@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+
+{% block title %}Iniciar Sesión - Kimün{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+        min-height: 100vh;
+    }
+    .login-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    .login-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        max-width: 450px;
+        width: 100%;
+    }
+    .login-logo {
+        width: 100px;
+        height: 100px;
+        background: #1e3a5f;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+    }
+    .form-label {
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: #1e3a5f;
+        margin-bottom: 8px;
+    }
+    .form-control {
+        font-size: 1.15rem;
+        padding: 16px 18px;
+        border: 2px solid #dee2e6;
+        border-radius: 12px;
+        transition: all 0.3s;
+    }
+    .form-control:focus {
+        border-color: #1e3a5f;
+        box-shadow: 0 0 0 4px rgba(30, 58, 95, 0.15);
+    }
+    .form-control::placeholder {
+        color: #adb5bd;
+    }
+    .btn-login {
+        font-size: 1.2rem;
+        font-weight: 600;
+        padding: 18px 24px;
+        border-radius: 12px;
+        background: #1e3a5f;
+        border: none;
+        transition: all 0.3s;
+    }
+    .btn-login:hover {
+        background: #2d5a87;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(30, 58, 95, 0.3);
+    }
+    .btn-login:active {
+        transform: translateY(0);
+    }
+    .brand-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1e3a5f;
+        margin-bottom: 8px;
+    }
+    .brand-subtitle {
+        font-size: 1.1rem;
+        color: #6c757d;
+    }
+    .alert {
+        font-size: 1.05rem;
+        border-radius: 12px;
+        padding: 16px;
+    }
+    .input-icon {
+        position: relative;
+    }
+    .input-icon i {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        font-size: 1.2rem;
+    }
+    .input-icon input {
+        padding-left: 50px;
+    }
+    .help-text {
+        font-size: 0.95rem;
+        color: #6c757d;
+        margin-top: 20px;
+    }
+    @media (max-width: 576px) {
+        .login-card {
+            padding: 30px 24px;
+        }
+        .brand-title {
+            font-size: 1.7rem;
+        }
+        .form-label {
+            font-size: 1rem;
+        }
+        .form-control {
+            font-size: 1.05rem;
+            padding: 14px 16px;
+        }
+        .btn-login {
+            font-size: 1.1rem;
+            padding: 16px 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card p-4 p-md-5">
+        <div class="text-center">
+            <div class="login-logo" role="img" aria-label="Kimün Logo">
+                <i class="bi bi-mortarboard-fill text-white" style="font-size: 3rem;"></i>
+            </div>
+            <h1 class="brand-title">Kimün</h1>
+            <p class="brand-subtitle mb-4">Plataforma de Capacitación</p>
+        </div>
+
+        <form method="post" autocomplete="on">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+            <div class="alert alert-danger" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <strong>Error de inicio de sesión</strong>
+                <hr class="my-2">
+                <ul class="mb-0 ps-3">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <div class="mb-4">
+                <label for="id_username" class="form-label">
+                    <i class="bi bi-person-fill me-2"></i>Usuario
+                </label>
+                <div class="input-icon">
+                    <i class="bi bi-person"></i>
+                    <input type="text" 
+                           name="username" 
+                           class="form-control" 
+                           id="id_username" 
+                           required
+                           autocomplete="username"
+                           placeholder="Ingrese su nombre de usuario"
+                           aria-describedby="usernameHelp">
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="id_password" class="form-label">
+                    <i class="bi bi-key-fill me-2"></i>Contraseña
+                </label>
+                <div class="input-icon">
+                    <i class="bi bi-lock"></i>
+                    <input type="password" 
+                           name="password" 
+                           class="form-control" 
+                           id="id_password" 
+                           required
+                           autocomplete="current-password"
+                           placeholder="Ingrese su contraseña">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-login w-100">
+                <i class="bi bi-box-arrow-in-right me-2"></i>
+                Iniciar Sesión
+            </button>
+        </form>
+
+        <div class="text-center help-text">
+            <i class="bi bi-info-circle me-1"></i>
+            ¿Olvidó su contraseña? Contacte al administrador
+        </div>
+        
+        <div class="text-center mt-3">
+            <small class="text-muted">© 2026 ONG ALUMCO - Todos los derechos reservados</small>
+        </div>
+    </div>
+</div>
+{% endblock %}

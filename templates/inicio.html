@@ -1,0 +1,265 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - Kimün{% endblock %}
+
+{% block extra_css %}
+<style>
+    .welcome-section {
+        background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .welcome-section h1 {
+        color: white;
+        font-size: 1.8rem;
+    }
+    
+    .dashboard-card {
+        border-radius: 16px;
+        overflow: hidden;
+        transition: all 0.3s;
+        border: 2px solid transparent;
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    }
+    
+    .dashboard-card .icon-wrapper {
+        width: 70px;
+        height: 70px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .dashboard-card .card-title {
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .dashboard-card .card-text {
+        font-size: 1rem;
+        color: #6c757d;
+        margin-bottom: 1.25rem;
+    }
+    
+    .dashboard-card .btn {
+        width: 100%;
+        padding: 14px 20px;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+    
+    .icon-users { background: #e3f2fd; color: #1976d2; }
+    .icon-chart { background: #e8f5e9; color: #388e3c; }
+    .icon-book { background: #fff3e0; color: #f57c00; }
+    .icon-training { background: #fce4ec; color: #c2185b; }
+    .icon-cert { background: #f3e5f5; color: #7b1fa2; }
+    
+    @media (max-width: 576px) {
+        .welcome-section {
+            padding: 1.5rem;
+        }
+        
+        .welcome-section h1 {
+            font-size: 1.4rem;
+        }
+        
+        .dashboard-card {
+            margin-bottom: 1rem;
+        }
+        
+        .dashboard-card .icon-wrapper {
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+        }
+        
+        .dashboard-card .btn {
+            padding: 12px 16px;
+            font-size: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="welcome-section">
+    <h1>
+        <i class="bi bi-sun-fill me-2" aria-hidden="true"></i>
+        Bienvenido, {{ user.get_full_name|default:user.username }}
+    </h1>
+    <p class="mb-0 fs-5">
+        {% if user.rol == 'admin' %}
+            <i class="bi bi-shield-check me-2"></i>Panel de Administración
+        {% elif user.rol == 'docente' %}
+            <i class="bi bi-book me-2"></i>Panel de Docente
+        {% else %}
+            <i class="bi bi-person-check me-2"></i>Panel de Colaborador
+        {% endif %}
+    </p>
+</div>
+
+<div class="row g-4">
+    {# ADMIN: Solo funciones de administración #}
+    {% if user.rol == 'admin' %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body d-flex flex-column">
+                <div class="icon-wrapper icon-users">
+                    <i class="bi bi-people-fill" aria-hidden="true"></i>
+                </div>
+                <h5 class="card-title">
+                    <i class="bi bi-people me-2"></i>Gestión de Usuarios
+                </h5>
+                <p class="card-text">Administrar usuarios, roles y asignaciones de cargo del personal.</p>
+                <a href="#" class="btn btn-primary mt-auto">
+                    <i class="bi bi-arrow-right-circle me-2" aria-hidden="true"></i>
+                    Ver Usuarios
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body d-flex flex-column">
+                <div class="icon-wrapper icon-chart">
+                    <i class="bi bi-bar-chart-fill" aria-hidden="true"></i>
+                </div>
+                <h5 class="card-title">
+                    <i class="bi bi-bar-chart me-2"></i>Reportes de Cumplimiento
+                </h5>
+                <p class="card-text">Ver estado de cumplimiento normativo del personal.</p>
+                <a href="#" class="btn btn-primary mt-auto">
+                    <i class="bi bi-arrow-right-circle me-2" aria-hidden="true"></i>
+                    Ver Reportes
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body d-flex flex-column">
+                <div class="icon-wrapper icon-book">
+                    <i class="bi bi-book-fill" aria-hidden="true"></i>
+                </div>
+                <h5 class="card-title">
+                    <i class="bi bi-book me-2"></i>Administrar Cursos
+                </h5>
+                <p class="card-text">Crear, editar y publicar cursos y materiales.</p>
+                <a href="#" class="btn btn-primary mt-auto">
+                    <i class="bi bi-arrow-right-circle me-2" aria-hidden="true"></i>
+                    Ver Cursos
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body d-flex flex-column">
+                <div class="icon-wrapper icon-cert">
+                    <i class="bi bi-award-fill" aria-hidden="true"></i>
+                </div>
+                <h5 class="card-title">
+                    <i class="bi bi-award me-2"></i>Emitir Certificados
+                </h5>
+                <p class="card-text">Ver y emitir certificados de cursos completados.</p>
+                <a href="#" class="btn btn-primary mt-auto">
+                    <i class="bi bi-arrow-right-circle me-2" aria-hidden="true"></i>
+                    Ver Certificados
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {# DOCENTE: Crear cursos y ver materiales #}
+    {% if user.rol == 'docente' %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body d-flex flex-column">
+                <div class="icon-wrapper icon-book">
+                    <i class="bi bi-book-fill" aria-hidden="true"></i>
+                </div>
+                <h5 class="card-title">
+                    <i class="bi bi-book me-2"></i>Mis Cursos
+                </h5>
+                <p class="card-text">Crear y gestionar cursos y materiales formativos.</p>
+                <a href="#" class="btn btn-primary mt-auto">
+                    <i class="bi bi-arrow-right-circle me-2" aria-hidden="true"></i>
+                    Administrar Cursos
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body d-flex flex-column">
+                <div class="icon-wrapper icon-training">
+                    <i class="bi bi-journal-check" aria-hidden="true"></i>
+                </div>
+                <h5 class="card-title">
+                    <i class="bi bi-journal-text me-2"></i>Mis Evaluaciones
+                </h5>
+                <p class="card-text">Crear y gestionar evaluaciones de mis cursos.</p>
+                <a href="#" class="btn btn-outline-primary mt-auto">
+                    <i class="bi bi-arrow-right-circle me-2" aria-hidden="true"></i>
+                    Ver Evaluaciones
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {# COLABORADOR y DOCENTE: Tomar capacitaciones y ver certificados #}
+    {% if user.rol == 'colaborador' or user.rol == 'docente' %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body d-flex flex-column">
+                <div class="icon-wrapper icon-training">
+                    <i class="bi bi-mortarboard-fill" aria-hidden="true"></i>
+                </div>
+                <h5 class="card-title">
+                    <i class="bi bi-journal-text me-2"></i>Mis Capacitaciones
+                </h5>
+                <p class="card-text">Acceder a tus capacitaciones asignadas y evaluaciones.</p>
+                <a href="#" class="btn btn-primary mt-auto">
+                    <i class="bi bi-arrow-right-circle me-2" aria-hidden="true"></i>
+                    Ver Capacitaciones
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body d-flex flex-column">
+                <div class="icon-wrapper icon-cert">
+                    <i class="bi bi-award-fill" aria-hidden="true"></i>
+                </div>
+                <h5 class="card-title">
+                    <i class="bi bi-award me-2"></i>Mis Certificados
+                </h5>
+                <p class="card-text">Ver y descargar certificados de cursos completados.</p>
+                <a href="#" class="btn btn-outline-primary mt-auto">
+                    <i class="bi bi-arrow-right-circle me-2" aria-hidden="true"></i>
+                    Ver Certificados
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
