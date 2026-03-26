@@ -1,209 +1,164 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="es" data-theme="classic">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Kimün</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: '#1e3a5f',
+                            light: '#2d5a87',
+                            dark: '#0f2744'
+                        },
+                        theme: {
+                            classic: { primary: '#1e3a5f', bg: '#f8fafc', accent: '#38a169' },
+                            friendly: { primary: '#e17055', bg: '#fff5f0', accent: '#00b894' },
+                            bold: { primary: '#000000', bg: '#ffffff', accent: '#FFD600' },
+                            minimal: { primary: '#5c6b5a', bg: '#f5f4f0', accent: '#7d9a74' },
+                            playful: { primary: '#6c5ce7', bg: '#f0f3ff', accent: '#fd79a8' }
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Segoe UI', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script>
+        // Theme application
+        (function() {
+            const saved = localStorage.getItem('kimun-theme') || 'classic';
+            applyTheme(saved);
+        })();
 
-{% block title %}Iniciar Sesión - Kimün{% endblock %}
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('kimun-theme', theme);
+            updateButtons(theme);
+        }
 
-{% block extra_css %}
-<style>
-    body {
-        background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
-        min-height: 100vh;
-    }
-    .login-container {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-    }
-    .login-card {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        max-width: 450px;
-        width: 100%;
-    }
-    .login-logo {
-        width: 100px;
-        height: 100px;
-        background: #1e3a5f;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 20px;
-    }
-    .form-label {
-        font-weight: 600;
-        font-size: 1.1rem;
-        color: #1e3a5f;
-        margin-bottom: 8px;
-    }
-    .form-control {
-        font-size: 1.15rem;
-        padding: 16px 18px;
-        border: 2px solid #dee2e6;
-        border-radius: 12px;
-        transition: all 0.3s;
-    }
-    .form-control:focus {
-        border-color: #1e3a5f;
-        box-shadow: 0 0 0 4px rgba(30, 58, 95, 0.15);
-    }
-    .form-control::placeholder {
-        color: #adb5bd;
-    }
-    .btn-login {
-        font-size: 1.2rem;
-        font-weight: 600;
-        padding: 18px 24px;
-        border-radius: 12px;
-        background: #1e3a5f;
-        border: none;
-        transition: all 0.3s;
-    }
-    .btn-login:hover {
-        background: #2d5a87;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 20px rgba(30, 58, 95, 0.3);
-    }
-    .btn-login:active {
-        transform: translateY(0);
-    }
-    .brand-title {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #1e3a5f;
-        margin-bottom: 8px;
-    }
-    .brand-subtitle {
-        font-size: 1.1rem;
-        color: #6c757d;
-    }
-    .alert {
-        font-size: 1.05rem;
-        border-radius: 12px;
-        padding: 16px;
-    }
-    .input-icon {
-        position: relative;
-    }
-    .input-icon i {
-        position: absolute;
-        left: 18px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #6c757d;
-        font-size: 1.2rem;
-    }
-    .input-icon input {
-        padding-left: 50px;
-    }
-    .help-text {
-        font-size: 0.95rem;
-        color: #6c757d;
-        margin-top: 20px;
-    }
-    @media (max-width: 576px) {
-        .login-card {
-            padding: 30px 24px;
+        function updateButtons(active) {
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.toggle('ring-2', btn.dataset.theme === active);
+                btn.classList.toggle('ring-offset-2', btn.dataset.theme === active);
+                btn.classList.toggle('ring-blue-900', btn.dataset.theme === active);
+            });
+            const label = document.getElementById('themeLabel');
+            if(label) label.textContent = 'Tema: ' + themeNames[active];
         }
-        .brand-title {
-            font-size: 1.7rem;
-        }
-        .form-label {
-            font-size: 1rem;
-        }
-        .form-control {
-            font-size: 1.05rem;
-            padding: 14px 16px;
-        }
-        .btn-login {
-            font-size: 1.1rem;
-            padding: 16px 20px;
-        }
-    }
-</style>
-{% endblock %}
 
-{% block content %}
-<div class="login-container">
-    <div class="login-card p-4 p-md-5">
-        <div class="text-center">
-            <div class="login-logo" role="img" aria-label="Kimün Logo">
-                <i class="bi bi-mortarboard-fill text-white" style="font-size: 3rem;"></i>
+        const themeNames = {
+            classic: 'Clásico',
+            friendly: 'Amigable',
+            bold: 'Alto Contraste',
+            minimal: 'Minimalista',
+            playful: 'Creativo'
+        };
+    </script>
+    <style>
+        /* Theme colors via CSS variables */
+        [data-theme="classic"] { --color-primary: #1e3a5f; --color-bg: #f8fafc; --color-surface: #ffffff; --color-text: #1e293b; }
+        [data-theme="friendly"] { --color-primary: #e17055; --color-bg: #fff5f0; --color-surface: #ffffff; --color-text: #1a1a1a; }
+        [data-theme="bold"] { --color-primary: #000000; --color-bg: #ffffff; --color-surface: #ffffff; --color-text: #000000; }
+        [data-theme="minimal"] { --color-primary: #5c6b5a; --color-bg: #f5f4f0; --color-surface: #ffffff; --color-text: #3d3d3d; }
+        [data-theme="playful"] { --color-primary: #6c5ce7; --color-bg: #f0f3ff; --color-surface: #ffffff; --color-text: #1a1a2e; }
+        
+        body { background-color: var(--color-bg); }
+        .btn-primary { background-color: var(--color-primary); }
+        .text-primary { color: var(--color-primary); }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4" data-theme="classic">
+    <!-- Login Card -->
+    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
+        <!-- Header -->
+        <div class="p-8 text-center" style="background: linear-gradient(135deg, var(--color-primary), color-mix(in srgb, var(--color-primary) 80%, white));">
+            <div class="w-20 h-20 bg-white rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg">
+                <i class="bi bi-mortarboard-fill text-4xl" style="color: var(--color-primary);"></i>
             </div>
-            <h1 class="brand-title">Kimün</h1>
-            <p class="brand-subtitle mb-4">Plataforma de Capacitación</p>
-        </div>
-
-        <form method="post" autocomplete="on">
-            {% csrf_token %}
-            
-            {% if form.errors %}
-            <div class="alert alert-danger" role="alert">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                <strong>Error de inicio de sesión</strong>
-                <hr class="my-2">
-                <ul class="mb-0 ps-3">
-                    {% for field in form %}
-                        {% for error in field.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    {% endfor %}
-                    {% for error in form.non_field_errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
-
-            <div class="mb-4">
-                <label for="id_username" class="form-label">
-                    <i class="bi bi-person-fill me-2"></i>Usuario
-                </label>
-                <div class="input-icon">
-                    <i class="bi bi-person"></i>
-                    <input type="text" 
-                           name="username" 
-                           class="form-control" 
-                           id="id_username" 
-                           required
-                           autocomplete="username"
-                           placeholder="Ingrese su nombre de usuario"
-                           aria-describedby="usernameHelp">
-                </div>
-            </div>
-
-            <div class="mb-4">
-                <label for="id_password" class="form-label">
-                    <i class="bi bi-key-fill me-2"></i>Contraseña
-                </label>
-                <div class="input-icon">
-                    <i class="bi bi-lock"></i>
-                    <input type="password" 
-                           name="password" 
-                           class="form-control" 
-                           id="id_password" 
-                           required
-                           autocomplete="current-password"
-                           placeholder="Ingrese su contraseña">
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary btn-login w-100">
-                <i class="bi bi-box-arrow-in-right me-2"></i>
-                Iniciar Sesión
-            </button>
-        </form>
-
-        <div class="text-center help-text">
-            <i class="bi bi-info-circle me-1"></i>
-            ¿Olvidó su contraseña? Contacte al administrador
+            <h1 class="text-2xl font-bold text-white">Kimün</h1>
+            <p class="text-white/80 mt-1">Plataforma de Capacitación</p>
         </div>
         
-        <div class="text-center mt-3">
-            <small class="text-muted">© 2026 ONG ALUMCO - Todos los derechos reservados</small>
+        <!-- Form -->
+        <div class="p-8">
+            {% if form.errors %}
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r">
+                <p class="text-red-700 font-medium">Error de inicio de sesión</p>
+            </div>
+            {% endif %}
+            
+            <form method="post" autocomplete="on">
+                {% csrf_token %}
+                <div class="mb-5">
+                    <label class="block text-sm font-semibold mb-2" style="color: var(--color-primary);">Usuario</label>
+                    <input type="text" name="username" required 
+                        class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-current focus:outline-none transition-colors"
+                        style="border-color: var(--color-primary);"
+                        placeholder="Ingrese su usuario">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold mb-2" style="color: var(--color-primary);">Contraseña</label>
+                    <input type="password" name="password" required 
+                        class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-current focus:outline-none transition-colors"
+                        style="border-color: var(--color-primary);"
+                        placeholder="Ingrese su contraseña">
+                </div>
+                <button type="submit" 
+                    class="w-full py-3 px-6 rounded-xl font-semibold text-white transition-transform hover:scale-[1.02] active:scale-[0.98]"
+                    style="background-color: var(--color-primary);">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+                </button>
+            </form>
         </div>
+        
+        <!-- Footer -->
+        <div class="px-8 py-4 bg-gray-50 text-center border-t">
+            <p class="text-gray-500 text-sm">© 2026 ONG ALUMCO</p>
+            <a href="{% url 'usuarios:style_selector' %}" class="text-sm text-blue-600 hover:underline mt-2 inline-block">
+                <i class="bi bi-palette me-1"></i>Cambiar estilo
+            </a>
+        </div>
+
+    <!-- Theme Selector -->
+    <div class="fixed bottom-6 right-6 bg-white rounded-2xl shadow-2xl p-4 z-50 max-w-xs">
+        <h3 class="font-bold text-sm mb-3 flex items-center gap-2" style="color: var(--color-primary);">
+            <i class="bi bi-palette"></i> Elegir Color
+        </h3>
+        <div class="flex gap-2 justify-center mb-2">
+            <button onclick="applyTheme('classic')" data-theme="classic" 
+                class="theme-btn w-10 h-10 rounded-lg bg-gradient-to-br from-blue-900 to-blue-700 ring-2 ring-offset-2 ring-blue-900 hover:scale-110 transition-transform"
+                title="Clásico"></button>
+            <button onclick="applyTheme('friendly')" data-theme="friendly"
+                class="theme-btn w-10 h-10 rounded-lg bg-gradient-to-br from-orange-400 to-orange-300 hover:scale-110 transition-transform"
+                title="Amigable"></button>
+            <button onclick="applyTheme('bold')" data-theme="bold"
+                class="theme-btn w-10 h-10 rounded-lg bg-gradient-to-br from-black to-yellow-400 hover:scale-110 transition-transform"
+                title="Alto Contraste"></button>
+            <button onclick="applyTheme('minimal')" data-theme="minimal"
+                class="theme-btn w-10 h-10 rounded-lg bg-gradient-to-br from-green-700 to-amber-200 hover:scale-110 transition-transform"
+                title="Minimalista"></button>
+            <button onclick="applyTheme('playful')" data-theme="playful"
+                class="theme-btn w-10 h-10 rounded-lg bg-gradient-to-br from-purple-600 to-pink-400 hover:scale-110 transition-transform"
+                title="Creativo"></button>
+        </div>
+        <p id="themeLabel" class="text-xs text-gray-500 text-center">LSM: Grande, Simple, Móvil</p>
     </div>
-</div>
-{% endblock %}
+
+    <script>
+        // Theme button click handlers
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                applyTheme(this.dataset.theme);
+            });
+        });
+    </script>
+</body>
+</html>

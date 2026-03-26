@@ -1,0 +1,189 @@
+{% extends 'base_brutal.html' %}
+
+{% block title %}Inicio - Kimün{% endblock %}
+
+{% block content %}
+<div class="mb-10">
+    <div class="fade-in bg-brutal-black p-6 inline-block">
+        <h1 class="text-3xl font-bold uppercase tracking-wider text-brutal-yellow">
+            <i class="bi bi-shield-check mr-3"></i>BIENVENIDO
+        </h1>
+    </div>
+    <div class="fade-in stagger-1 mt-4">
+        <p class="bg-brutal-yellow inline-block px-4 py-2 font-bold text-sm border-2 border-brutal-black">
+            /// {{ user.get_full_name|default:user.username|upper }}
+        </p>
+        <p class="text-brutal-gray font-bold text-sm mt-2">
+            {% if user.rol == 'admin' %}>>> MODO: ADMINISTRADOR
+            {% elif user.rol == 'docente' %}>>> MODO: DOCENTE
+            {% else %}>>> MODO: COLABORADOR{% endif %}
+        </p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {% if user.rol == 'admin' %}
+    <a href="#" class="brutal-card fade-in stagger-2 bg-white border-4 border-brutal-black p-6 group">
+        <div class="flex items-start justify-between mb-4">
+            <div class="w-14 h-14 bg-brutal-yellow flex items-center justify-center text-2xl border-2 border-brutal-black">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <span class="bg-brutal-black text-brutal-yellow px-2 py-1 font-bold text-xs">12</span>
+        </div>
+        <h3 class="text-xl font-bold uppercase mb-2">/// USUARIOS</h3>
+        <p class="text-sm text-brutal-gray mb-4">Gestiona usuarios, roles y permisos del sistema</p>
+        <div class="border-t-2 border-brutal-black pt-3 flex justify-between items-center">
+            <span class="text-xs font-bold text-brutal-gray">8 activos</span>
+            <span class="text-sm font-bold group-hover:underline">ACCEDER →</span>
+        </div>
+    </a>
+    
+    <a href="#" class="brutal-card fade-in stagger-3 bg-white border-4 border-brutal-black p-6 group">
+        <div class="flex items-start justify-between mb-4">
+            <div class="w-14 h-14 bg-green-400 flex items-center justify-center text-2xl border-2 border-brutal-black">
+                <i class="bi bi-bar-chart-fill"></i>
+            </div>
+            <span class="bg-green-400 text-brutal-black px-2 py-1 font-bold text-xs">85%</span>
+        </div>
+        <h3 class="text-xl font-bold uppercase mb-2">/// REPORTES</h3>
+        <p class="text-sm text-brutal-gray mb-4">Visualiza métricas y cumplimiento normativo</p>
+        <div class="border-t-2 border-brutal-black pt-3 flex justify-between items-center">
+            <span class="text-xs font-bold text-brutal-gray">3 reportes</span>
+            <span class="text-sm font-bold group-hover:underline">ACCEDER →</span>
+        </div>
+    </a>
+
+    <a href="#" class="brutal-card fade-in stagger-4 bg-white border-4 border-brutal-black p-6 group">
+        <div class="flex items-start justify-between mb-4">
+            <div class="w-14 h-14 bg-orange-400 flex items-center justify-center text-2xl border-2 border-brutal-black">
+                <i class="bi bi-book-fill"></i>
+            </div>
+            <span class="bg-orange-400 text-brutal-black px-2 py-1 font-bold text-xs">8</span>
+        </div>
+        <h3 class="text-xl font-bold uppercase mb-2">/// CURSOS</h3>
+        <p class="text-sm text-brutal-gray mb-4">Administra cursos y contenido educativo</p>
+        <div class="border-t-2 border-brutal-black pt-3 flex justify-between items-center">
+            <span class="text-xs font-bold text-brutal-gray">5 publicados</span>
+            <span class="text-sm font-bold group-hover:underline">ACCEDER →</span>
+        </div>
+    </a>
+    
+    <a href="#" class="brutal-card fade-in stagger-1 bg-white border-4 border-brutal-black p-6 group">
+        <div class="flex items-start justify-between mb-4">
+            <div class="w-14 h-14 bg-purple-400 flex items-center justify-center text-2xl border-2 border-brutal-black">
+                <i class="bi bi-award-fill"></i>
+            </div>
+            <span class="bg-purple-400 text-brutal-black px-2 py-1 font-bold text-xs">156</span>
+        </div>
+        <h3 class="text-xl font-bold uppercase mb-2">/// CERTIFICADOS</h3>
+        <p class="text-sm text-brutal-gray mb-4">Emite y gestiona certificados de capacitación</p>
+        <div class="border-t-2 border-brutal-black pt-3 flex justify-between items-center">
+            <span class="text-xs font-bold text-brutal-gray">este mes</span>
+            <span class="text-sm font-bold group-hover:underline">ACCEDER →</span>
+        </div>
+    </a>
+    {% endif %}
+
+    {% if user.rol == 'docente' %}
+    <a href="#" class="brutal-card fade-in stagger-2 bg-white border-4 border-brutal-black p-6 group">
+        <div class="flex items-start justify-between mb-4">
+            <div class="w-14 h-14 bg-orange-400 flex items-center justify-center text-2xl border-2 border-brutal-black">
+                <i class="bi bi-book-fill"></i>
+            </div>
+            <span class="bg-orange-400 text-brutal-black px-2 py-1 font-bold text-xs">5</span>
+        </div>
+        <h3 class="text-xl font-bold uppercase mb-2">/// MIS CURSOS</h3>
+        <p class="text-sm text-brutal-gray mb-4">Crea y administra tus cursos</p>
+        <div class="border-t-2 border-brutal-black pt-3 flex justify-between items-center">
+            <span class="text-xs font-bold text-brutal-gray">3 activos</span>
+            <span class="text-sm font-bold group-hover:underline">ACCEDER →</span>
+        </div>
+    </a>
+    
+    <a href="#" class="brutal-card fade-in stagger-3 bg-white border-4 border-brutal-black p-6 group">
+        <div class="flex items-start justify-between mb-4">
+            <div class="w-14 h-14 bg-pink-400 flex items-center justify-center text-2xl border-2 border-brutal-black">
+                <i class="bi bi-journal-check"></i>
+            </div>
+            <span class="bg-pink-400 text-brutal-black px-2 py-1 font-bold text-xs">12</span>
+        </div>
+        <h3 class="text-xl font-bold uppercase mb-2">/// EVALUACIONES</h3>
+        <p class="text-sm text-brutal-gray mb-4">Gestiona evaluaciones de tus cursos</p>
+        <div class="border-t-2 border-brutal-black pt-3 flex justify-between items-center">
+            <span class="text-xs font-bold text-brutal-gray">6 activas</span>
+            <span class="text-sm font-bold group-hover:underline">ACCEDER →</span>
+        </div>
+    </a>
+    {% endif %}
+
+    {% if user.rol == 'colaborador' or user.rol == 'docente' %}
+    <a href="#" class="brutal-card fade-in stagger-2 bg-white border-4 border-brutal-black p-6 group">
+        <div class="flex items-start justify-between mb-4">
+            <div class="w-14 h-14 bg-pink-400 flex items-center justify-center text-2xl border-2 border-brutal-black">
+                <i class="bi bi-mortarboard-fill"></i>
+            </div>
+            <span class="bg-pink-400 text-brutal-black px-2 py-1 font-bold text-xs">3</span>
+        </div>
+        <h3 class="text-xl font-bold uppercase mb-2">/// CAPACITACIONES</h3>
+        <p class="text-sm text-brutal-gray mb-4">Accede a tus capacitaciones asignadas</p>
+        <div class="border-t-2 border-brutal-black pt-3 flex justify-between items-center">
+            <span class="text-xs font-bold text-brutal-gray">2 pendientes</span>
+            <span class="text-sm font-bold group-hover:underline">ACCEDER →</span>
+        </div>
+    </a>
+
+    <a href="#" class="brutal-card fade-in stagger-3 bg-white border-4 border-brutal-black p-6 group">
+        <div class="flex items-start justify-between mb-4">
+            <div class="w-14 h-14 bg-purple-400 flex items-center justify-center text-2xl border-2 border-brutal-black">
+                <i class="bi bi-award-fill"></i>
+            </div>
+            <span class="bg-purple-400 text-brutal-black px-2 py-1 font-bold text-xs">5</span>
+        </div>
+        <h3 class="text-xl font-bold uppercase mb-2">/// CERTIFICADOS</h3>
+        <p class="text-sm text-brutal-gray mb-4">Descarga tus certificados obtenidos</p>
+        <div class="border-t-2 border-brutal-black pt-3 flex justify-between items-center">
+            <span class="text-xs font-bold text-brutal-gray">obtenidos</span>
+            <span class="text-sm font-bold group-hover:underline">ACCEDER →</span>
+        </div>
+    </a>
+    {% endif %}
+</div>
+
+<div class="mt-12 fade-in stagger-4">
+    <div class="bg-brutal-black p-6 border-4 border-brutal-black">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold uppercase text-brutal-yellow">/// ACTIVIDAD RECIENTE</h2>
+            <button class="text-brutal-yellow text-sm font-bold hover:underline">VER TODO</button>
+        </div>
+        <div class="space-y-3">
+            <div class="flex items-center gap-4 bg-brutal-white p-4 border-2 border-brutal-black">
+                <div class="w-10 h-10 bg-brutal-yellow flex items-center justify-center border-2 border-brutal-black">
+                    <i class="bi bi-check-lg"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="font-bold text-sm">CURSO "PRIMEROS AUXILIOS" COMPLETADO</p>
+                    <p class="text-xs text-brutal-gray">>>> HACE 2 DÍAS</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 bg-brutal-white p-4 border-2 border-brutal-black">
+                <div class="w-10 h-10 bg-blue-400 flex items-center justify-center border-2 border-brutal-black">
+                    <i class="bi bi-book"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="font-bold text-sm">NUEVO CURSO ASIGNADO: "SEGURIDAD LABORAL"</p>
+                    <p class="text-xs text-brutal-gray">>>> HACE 5 DÍAS</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 bg-brutal-white p-4 border-2 border-brutal-black">
+                <div class="w-10 h-10 bg-purple-400 flex items-center justify-center border-2 border-brutal-black">
+                    <i class="bi bi-award"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="font-bold text-sm">CERTIFICADO OBTENIDO: "MANEJO DE CRISIS"</p>
+                    <p class="text-xs text-brutal-gray">>>> HACE 1 SEMANA</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

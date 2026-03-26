@@ -1,0 +1,188 @@
+{% extends 'base_glass.html' %}
+
+{% block title %}Inicio - Kimün{% endblock %}
+
+{% block content %}
+<div class="mb-12">
+    <div class="fade-in">
+        <p class="text-white/50 text-sm font-medium tracking-widest uppercase mb-2">Dashboard</p>
+        <h1 class="text-4xl font-semibold text-white tracking-tight">
+            <i class="bi bi-sun-fill me-3"></i>Bienvenido, {{ user.get_full_name|default:user.username }}
+        </h1>
+    </div>
+    <div class="fade-in stagger-1 mt-4 flex items-center gap-3">
+        <span class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></span>
+        <span class="text-white/70">
+            {% if user.rol == 'admin' %}<i class="bi bi-shield-check me-2"></i>Administrador
+            {% elif user.rol == 'docente' %}<i class="bi bi-book me-2"></i>Docente
+            {% else %}<i class="bi bi-person-check me-2"></i>Colaborador{% endif %}
+        </span>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% if user.rol == 'admin' %}
+    <a href="#" class="glass-card fade-in stagger-2 rounded-2xl p-7 group">
+        <div class="flex items-start justify-between mb-5">
+            <div class="w-14 h-14 glass rounded-2xl flex items-center justify-center text-2xl">
+                <i class="bi bi-people-fill text-white"></i>
+            </div>
+            <span class="glass px-3 py-1 rounded-full text-xs font-medium text-white/80">12</span>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-2">Usuarios</h3>
+        <p class="text-white/60 text-sm mb-4">Gestiona usuarios, roles y permisos del sistema</p>
+        <div class="pt-4 border-t border-white/10 flex items-center justify-between">
+            <span class="text-xs text-white/50">8 usuarios activos</span>
+            <i class="bi bi-arrow-right text-white/50 group-hover:text-white group-hover:translate-x-2 transition-all"></i>
+        </div>
+    </a>
+    
+    <a href="#" class="glass-card fade-in stagger-3 rounded-2xl p-7 group">
+        <div class="flex items-start justify-between mb-5">
+            <div class="w-14 h-14 glass rounded-2xl flex items-center justify-center text-2xl" style="background: rgba(74, 222, 128, 0.2);">
+                <i class="bi bi-bar-chart-fill text-green-300"></i>
+            </div>
+            <span class="glass px-3 py-1 rounded-full text-xs font-medium text-green-300">85%</span>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-2">Reportes</h3>
+        <p class="text-white/60 text-sm mb-4">Visualiza métricas y cumplimiento normativo</p>
+        <div class="pt-4 border-t border-white/10 flex items-center justify-between">
+            <span class="text-xs text-white/50">3 reportes</span>
+            <i class="bi bi-arrow-right text-white/50 group-hover:text-white group-hover:translate-x-2 transition-all"></i>
+        </div>
+    </a>
+
+    <a href="#" class="glass-card fade-in stagger-4 rounded-2xl p-7 group">
+        <div class="flex items-start justify-between mb-5">
+            <div class="w-14 h-14 glass rounded-2xl flex items-center justify-center text-2xl" style="background: rgba(251, 146, 60, 0.2);">
+                <i class="bi bi-book-fill text-orange-300"></i>
+            </div>
+            <span class="glass px-3 py-1 rounded-full text-xs font-medium text-orange-300">8</span>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-2">Cursos</h3>
+        <p class="text-white/60 text-sm mb-4">Administra cursos y contenido educativo</p>
+        <div class="pt-4 border-t border-white/10 flex items-center justify-between">
+            <span class="text-xs text-white/50">5 publicados</span>
+            <i class="bi bi-arrow-right text-white/50 group-hover:text-white group-hover:translate-x-2 transition-all"></i>
+        </div>
+    </a>
+    
+    <a href="#" class="glass-card fade-in stagger-1 rounded-2xl p-7 group">
+        <div class="flex items-start justify-between mb-5">
+            <div class="w-14 h-14 glass rounded-2xl flex items-center justify-center text-2xl" style="background: rgba(167, 139, 250, 0.2);">
+                <i class="bi bi-award-fill text-purple-300"></i>
+            </div>
+            <span class="glass px-3 py-1 rounded-full text-xs font-medium text-purple-300">156</span>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-2">Certificados</h3>
+        <p class="text-white/60 text-sm mb-4">Emite y gestiona certificados de capacitación</p>
+        <div class="pt-4 border-t border-white/10 flex items-center justify-between">
+            <span class="text-xs text-white/50">este mes</span>
+            <i class="bi bi-arrow-right text-white/50 group-hover:text-white group-hover:translate-x-2 transition-all"></i>
+        </div>
+    </a>
+    {% endif %}
+
+    {% if user.rol == 'docente' %}
+    <a href="#" class="glass-card fade-in stagger-2 rounded-2xl p-7 group">
+        <div class="flex items-start justify-between mb-5">
+            <div class="w-14 h-14 glass rounded-2xl flex items-center justify-center text-2xl" style="background: rgba(251, 146, 60, 0.2);">
+                <i class="bi bi-book-fill text-orange-300"></i>
+            </div>
+            <span class="glass px-3 py-1 rounded-full text-xs font-medium text-orange-300">5</span>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-2">Mis Cursos</h3>
+        <p class="text-white/60 text-sm mb-4">Crea y administra tus cursos</p>
+        <div class="pt-4 border-t border-white/10 flex items-center justify-between">
+            <span class="text-xs text-white/50">3 activos</span>
+            <i class="bi bi-arrow-right text-white/50 group-hover:text-white group-hover:translate-x-2 transition-all"></i>
+        </div>
+    </a>
+    
+    <a href="#" class="glass-card fade-in stagger-3 rounded-2xl p-7 group">
+        <div class="flex items-start justify-between mb-5">
+            <div class="w-14 h-14 glass rounded-2xl flex items-center justify-center text-2xl" style="background: rgba(236, 72, 153, 0.2);">
+                <i class="bi bi-journal-check text-pink-300"></i>
+            </div>
+            <span class="glass px-3 py-1 rounded-full text-xs font-medium text-pink-300">12</span>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-2">Evaluaciones</h3>
+        <p class="text-white/60 text-sm mb-4">Gestiona evaluaciones de tus cursos</p>
+        <div class="pt-4 border-t border-white/10 flex items-center justify-between">
+            <span class="text-xs text-white/50">6 activas</span>
+            <i class="bi bi-arrow-right text-white/50 group-hover:text-white group-hover:translate-x-2 transition-all"></i>
+        </div>
+    </a>
+    {% endif %}
+
+    {% if user.rol == 'colaborador' or user.rol == 'docente' %}
+    <a href="#" class="glass-card fade-in stagger-2 rounded-2xl p-7 group">
+        <div class="flex items-start justify-between mb-5">
+            <div class="w-14 h-14 glass rounded-2xl flex items-center justify-center text-2xl" style="background: rgba(236, 72, 153, 0.2);">
+                <i class="bi bi-mortarboard-fill text-pink-300"></i>
+            </div>
+            <span class="glass px-3 py-1 rounded-full text-xs font-medium text-pink-300">3</span>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-2">Capacitaciones</h3>
+        <p class="text-white/60 text-sm mb-4">Accede a tus capacitaciones asignadas</p>
+        <div class="pt-4 border-t border-white/10 flex items-center justify-between">
+            <span class="text-xs text-white/50">2 pendientes</span>
+            <i class="bi bi-arrow-right text-white/50 group-hover:text-white group-hover:translate-x-2 transition-all"></i>
+        </div>
+    </a>
+
+    <a href="#" class="glass-card fade-in stagger-3 rounded-2xl p-7 group">
+        <div class="flex items-start justify-between mb-5">
+            <div class="w-14 h-14 glass rounded-2xl flex items-center justify-center text-2xl" style="background: rgba(167, 139, 250, 0.2);">
+                <i class="bi bi-award-fill text-purple-300"></i>
+            </div>
+            <span class="glass px-3 py-1 rounded-full text-xs font-medium text-purple-300">5</span>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-2">Mis Certificados</h3>
+        <p class="text-white/60 text-sm mb-4">Descarga tus certificados obtenidos</p>
+        <div class="pt-4 border-t border-white/10 flex items-center justify-between">
+            <span class="text-xs text-white/50">obtenidos</span>
+            <i class="bi bi-arrow-right text-white/50 group-hover:text-white group-hover:translate-x-2 transition-all"></i>
+        </div>
+    </a>
+    {% endif %}
+</div>
+
+<div class="mt-12 fade-in stagger-4">
+    <div class="glass rounded-2xl p-8">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-white">Actividad Reciente</h2>
+            <button class="text-white/50 hover:text-white text-sm transition-colors">Ver todo</button>
+        </div>
+        <div class="space-y-4">
+            <div class="flex items-center gap-4 p-4 glass rounded-xl">
+                <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background: rgba(74, 222, 128, 0.2);">
+                    <i class="bi bi-check-lg text-green-300"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-white">Curso "Primeros Auxilios" completado</p>
+                    <p class="text-xs text-white/40">Hace 2 días</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 p-4 glass rounded-xl">
+                <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background: rgba(96, 165, 250, 0.2);">
+                    <i class="bi bi-book text-blue-300"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-white">Nuevo curso asignado: "Seguridad Laboral"</p>
+                    <p class="text-xs text-white/40">Hace 5 días</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 p-4 glass rounded-xl">
+                <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background: rgba(167, 139, 250, 0.2);">
+                    <i class="bi bi-award text-purple-300"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-white">Certificado obtenido: "Manejo de Crisis"</p>
+                    <p class="text-xs text-white/40">Hace 1 semana</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

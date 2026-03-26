@@ -1,0 +1,134 @@
+/* Kimün Theme System - LSM Focused (Large, Simple, Mobile-friendly) */
+
+/* Base CSS Variables - These change per theme */
+:root {
+    /* Default: Classic Blue */
+    --primary-color: #1e3a5f;
+    --primary-hover: #2d5a87;
+    --primary-light: #e3f2fd;
+    --secondary-color: #f57c00;
+    --background-color: #f8f9fa;
+    --surface-color: #ffffff;
+    --text-primary: #1e3a5f;
+    --text-secondary: #495057;
+    --text-muted: #6c757d;
+    --border-color: #dee2e6;
+    --success-color: #198754;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #0dcaf0;
+    --card-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    --gradient-start: #1e3a5f;
+    --gradient-end: #2d5a87;
+    --theme-name: "Azul Clásico";
+}
+
+/* Theme 1: Classic Blue - High Contrast */
+[data-theme="classic-blue"] {
+    --primary-color: #1e3a5f;
+    --primary-hover: #2d5a87;
+    --primary-light: #e3f2fd;
+    --secondary-color: #f57c00;
+    --background-color: #f8f9fa;
+    --surface-color: #ffffff;
+    --text-primary: #1e3a5f;
+    --text-secondary: #495057;
+    --text-muted: #6c757d;
+    --border-color: #dee2e6;
+    --success-color: #198754;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #0dcaf0;
+    --card-shadow: 0 4px 20px rgba(30, 58, 95, 0.15);
+    --gradient-start: #1e3a5f;
+    --gradient-end: #2d5a87;
+    --theme-name: "Azul Clásico";
+}
+
+/* Theme 2: Warm Amber - Soft Contrast */
+[data-theme="warm-amber"] {
+    --primary-color: #b45309;
+    --primary-hover: #d97706;
+    --primary-light: #fef3c7;
+    --secondary-color: #059669;
+    --background-color: #fffbeb;
+    --surface-color: #ffffff;
+    --text-primary: #92400e;
+    --text-secondary: #78350f;
+    --text-muted: #92400e;
+    --border-color: #fcd34d;
+    --success-color: #059669;
+    --warning-color: #f59e0b;
+    --danger-color: #dc2626;
+    --info-color: #0891b2;
+    --card-shadow: 0 4px 20px rgba(180, 83, 9, 0.15);
+    --gradient-start: #b45309;
+    --gradient-end: #d97706;
+    --theme-name: "Ámbar Cálido";
+}
+
+/* Theme 3: Forest Green - Calming Nature */
+[data-theme="forest-green"] {
+    --primary-color: #166534;
+    --primary-hover: #15803d;
+    --primary-light: #dcfce7;
+    --secondary-color: #0369a1;
+    --background-color: #f0fdf4;
+    --surface-color: #ffffff;
+    --text-primary: #14532d;
+    --text-secondary: #166534;
+    --text-muted: #166534;
+    --border-color: #86efac;
+    --success-color: #16a34a;
+    --warning-color: #ca8a04;
+    --danger-color: #dc2626;
+    --info-color: #0891b2;
+    --card-shadow: 0 4px 20px rgba(22, 101, 52, 0.15);
+    --gradient-start: #166534;
+    --gradient-end: #15803d;
+    --theme-name: "Verde Bosque";
+}
+
+/* Theme 4: Rose Pink - Warm Inviting */
+[data-theme="rose-pink"] {
+    --primary-color: #be185d;
+    --primary-hover: #db2777;
+    --primary-light: #fce7f3;
+    --secondary-color: #7c3aed;
+    --background-color: #fff1f2;
+    --surface-color: #ffffff;
+    --text-primary: #9d174d;
+    --text-secondary: #be185d;
+    --text-muted: #be185d;
+    --border-color: #fda4af;
+    --success-color: #059669;
+    --warning-color: #f59e0b;
+    --danger-color: #dc2626;
+    --info-color: #0891b2;
+    --card-shadow: 0 4px 20px rgba(190, 24, 93, 0.15);
+    --gradient-start: #be185d;
+    --gradient-end: #db2777;
+    --theme-name: "Rosa Encantador";
+}
+
+/* Theme 5: Midnight Dark - Dark Mode */
+[data-theme="midnight-dark"] {
+    --primary-color: #60a5fa;
+    --primary-hover: #93c5fd;
+    --primary-light: #1e3a5f;
+    --secondary-color: #fbbf24;
+    --background-color: #0f172a;
+    --surface-color: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+    --success-color: #34d399;
+    --warning-color: #fbbf24;
+    --danger-color: #f87171;
+    --info-color: #22d3ee;
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    --gradient-start: #1e3a5f;
+    --gradient-end: #3b82f6;
+    --theme-name: "Modo Nocturno";
+}
