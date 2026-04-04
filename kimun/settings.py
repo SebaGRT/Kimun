@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'cursos',
     'evaluaciones',
     'certificados',
+    'reportes',
 ]
 
 MIDDLEWARE = [
@@ -124,6 +125,7 @@ AUTH_USER_MODEL = 'usuarios.Usuario'
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'templates' / 'admin',
+    BASE_DIR / 'kimun',
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
@@ -134,3 +136,13 @@ MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_URL = 'usuarios:login'
 LOGIN_REDIRECT_URL = 'inicio'
 LOGOUT_REDIRECT_URL = 'usuarios:login'
+
+# Email Configuration (Development - prints to console)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# For production, use SMTP:
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.example.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'notifications@alumco.cl'
+# EMAIL_HOST_PASSWORD = 'your-password'

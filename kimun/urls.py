@@ -7,6 +7,10 @@ from usuarios.views import inicio
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('usuarios.urls')),
+    path('cursos/', include('cursos.urls')),
+    path('evaluaciones/', include('evaluaciones.urls')),
+    path('certificados/', include('certificados.urls')),
+    path('reportes/', include('reportes.urls')),
     path('', inicio, name='inicio'),
 ]
 

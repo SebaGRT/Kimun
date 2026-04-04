@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if accion == 'crear' %}Crear Categoría{% else %}Editar Categoría{% endif %} - Kimün{% endblock %}
+
+{% block breadcrumbs %}
+<nav class="text-sm mb-4" style="color: var(--color-text-secondary);">
+    <a href="{% url 'inicio' %}">Inicio</a>
+    <i class="bi bi-chevron-right text-xs mx-1"></i>
+    <a href="{% url 'cursos:categoria_list' %}">Categorías</a>
+    <i class="bi bi-chevron-right text-xs mx-1"></i>
+    <span>{% if accion == 'crear' %}Crear{% else %}Editar{% endif %}</span>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold" style="color: var(--color-text);">
+        <i class="bi bi-tag me-2" style="color: var(--color-primary);"></i>
+        {% if accion == 'crear' %}Crear Nueva Categoría{% else %}Editar Categoría{% endif %}
+    </h1>
+    <p class="mt-1" style="color: var(--color-text-secondary);">
+        Define una categoría para organizar tus cursos
+    </p>
+</div>
+
+<div class="hybrid-card rounded-2xl p-8 max-w-2xl">
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="mb-6">
+            <label class="block text-base font-medium mb-2" style="color: var(--color-text);">
+                Nombre <span class="text-red-500">*</span>
+            </label>
+            <input type="text" name="nombre" required 
+                class="input-field w-full px-4 py-3 rounded-xl text-lg"
+                placeholder="Ej: Seguridad Laboral"
+                value="{{ categoria.nombre|default:'' }}">
+        </div>
+        
+        <div class="mb-6">
+            <label class="block text-base font-medium mb-2" style="color: var(--color-text);">
+                Color
+            </label>
+            <div class="flex items-center gap-4">
+                <input type="color" name="color" 
+                    class="w-12 h-12 rounded-lg cursor-pointer border-0"
+                    value="{{ categoria.color|default:'#6366f1' }}">
+                <span class="text-sm" style="color: var(--color-text-secondary);">
+                    Selecciona un color para identificar la categoría
+                </span>
+            </div>
+        </div>
+        
+        <div class="mb-8">
+            <label class="block text-base font-medium mb-2" style="color: var(--color-text);">
+                Descripción (opcional)
+            </label>
+            <textarea name="descripcion" rows="3"
+                class="input-field w-full px-4 py-3 rounded-xl text-lg"
+                placeholder="Descripción breve de la categoría...">{{ categoria.descripcion|default:'' }}</textarea>
+        </div>
+        
+        <div class="flex gap-4">
+            <button type="submit" class="btn-primary px-6 py-3 rounded-xl font-medium">
+                <i class="bi bi-check-lg me-2"></i>
+                {% if accion == 'crear' %}Crear Categoría{% else %}Guardar Cambios{% endif %}
+            </button>
+            <a href="{% url 'cursos:categoria_list' %}" class="btn-outline px-6 py-3 rounded-xl font-medium inline-block">
+                <i class="bi bi-x-lg me-2"></i>Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

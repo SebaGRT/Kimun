@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+
+{% block title %}{% if evaluacion %}Editar{% else %}Nueva{% endif %} Evaluación{% endblock %}
+
+{% block extra_head %}
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+{% endblock %}
+
+{% block breadcrumbs %}
+{% if evaluacion %}
+{% url 'evaluaciones:evaluacion_list' curso_pk=evaluacion.curso.pk as eval_list_url %}
+{% else %}
+{% url 'evaluaciones:evaluacion_list' curso_pk=curso.pk as eval_list_url %}
+{% endif %}
+<nav class="text-sm mb-4" style="color: var(--color-text-secondary);">
+    <a href="{% url 'inicio' %}">Inicio</a>
+    <i class="bi bi-chevron-right text-xs mx-1"></i>
+    <a href="{% url 'cursos:curso_list' %}">Cursos</a>
+    <i class="bi bi-chevron-right text-xs mx-1"></i>
+    <a href="{% if evaluacion %}{% url 'cursos:curso_detail' pk=evaluacion.curso.pk %}{% else %}{% url 'cursos:curso_detail' pk=curso.pk %}{% endif %}">
+        {{ evaluacion.curso.titulo|default:curso.titulo }}
+    </a>
+    <i class="bi bi-chevron-right text-xs mx-1"></i>
+    <a href="{{ eval_list_url }}">Evaluaciones</a>
+    <i class="bi bi-chevron-right text-xs mx-1"></i>
+    <span>{% if evaluacion %}Editar{% else %}Nueva{% endif %}</span>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="fade-in max-w-4xl mx-auto" x-data="gestionPreguntas()">
+    <div class="mb-6">
+        <a href="{{ eval_list_url }}" 
+           class="text-sm hover:underline" style="color: var(--color-text-secondary);">
+            <i class="bi bi-arrow-left"></i> Volver a evaluaciones
+        </a>
+        <h1 class="text-3xl font-bold mt-2">
+            {% if evaluacion %}Editar Evaluación{% else %}Nueva Evaluación{% endif %}
+        </h1>
+    </div>
+
+    <form method="post" id="evaluacionForm" class="space-y-6">
+        {% csrf_token %}
+        
+        <div class="hybrid-card rounded-xl p-6">
+            <h2 class="text-lg font-semibold mb-4">Información General</h2>
+            <div class="grid gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Título de la Evaluación</label>
+                    <input type="text" name="titulo" required 
+                           value="{{ evaluacion.titulo|default:'' }}"
+                           class="w-full px-4 py-3 rounded-lg input-field" 
+                           placeholder="Ej: Evaluación Final - Módulo 1">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Porcentaje para Aprobar</label>
+                    <input type="number" name="porcentaje_aprobacion" 
+                           value="{{ evaluacion.porcentaje_aprobacion|default:70 }}" 
+                           min="0" max="100" required
+                           class="w-full px-4 py-3 rounded-lg input-field">
+                    <p class="text-sm mt-1" style="color: var(--color-text-secondary);">
+                        El usuario debe obtener al menos este porcentaje para aprobar.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="hybrid-card rounded-xl p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold">Preguntas</h2>
+                <button type="button" @click="agregarPregunta()" 
+                        class="btn-outline px-4 py-2 rounded-lg text-sm font-medium">
+                    <i class="bi bi-plus-lg"></i> Agregar Pregunta
+                </button>
+            </div>
+
+            <template x-for="(pregunta, index) in preguntas" :key="index">
+                <div class="mb-6 p-4 rounded-lg" style="background-color: var(--color-bg); border: 1px solid var(--color-border);">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="font-medium" x-text="'Pregunta ' + (index + 1)"></span>
+                        <button type="button" @click="eliminarPregunta(index)" 
+                                class="text-red-600 hover:text-red-800">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm mb-2">Texto de la pregunta</label>
+                        <input type="text" :name="'preguntas[' + index + '][texto]'" 
+                               x-model="pregunta.texto" required
+                               class="w-full px-3 py-2 rounded-lg input-field" 
+                               placeholder="Escribe la pregunta...">
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium">Alternativas</span>
+                            <button type="button" @click="agregarAlternativa(index)" 
+                                    class="text-sm hover:underline" style="color: var(--color-primary);">
+                                <i class="bi bi-plus"></i> Agregar alternativa
+                            </button>
+                        </div>
+                        <template x-for="(alt, altIndex) in pregunta.alternativas" :key="altIndex">
+                            <div class="flex items-center gap-3">
+                                <input type="radio" :name="'preguntas[' + index + '][correcta]'" 
+                                       :value="altIndex" :id="'p' + index + '_a' + altIndex"
+                                       x-model="pregunta.correctaIndex"
+                                       class="w-4 h-4" style="accent-color: var(--color-primary);">
+                                <input type="text" :name="'preguntas[' + index + '][alternativas][' + altIndex + '][texto]'" 
+                                       x-model="alt.texto" required
+                                       class="flex-1 px-3 py-2 rounded-lg input-field text-sm"
+                                       placeholder="Alternativa...">
+                                <input type="hidden" :name="'preguntas[' + index + '][alternativas][' + altIndex + '][es_correcta]'" 
+                                       :value="altIndex == pregunta.correctaIndex ? 'true' : 'false'">
+                                <button type="button" @click="eliminarAlternativa(index, altIndex)" 
+                                        class="text-red-600 hover:text-red-800 p-1">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+
+            <div x-show="preguntas.length === 0" class="text-center py-8" style="color: var(--color-text-secondary);">
+                <i class="bi bi-chat-square-text text-3xl mb-2"></i>
+                <p>Agrega al menos una pregunta</p>
+            </div>
+        </div>
+
+        <div class="flex justify-end gap-4">
+            <a href="{% if evaluacion %}{% url 'evaluaciones:evaluacion_list' curso_pk=evaluacion.curso.pk %}{% else %}{% url 'evaluaciones:evaluacion_list' curso_pk=curso.pk %}{% endif %}" 
+               class="px-6 py-2.5 rounded-lg font-medium" style="color: var(--color-text-secondary);">
+                Cancelar
+            </a>
+            <button type="submit" class="btn-primary px-6 py-2.5 rounded-lg font-medium">
+                <i class="bi bi-check-lg"></i> Guardar Evaluación
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+function gestionPreguntas() {
+    return {
+        preguntas: [
+            {% if evaluacion %}
+            {% for pregunta in evaluacion.preguntas.all %}
+            {
+                texto: "{{ pregunta.texto|escapejs }}",
+                alternativas: [
+                    {% for alt in pregunta.alternativas.all %}
+                    { texto: "{{ alt.texto|escapejs }}" }{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                correctaIndex: {{ forloop.counter0 }}
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+            {% else %}
+            { texto: '', alternativas: [{ texto: '' }, { texto: '' }], correctaIndex: 0 }
+            {% endif %}
+        ],
+        agregarPregunta() {
+            this.preguntas.push({
+                texto: '',
+                alternativas: [{ texto: '' }, { texto: '' }],
+                correctaIndex: 0
+            });
+            this.$nextTick(() => this.actualizarIndices());
+        },
+        eliminarPregunta(index) {
+            this.preguntas.splice(index, 1);
+            this.$nextTick(() => this.actualizarIndices());
+        },
+        agregarAlternativa(pregIndex) {
+            this.preguntas[pregIndex].alternativas.push({ texto: '' });
+        },
+        eliminarAlternativa(pregIndex, altIndex) {
+            if (this.preguntas[pregIndex].alternativas.length > 2) {
+                this.preguntas[pregIndex].alternativas.splice(altIndex, 1);
+                if (this.preguntas[pregIndex].correctaIndex >= altIndex && this.preguntas[pregIndex].correctaIndex > 0) {
+                    this.preguntas[pregIndex].correctaIndex--;
+                }
+            }
+        },
+        actualizarIndices() {
+            this.preguntas.forEach((p, i) => {
+                if (p.correctaIndex >= p.alternativas.length) {
+                    p.correctaIndex = 0;
+                }
+            });
+        }
+    };
+}
+</script>
+{% endblock %}

@@ -2,6 +2,20 @@ from django.db import models
 from django.conf import settings
 
 
+class Categoria(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+    color = models.CharField(max_length=7, default='#6366f1', help_text='Color en formato hex, ej: #6366f1')
+    descripcion = models.TextField(blank=True, default='')
+    
+    class Meta:
+        verbose_name = 'Categoría'
+        verbose_name_plural = 'Categorías'
+        ordering = ['nombre']
+    
+    def __str__(self):
+        return self.nombre
+
+
 class Curso(models.Model):
     ESTADO_CHOICES = [
         ('borrador', 'Borrador'),
@@ -10,6 +24,13 @@ class Curso(models.Model):
 
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField()
+    categoria = models.ForeignKey(
+        Categoria,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='cursos'
+    )
     docente_creador = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -17,6 +38,7 @@ class Curso(models.Model):
     )
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='borrador')
     fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_limite = models.DateTimeField(null=True, blank=True, verbose_name='Fecha límite')
 
     class Meta:
         verbose_name = 'Curso'

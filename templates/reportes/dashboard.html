@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+
+{% block title %}Reportes de Cumplimiento - Kimün{% endblock %}
+
+{% block breadcrumbs %}
+<nav class="text-sm mb-4" style="color: var(--color-text-secondary);">
+    <a href="{% url 'inicio' %}">Inicio</a>
+    <i class="bi bi-chevron-right text-xs mx-1"></i>
+    <span>Reportes</span>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold">Reportes de Cumplimiento</h1>
+        <p class="mt-1" style="color: var(--color-text-secondary);">
+            Estadísticas y métricas de la plataforma
+        </p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div class="hybrid-card rounded-xl p-5">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background-color: var(--color-primary); color: white;">
+                    <i class="bi bi-people-fill text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold">{{ total_usuarios }}</p>
+                    <p class="text-sm" style="color: var(--color-text-secondary);">Usuarios</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hybrid-card rounded-xl p-5">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background-color: var(--color-warning-bg); color: var(--color-warning);">
+                    <i class="bi bi-book-fill text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold">{{ total_cursos }}</p>
+                    <p class="text-sm" style="color: var(--color-text-secondary);">Cursos</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hybrid-card rounded-xl p-5">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background-color: var(--color-info-bg); color: var(--color-info);">
+                    <i class="bi bi-person-plus-fill text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold">{{ total_inscripciones }}</p>
+                    <p class="text-sm" style="color: var(--color-text-secondary);">Inscripciones</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hybrid-card rounded-xl p-5">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background-color: var(--color-purple-bg); color: var(--color-purple);">
+                    <i class="bi bi-award-fill text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold">{{ total_certificados }}</p>
+                    <p class="text-sm" style="color: var(--color-text-secondary);">Certificados</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Users by Role -->
+        <div class="hybrid-card rounded-xl p-6">
+            <h2 class="text-lg font-semibold mb-4">Usuarios por Rol</h2>
+            <div class="space-y-3">
+                {% for item in usuarios_por_rol %}
+                <div class="flex items-center justify-between p-3 rounded-lg" style="background-color: var(--color-bg);">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center" 
+                             style="background-color: {% if item.rol == 'admin' %}var(--color-primary){% elif item.rol == 'docente' %}var(--color-warning-bg){% else %}var(--color-pink-bg){% endif %}; 
+                                    color: {% if item.rol == 'admin' %}white{% elif item.rol == 'docente' %}var(--color-warning){% else %}var(--color-pink){% endif %};">
+                            <i class="bi bi-{% if item.rol == 'admin' %}shield-check{% elif item.rol == 'docente' %}book{% else %}person{% endif %}"></i>
+                        </div>
+                        <span class="font-medium">
+                            {% if item.rol == 'admin' %}Administradores
+                            {% elif item.rol == 'docente' %}Docentes
+                            {% else %}Colaboradores{% endif %}
+                        </span>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-sm font-medium" style="background-color: var(--color-bg);">
+                        {{ item.count }}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Inscriptions by Status -->
+        <div class="hybrid-card rounded-xl p-6">
+            <h2 class="text-lg font-semibold mb-4">Inscripciones por Estado</h2>
+            <div class="space-y-3">
+                {% for item in inscripciones_por_estado %}
+                <div class="flex items-center justify-between p-3 rounded-lg" style="background-color: var(--color-bg);">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center" 
+                             style="background-color: {% if item.estado == 'completado' %}var(--color-success-bg){% elif item.estado == 'en_progreso' %}var(--color-warning-bg){% else %}var(--color-info-bg){% endif %}; 
+                                    color: {% if item.estado == 'completado' %}var(--color-success){% elif item.estado == 'en_progreso' %}var(--color-warning){% else %}var(--color-info){% endif %};">
+                            <i class="bi bi-{% if item.estado == 'completado' %}check-circle{% elif item.estado == 'en_progreso' %}play-circle{% else %}clock{% endif %}"></i>
+                        </div>
+                        <span class="font-medium">
+                            {% if item.estado == 'completado' %}Completado
+                            {% elif item.estado == 'en_progreso' %}En Progreso
+                            {% else %}Asignado{% endif %}
+                        </span>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-sm font-medium" style="background-color: var(--color-bg);">
+                        {{ item.count }}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Courses with most inscriptions -->
+    <div class="hybrid-card rounded-xl p-6 mt-6">
+        <h2 class="text-lg font-semibold mb-4">Cursos con más Inscripciones</h2>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--color-border);">
+                        <th class="text-left py-3 px-4 font-medium" style="color: var(--color-text-secondary);">Curso</th>
+                        <th class="text-center py-3 px-4 font-medium" style="color: var(--color-text-secondary);">Inscripciones</th>
+                        <th class="text-center py-3 px-4 font-medium" style="color: var(--color-text-secondary);">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for curso in cursos_con_mas_inscritos %}
+                    <tr style="border-bottom: 1px solid var(--color-border);">
+                        <td class="py-3 px-4">{{ curso.titulo }}</td>
+                        <td class="text-center py-3 px-4">
+                            <span class="px-3 py-1 rounded-full text-sm font-medium" style="background-color: var(--color-primary); color: white;">
+                                {{ curso.num_inscripciones }}
+                            </span>
+                        </td>
+                        <td class="text-center py-3 px-4">
+                            <a href="{% url 'reportes:reporte_curso' curso.pk %}" 
+                               class="btn-outline px-3 py-1 rounded-lg text-sm">
+                                Ver Detalle
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Average evaluation score -->
+    <div class="hybrid-card rounded-xl p-6 mt-6">
+        <h2 class="text-lg font-semibold mb-4">Rendimiento General</h2>
+        <div class="flex items-center justify-center py-6">
+            <div class="text-center">
+                <div class="text-5xl font-bold mb-2" style="color: var(--color-primary);">
+                    {{ promedio_evaluaciones|floatformat:1 }}%
+                </div>
+                <p style="color: var(--color-text-secondary);">Promedio de notas en evaluaciones</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Inscriptions -->
+    <div class="hybrid-card rounded-xl p-6 mt-6">
+        <h2 class="text-lg font-semibold mb-4">Inscripciones Recientes</h2>
+        <div class="space-y-3">
+            {% for inscripcion in ultimas_inscripciones %}
+            <div class="flex items-center justify-between p-3 rounded-lg" style="background-color: var(--color-bg);">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: var(--color-primary); color: white;">
+                        <i class="bi bi-person"></i>
+                    </div>
+                    <div>
+                        <p class="font-medium">{{ inscripcion.usuario.get_full_name|default:inscripcion.usuario.username }}</p>
+                        <p class="text-sm" style="color: var(--color-text-secondary);">{{ inscripcion.curso.titulo }}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="px-2 py-1 rounded text-xs font-medium
+                        {% if inscripcion.estado == 'completado' %}bg-green-100 text-green-800
+                        {% elif inscripcion.estado == 'en_progreso' %}bg-yellow-100 text-yellow-800
+                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                        {% if inscripcion.estado == 'completado' %}Completado
+                        {% elif inscripcion.estado == 'en_progreso' %}En Progreso
+                        {% else %}Asignado{% endif %}
+                    </span>
+                    <p class="text-xs mt-1" style="color: var(--color-text-secondary);">{{ inscripcion.fecha_asignacion|date:"d M Y" }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

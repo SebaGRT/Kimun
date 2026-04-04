@@ -36,3 +36,33 @@ class Usuario(AbstractUser):
 
     def __str__(self):
         return f"{self.get_full_name() or self.username} ({self.get_rol_display()})"
+
+
+class Recordatorio(models.Model):
+    TIPO_CHOICES = [
+        ('7_dias', '7 días antes'),
+        ('3_dias', '3 días antes'),
+        ('1_dia', '1 día antes'),
+        ('vencimiento', 'Día del vencimiento'),
+    ]
+
+    usuario = models.ForeignKey(
+        'Usuario',
+        on_delete=models.CASCADE,
+        related_name='recordatorios'
+    )
+    curso = models.ForeignKey(
+        'cursos.Curso',
+        on_delete=models.CASCADE,
+        related_name='recordatorios'
+    )
+    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
+    fecha_envio = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Recordatorio'
+        verbose_name_plural = 'Recordatorios'
+        unique_together = ['usuario', 'curso', 'tipo']
+
+    def __str__(self):
+        return f"{self.usuario} - {self.curso.titulo} ({self.get_tipo_display()})"
