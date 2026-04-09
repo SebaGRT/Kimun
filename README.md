@@ -71,8 +71,8 @@ Abre tu navegador en: `http://127.0.0.1:8000`
 - Crear y editar cursos propios
 - Agregar materiales (PDF, videos)
 - Crear evaluaciones
-- Ver统计ísticas de sus cursos
-- No puede gestionar usuarios ni ver reportes全体の
+- Ver características de sus cursos
+- No puede gestionar usuarios ni ver reportes
 
 ### Colaborador
 - Ver cursos asignados
