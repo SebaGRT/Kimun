@@ -21,7 +21,7 @@ Plataforma de capacitación interna para la ONG ALUMCO, dedicada a trabajar con 
 
 ## Instalación Rápida
 
-### 1. Clonar yEntrar al proyecto
+### 1. Clonar y Entrar al proyecto
 ```bash
 cd /home/sebacc/Documents/UDD/Ingeniería\ de\ Software/Proyecto-Kimün
 ```
@@ -170,7 +170,7 @@ MIT License - Proyecto desarrollado para ONG ALUMCO
 
 ## Equipo
 
-Desarrollado por equipo universitario para práctica profesional.
+Desarrollado por equipo universitario para el ramo Ingeniería de Software
 
 ---
 
