@@ -38,6 +38,10 @@
 - 286/286 tests pass
 
 ## Session Notes:
+
+- Archived temporary debugging scripts from the project root into `tools/` without changing script contents.
+- Added `tools/` to `.gitignore` so the archived helpers stay out of future production-focused changes.
+- Verified the move with 10 scripts in `tools/`, 0 stray `check_*`/`fix_*`/`rewrite*` scripts at root, and the full Django suite still passing (286 tests).
 - Handled announcement delivery filtering
 - Calendar sync via generic post_save/post_delete receivers
 - At-risk student reporting via shared helper

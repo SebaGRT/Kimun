@@ -48,3 +48,6 @@ venv/
 .sisyphus/notepads/
 .sisyphus/drafts/
 .opencode/
+
+# Archived scripts
+tools/
