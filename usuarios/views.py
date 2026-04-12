@@ -58,9 +58,7 @@ def logout_view(request):
 
 @login_required(login_url='usuarios:login')
 def inicio(request):
-    from cursos.models import InscripcionCurso, Curso
     from certificados.models import Certificado
-    from evaluaciones.models import IntentoEvaluacion
     from django.utils import timezone
     
     context = {}
@@ -220,6 +218,26 @@ def usuario_create(request):
     from usuarios.models import AreaCargo
     areas = AreaCargo.objects.all()
     
+    colaborador_cargos = [
+        'Profesional de Atención Directa',
+        'Técnico de Atención Directa',
+        'Asistente de Trato Directo',
+        'Auxiliares de Servicio',
+        'Manipuladores de Alimento',
+    ]
+    admin_cargos = [
+        'Administración y Apoyo',
+        'Directivos',
+    ]
+    docente_cargos = [
+        'Docente Interno',
+        'Docente Externo',
+    ]
+    
+    areas_colaborador = areas.filter(nombre__in=colaborador_cargos)
+    areas_admin = areas.filter(nombre__in=admin_cargos)
+    areas_docente = areas.filter(nombre__in=docente_cargos)
+    
     if request.method == 'POST':
         form = UsuarioForm(request.POST)
         if form.is_valid():
@@ -232,6 +250,9 @@ def usuario_create(request):
     return render(request, 'usuarios/usuario_form.html', {
         'form': form,
         'areas': areas,
+        'areas_colaborador': areas_colaborador,
+        'areas_admin': areas_admin,
+        'areas_docente': areas_docente,
         'accion': 'crear'
     })
 
@@ -241,6 +262,27 @@ def usuario_create(request):
 def usuario_edit(request, pk):
     from usuarios.models import AreaCargo
     areas = AreaCargo.objects.all()
+    
+    colaborador_cargos = [
+        'Profesional de Atención Directa',
+        'Técnico de Atención Directa',
+        'Asistente de Trato Directo',
+        'Auxiliares de Servicio',
+        'Manipuladores de Alimento',
+    ]
+    admin_cargos = [
+        'Administración y Apoyo',
+        'Directivos',
+    ]
+    docente_cargos = [
+        'Docente Interno',
+        'Docente Externo',
+    ]
+    
+    areas_colaborador = areas.filter(nombre__in=colaborador_cargos)
+    areas_admin = areas.filter(nombre__in=admin_cargos)
+    areas_docente = areas.filter(nombre__in=docente_cargos)
+    
     usuario = get_object_or_404(Usuario, pk=pk)
     
     if request.method == 'POST':
@@ -256,6 +298,9 @@ def usuario_edit(request, pk):
         'form': form,
         'usuario': usuario,
         'areas': areas,
+        'areas_colaborador': areas_colaborador,
+        'areas_admin': areas_admin,
+        'areas_docente': areas_docente,
         'accion': 'editar'
     })
 
@@ -281,7 +326,6 @@ def usuario_delete(request, pk):
 @login_required
 @admin_required
 def inscribir_curso(request, curso_id):
-    """Admin: Inscribir usuarios a un curso"""
     curso = get_object_or_404(Curso, pk=curso_id)
     
     if request.method == 'POST':
@@ -317,7 +361,6 @@ def inscribir_curso(request, curso_id):
 @login_required
 @admin_required
 def inscribir_curso_bulk(request, curso_id):
-    """Admin: Inscribir múltiples usuarios a un curso"""
     curso = get_object_or_404(Curso, pk=curso_id)
     
     query = request.GET.get('q', '')

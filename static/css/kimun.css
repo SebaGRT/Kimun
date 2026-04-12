@@ -1,7 +1,4 @@
-/* Kimün LMS component stylesheet */
-
 :root {
-    /* Spacing scale */
     --space-xs: 0.25rem;
     --space-sm: 0.5rem;
     --space-md: 1rem;
@@ -10,29 +7,26 @@
     --space-2xl: 3rem;
     --space-3xl: 4rem;
 
-    /* Radius variants */
     --radius-sm: 0.25rem;
     --radius-md: 0.75rem;
     --radius-lg: 1rem;
     --radius-xl: 1.5rem;
     --radius-asymmetric: 1rem 0.25rem 1rem 0.25rem;
 
-    /* Shadow depth */
     --shadow-sm: 0 1px 2px color-mix(in srgb, var(--color-text) 8%, transparent);
     --shadow-md: 0 4px 6px -1px color-mix(in srgb, var(--color-text) 12%, transparent);
     --shadow-lg: 0 10px 40px -10px color-mix(in srgb, var(--color-text) 18%, transparent);
 
-    /* Transition */
     --transition-fast: 0.15s ease;
     --transition-normal: 0.2s ease;
     --transition-slow: 0.3s ease;
 }
 
-/* Card variants */
 .hybrid-card-featured {
     border-radius: var(--radius-asymmetric);
     border-inline-start: 4px solid var(--color-primary);
     box-shadow: var(--shadow-md);
+    transition: all 0.2s ease;
 }
 
 .hybrid-card-stat {
@@ -40,6 +34,14 @@
     text-align: center;
     padding: var(--space-lg) var(--space-xl);
     box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+}
+
+.hybrid-card-featured:hover,
+.hybrid-card-stat:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.15);
+    background-color: var(--color-card-hover);
 }
 
 .hybrid-card-elevated {
@@ -47,7 +49,6 @@
     box-shadow: var(--shadow-lg);
 }
 
-/* Button variants */
 .btn-subtle {
     background: transparent;
     color: var(--color-text-secondary);
@@ -74,7 +75,6 @@
     border-color: var(--color-border);
 }
 
-/* Badge variants */
 .badge {
     display: inline-flex;
     align-items: center;
@@ -112,7 +112,6 @@
     color: var(--color-pink);
 }
 
-/* Section headers */
 .section-title {
     display: flex;
     align-items: center;
@@ -139,7 +138,6 @@
     letter-spacing: 0.08em;
 }
 
-/* Animation patterns */
 .stagger-in > * {
     opacity: 0;
     animation: fadeInUp 0.5s ease forwards;
@@ -199,7 +197,6 @@
     opacity: 0;
 }
 
-/* Layout utilities */
 .layout-split {
     display: grid;
     grid-template-columns: 1fr;
@@ -238,6 +235,11 @@
     border-radius: var(--radius-xl);
     color: var(--color-surface);
     box-shadow: var(--shadow-lg);
+}
+
+/* Hero text always light - gradient background needs high contrast */
+[data-theme="dark"] .hero-section {
+    color: #ffffff;
 }
 
 .hero-section::after {

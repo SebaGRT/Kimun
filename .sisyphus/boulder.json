@@ -1,0 +1,23 @@
+{
+  "active_plan": "/home/sebacc/Documents/UDD/Ingeniería de Software/Proyecto-Kimün/.sisyphus/plans/cleanup-and-features.md",
+  "started_at": "2026-04-12T17:28:59.065Z",
+  "session_ids": [
+    "ses_2d54f62deffeNRxWFFwXfMwQJG"
+  ],
+  "session_origins": {
+    "ses_2d54f62deffeNRxWFFwXfMwQJG": "direct"
+  },
+  "plan_name": "cleanup-and-features",
+  "agent": "atlas",
+  "task_sessions": {
+    "todo:1": {
+      "task_key": "todo:1",
+      "task_label": "1",
+      "task_title": "Pre-cleanup Verification",
+      "session_id": "ses_27d42002affeAqPv4Z5QfLEk1N",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-04-12T17:35:35.091Z"
+    }
+  }
+}

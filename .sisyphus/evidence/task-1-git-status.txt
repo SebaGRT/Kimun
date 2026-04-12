@@ -1,0 +1,28 @@
+ M .sisyphus/notepads/kimun-roadmap/learnings.md
+ M .sisyphus/plans/kimun-roadmap.md
+ M .sisyphus/plans/ui-redesign.md
+ M kimun/settings.py
+ M static/css/kimun.css
+ M templates/base.html
+ M templates/certificados/admin_certificado_list.html
+ M templates/inicio.html
+ M templates/usuarios/usuario_form.html
+ M usuarios/views.py
+?? .sisyphus/boulder.json
+?? .sisyphus/evidence/task-1-git-status.txt
+?? .sisyphus/evidence/task-1-migrations.txt
+?? .sisyphus/evidence/task-1-test-suite.txt
+?? .sisyphus/notepads/ui-redesign/
+?? .sisyphus/plans/cleanup-and-features.md
+?? usuarios/management/
+ .sisyphus/notepads/kimun-roadmap/learnings.md      |  50 +++++-
+ .sisyphus/plans/kimun-roadmap.md                   | 152 ++++++++--------
+ .sisyphus/plans/ui-redesign.md                     | 194 ++++-----------------
+ kimun/settings.py                                  |  29 +--
+ static/css/kimun.css                               |  26 +--
+ templates/base.html                                | 124 ++++++++-----
+ templates/certificados/admin_certificado_list.html |   2 +-
+ templates/inicio.html                              |  79 ++++-----
+ templates/usuarios/usuario_form.html               |  59 ++++++-
+ usuarios/views.py                                  |  53 +++++-
+ 10 files changed, 388 insertions(+), 380 deletions(-)

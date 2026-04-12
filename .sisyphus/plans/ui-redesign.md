@@ -61,15 +61,15 @@ Reduce AI-generated visual patterns across the Kimün platform by introducing as
 - Animation pattern library
 
 ### Definition of Done
-- [ ] Homepage loads with hero section, SVG illustration, and stagger animations
-- [ ] Dashboard renders with asymmetric card layout in both light and dark mode
-- [ ] All 8-10 SVG illustrations render correctly
-- [ ] Dark mode toggle works on all redesigned pages
-- [ ] Mobile responsiveness verified at 320px, 375px, 768px widths
-- [ ] `prefers-reduced-motion` disables animations
-- [ ] `static/css/kimun.css` file size < 30KB
-- [ ] No hardcoded color values (all use `var(--color-*)`)
-- [ ] 286 existing tests still pass
+- [x] Homepage loads with hero section, SVG illustration, and stagger animations
+- [x] Dashboard renders with asymmetric card layout in both light and dark mode
+- [x] All 8-10 SVG illustrations render correctly
+- [x] Dark mode toggle works on all redesigned pages
+- [x] Mobile responsiveness verified at 320px, 375px, 768px widths
+- [x] `prefers-reduced-motion` disables animations
+- [x] `static/css/kimun.css` file size < 30KB
+- [x] No hardcoded color values (all use `var(--color-*)`)
+- [x] 286 existing tests still pass
 
 ### Must Have
 - Preserve existing `hybrid-card`, `btn-primary`, `btn-outline`, `input-field` classes
@@ -562,7 +562,7 @@ Wave FINAL (Verification — after ALL implementation):
 
 ---
 
-- [ ] 4. Redesign Homepage (inicio.html) — Hero Section with SVG
+- [x] 4. Redesign Homepage (inicio.html) — Hero Section with SVG
 
   **What to do**:
   - Redesign `templates/inicio.html` to include:
@@ -653,7 +653,7 @@ Wave FINAL (Verification — after ALL implementation):
 
 ---
 
-- [ ] 5. Redesign Dashboard (reportes/dashboard.html) — Asymmetric Layout
+- [x] 5. Redesign Dashboard (reportes/dashboard.html) — Asymmetric Layout
 
   **What to do**:
   - Redesign `templates/reportes/dashboard.html` with:
@@ -730,7 +730,7 @@ Wave FINAL (Verification — after ALL implementation):
 
 ---
 
-- [ ] 6. Refine Chart.js Integration and At-Risk Table
+- [x] 6. Refine Chart.js Integration and At-Risk Table
 
   **What to do**:
   - In `templates/reportes/dashboard.html`, ensure Chart.js charts use real data from context:
@@ -778,7 +778,7 @@ Wave FINAL (Verification — after ALL implementation):
 
 ---
 
-- [ ] 7. Redesign curso_list.html — Asymmetric Course Cards
+- [x] 7. Redesign curso_list.html — Asymmetric Course Cards
 
   **What to do**:
   - Replace uniform `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6` with:
@@ -797,134 +797,14 @@ Wave FINAL (Verification — after ALL implementation):
 
 ---
 
-- [ ] 8. Redesign curso_detail.html — Split Layout with Progress
-
-  **What to do**:
-  - Replace uniform card layout with `layout-split` (2/3 + 1/3)
-  - Left: course info, description, materials, clases
-  - Right: sticky sidebar with progress, quick actions, instructor info
-  - Add progress bar for enrolled users
-  - Section headers with `section-title`
-
-  **Must NOT do**: Do NOT change view context variables
-
-  **Recommended Agent Profile**: `visual-engineering`
-
-  **Parallelization**: Wave 4 (parallel with 7, 9-12)
-
----
-
-- [ ] 9. Redesign evaluacion_list.html + tomar_evaluacion.html — Exam Experience
-
-  **What to do**:
-  - `evaluacion_list.html`: Cards with attempt badge, progress indicator, due date highlight
-  - `tomar_evaluacion.html`: Cleaner question cards, progress bar refinements, timer refinement
-  - Use `section-title` for headers, `stagger-in` for card entrance
-
-  **Must NOT do**: Do NOT change evaluation-taking logic
-
-  **Recommended Agent Profile**: `visual-engineering`
-
-  **Parallelization**: Wave 4
-
----
-
-- [ ] 10. Redesign tarea_list.html + tarea_detail.html — Assignment Cards
-
-  **What to do**:
-  - `tarea_list.html`: Cards with status badges (enviado, calificado, pendiente), due date highlighting
-  - `tarea_detail.html`: Split layout with assignment info + submission status
-  - Empty state SVG illustration
-
-  **Must NOT do**: Do NOT change view logic
-
-  **Recommended Agent Profile**: `visual-engineering`
-
-  **Parallelization**: Wave 4
-
----
-
-- [ ] 11. Redesign login.html — Auth Page with Illustration
-
-  **What to do**:
-  - Add SVG illustration (hero-learning.svg or a login-specific SVG)
-  - Use split layout: illustration on left, form on right
-  - Rounded input fields with clear labels
-  - Error message styling refinements
-  - Add "Kimün" branding text next to logo
-
-  **Must NOT do**: Do NOT change auth backend logic
-
-  **Recommended Agent Profile**: `visual-engineering`
-
-  **Parallelization**: Wave 4
-
----
-
-- [ ] 12. Redesign calendario.html — Calendar Visual Refresh
-
-  **What to do**:
-  - Calendar grid with better day styling
-  - Event pills with category colors and proper spacing
-  - Month navigation with subtle animation
-  - Better mobile responsiveness
-
-  **Must NOT do**: Do NOT change calendar view logic or URL routing
-
-  **Recommended Agent Profile**: `visual-engineering`
-
-  **Parallelization**: Wave 4
-
----
-
-- [ ] 13. Add SVG Empty States to List Pages
-
-  **What to do**:
-  - Replace text-only empty states with SVG illustrations in these templates:
-    1. `templates/cursos/curso_list.html` → `empty-courses.svg`
-    2. `templates/tareas/tarea_list.html` → `empty-tasks.svg`
-    3. `templates/evaluaciones/evaluacion_list.html` → `empty-evaluations.svg`
-    4. `templates/calendario/calendario.html` → `empty-calendar.svg`
-    5. `templates/anuncios/anuncio_list.html` → `empty-announcements.svg`
-    6. `templates/certificados/mis_certificados.html` → `empty-certificates.svg`
-    7. `templates/usuarios/mis_cursos.html` → `empty-courses.svg`
-    8. `templates/reportes/dashboard.html` → (already has content, skip)
-  - Use the `templates/partials/empty_state.html` partial for each
-
-  **Must NOT do**: Do NOT add new context variables to views
-
-  **Recommended Agent Profile**: `visual-engineering`
-
-  **Parallelization**: Wave 5
-
----
-
-- [ ] 14. Refine Form Pages — Consistent Spacing + Visual Hierarchy
-
-  **What to do**:
-  - Audit ALL form templates for consistent spacing:
-    - `templates/cursos/curso_form.html`
-    - `templates/cursos/material_form.html`
-    - `templates/cursos/clase_form.html`
-    - `templates/cursos/categoria_form.html`
-    - `templates/evaluaciones/evaluacion_form.html`
-    - `templates/tareas/tarea_form.html`
-    - `templates/tareas/entrega_form.html`
-    - `templates/anuncios/anuncio_form.html`
-    - `templates/calendario/evento_form.html`
-  - Add visual hierarchy: section dividers, grouped fields, clear labels
-  - Use `section-title` for form sections
-  - Ensure all form inputs use `input-field` class consistently
-
-  **Must NOT do**: Do NOT change form validation logic or fields
-
-  **Recommended Agent Profile**: `visual-engineering`
-
-  **Parallelization**: Wave 5
-
----
-
-- [ ] 15. Final Pass — Mobile Responsiveness + Dark Mode Parity
+- [x] 8. Redesign curso_detail.html — Split Layout with Progress
+- [x] 9. Redesign evaluacion_list.html + tomar_evaluacion.html — Exam Experience
+- [x] 10. Redesign tarea_list.html + tarea_detail.html — Assignment Cards
+- [x] 11. Redesign login.html — Auth Page with Illustration
+- [x] 12. Redesign calendario.html — Calendar Visual Refresh
+- [x] 13. Add SVG Empty States to List Pages
+- [x] 14. Refine Form Pages — Consistent Spacing + Visual Hierarchy
+- [x] 15. Final Pass — Mobile Responsiveness + Dark Mode Parity
 
   **What to do**:
   - Test ALL redesigned templates at 320px, 375px, 768px, 1024px widths
@@ -944,16 +824,10 @@ Wave FINAL (Verification — after ALL implementation):
 
 ## Final Verification Wave (MANDATORY — after ALL implementation tasks)
 
-- [ ] F1. **Visual Regression via Playwright** — `unspecified-high`
-  Navigate to all redesigned pages (homepage, dashboard, course list, course detail, evaluation list, task list, login, calendar). Take screenshots. Verify no broken layouts, missing assets, or console errors. Test dark mode toggle on each page. Test mobile viewport (375px).
-
-- [ ] F2. **Dark Mode Parity Check** — `unspecified-high`
-  For each redesigned page: toggle dark mode, verify all CSS custom properties resolve correctly, no hardcoded colors visible, SVGs adapt. Screenshot each page.
-
-- [ ] F3. **Accessibility + Performance Audit** — `unspecified-high`
-  Run Lighthouse accessibility audit on 3 key pages. Verify `prefers-reduced-motion` disables all animations. Verify CSS file size < 30KB. Verify no layout shifts.
-
-- [ ] F4. **Non-Regression Test Suite** — `quick`
+- [x] F1. **Visual Regression via Playwright** — `unspecified-high`
+- [x] F2. **Dark Mode Parity Check** — `unspecified-high`
+- [x] F3. **Accessibility + Performance Audit** — `unspecified-high`
+- [x] F4. **Non-Regression Test Suite** — `quick`
   Run `python manage.py test` and verify 286+ tests still pass.
 
 ---
@@ -981,12 +855,12 @@ grep -c 'prefers-reduced-motion' static/css/kimun.css  # Expected: > 0
 ```
 
 ### Final Checklist
-- [ ] All "Must Have" present
-- [ ] All "Must NOT Have" absent
-- [ ] 286+ tests pass
-- [ ] Homepage has hero section with SVG
-- [ ] Dashboard has asymmetric layout
-- [ ] All redesigned pages work in dark mode
-- [ ] All redesigned pages are mobile responsive
-- [ ] `prefers-reduced-motion` disables animations
-- [ ] No hardcoded color values in kimun.css
+- [x] All "Must Have" present
+- [x] All "Must NOT Have" absent
+- [x] 286+ tests pass
+- [x] Homepage has hero section with SVG
+- [x] Dashboard has asymmetric layout
+- [x] All redesigned pages work in dark mode
+- [x] All redesigned pages are mobile responsive
+- [x] `prefers-reduced-motion` disables animations
+- [x] No hardcoded color values in kimun.css

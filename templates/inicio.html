@@ -4,27 +4,26 @@
 {% block title %}Inicio - Kimün{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<div class="hero-section mb-8">
+<div class="hero-section mb-8 fade-in">
     <div class="flex flex-col md:flex-row items-center gap-8">
         <div class="flex-1 text-center md:text-left">
-            <h1 class="text-3xl md:text-4xl font-bold mb-4" style="color: var(--color-surface);">
+            <h1 class="text-3xl md:text-4xl font-bold mb-4 text-white">
                 Bienvenido a Kimün, {{ user.get_full_name|default:user.username }}
             </h1>
-            <p class="text-lg mb-6 opacity-90" style="color: var(--color-surface);">
+            <p class="text-lg mb-6 opacity-90 text-white">
                 Plataforma de capacitación para el cuidado de personas mayores
             </p>
             <div class="flex flex-wrap gap-3 justify-center md:justify-start">
                 {% if user.rol == 'admin' %}
-                <a href="{% url 'usuarios:usuario_list' %}" class="btn-subtle px-4 py-2 rounded-lg text-sm font-medium" style="background: var(--color-surface); border: none;">
+                <a href="{% url 'usuarios:usuario_list' %}" class="btn-subtle px-4 py-2 rounded-lg text-sm font-medium" style="background: #ffffff; color: var(--color-primary); border: none; box-shadow: var(--shadow-sm);">
                     <i class="bi bi-person-plus me-2"></i>Gestionar Usuarios
                 </a>
                 {% elif user.rol == 'docente' %}
-                <a href="{% url 'cursos:curso_create' %}" class="btn-subtle px-4 py-2 rounded-lg text-sm font-medium" style="background: var(--color-surface); border: none;">
+                <a href="{% url 'cursos:curso_create' %}" class="btn-subtle px-4 py-2 rounded-lg text-sm font-medium" style="background: #ffffff; color: var(--color-primary); border: none; box-shadow: var(--shadow-sm);">
                     <i class="bi bi-plus-circle me-2"></i>Crear Curso
                 </a>
                 {% else %}
-                <a href="{% url 'usuarios:mis_cursos' %}" class="btn-subtle px-4 py-2 rounded-lg text-sm font-medium" style="background: var(--color-surface); border: none;">
+                <a href="{% url 'usuarios:mis_cursos' %}" class="btn-subtle px-4 py-2 rounded-lg text-sm font-medium" style="background: #ffffff; color: var(--color-primary); border: none; box-shadow: var(--shadow-sm);">
                     <i class="bi bi-journal-text me-2"></i>Mis Capacitaciones
                 </a>
                 {% endif %}
@@ -36,7 +35,6 @@
     </div>
 </div>
 
-<!-- Quick Actions -->
 <div class="surface-panel surface-panel--padded mb-8 fade-in">
     <h3 class="section-title"><i class="bi bi-lightning-charge"></i> Acciones Rápidas</h3>
     <div class="flex flex-wrap gap-3">
@@ -68,12 +66,10 @@
     </div>
 </div>
 
-<!-- Stats Row (Asymmetric) -->
+{% if user.rol == 'admin' %}
 <div class="layout-split mb-8">
-    {% if user.rol == 'admin' %}
-    <!-- Large stat cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <a href="{% url 'usuarios:usuario_list' %}" class="hybrid-card-featured p-6 group block fade-in">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 stagger-in">
+        <a href="{% url 'usuarios:usuario_list' %}" class="hybrid-card-featured p-6 group block">
             <div class="flex items-start justify-between mb-4">
                 <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl" style="background-color: var(--color-primary); color: white;">
                     <i class="bi bi-people-fill"></i>
@@ -84,7 +80,7 @@
             <p class="text-sm" style="color: var(--color-text-secondary);">Gestión de personal y roles</p>
         </a>
         
-        <a href="{% url 'reportes:dashboard_reportes' %}" class="hybrid-card-featured p-6 group block fade-in" style="border-inline-start-color: var(--color-success);">
+        <a href="{% url 'reportes:dashboard_reportes' %}" class="hybrid-card-featured p-6 group block" style="border-inline-start-color: var(--color-success);">
             <div class="flex items-start justify-between mb-4">
                 <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl" style="background-color: var(--color-success-bg); color: var(--color-success);">
                     <i class="bi bi-bar-chart-fill"></i>
@@ -96,24 +92,25 @@
         </a>
     </div>
 
-    <!-- Small stat cards -->
-    <div class="flex flex-col sm:flex-row md:flex-col gap-4">
-        <a href="{% url 'cursos:curso_list' %}" class="flex-1 hybrid-card-stat p-4 flex flex-col justify-center items-center group fade-in">
+    <div class="flex flex-col sm:flex-row md:flex-col gap-4 stagger-in">
+        <a href="{% url 'cursos:curso_list' %}" class="flex-1 hybrid-card-stat p-4 flex flex-col justify-center items-center group">
             <i class="bi bi-book-fill text-xl mb-1" style="color: var(--color-warning);"></i>
             <span class="text-xl font-bold" style="color: var(--color-text);">{{ total_cursos }}</span>
             <span class="text-xs" style="color: var(--color-text-secondary);">Cursos</span>
         </a>
-        <a href="{% url 'certificados:certificado_list' %}" class="flex-1 hybrid-card-stat p-4 flex flex-col justify-center items-center group fade-in">
+        <a href="{% url 'certificados:certificado_list' %}" class="flex-1 hybrid-card-stat p-4 flex flex-col justify-center items-center group">
             <i class="bi bi-award-fill text-xl mb-1" style="color: var(--color-purple);"></i>
             <span class="text-xl font-bold" style="color: var(--color-text);">{{ total_certificados }}</span>
             <span class="text-xs" style="color: var(--color-text-secondary);">Certificados</span>
         </a>
     </div>
 
-    {% elif user.rol == 'docente' %}
-    <!-- Large stat cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <a href="{% url 'cursos:curso_list' %}" class="hybrid-card-featured p-6 group block fade-in" style="border-inline-start-color: var(--color-warning);">
+    </div>
+
+{% elif user.rol == 'docente' %}
+<div class="layout-split mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 stagger-in">
+        <a href="{% url 'cursos:curso_list' %}" class="hybrid-card-featured p-6 group block" style="border-inline-start-color: var(--color-warning);">
             <div class="flex items-start justify-between mb-4">
                 <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl" style="background-color: var(--color-warning-bg); color: var(--color-warning);">
                     <i class="bi bi-book-fill"></i>
@@ -124,7 +121,7 @@
             <p class="text-sm" style="color: var(--color-text-secondary);">Cursos que impartes</p>
         </a>
         
-        <a href="{% url 'usuarios:mis_cursos' %}" class="hybrid-card-featured p-6 group block fade-in" style="border-inline-start-color: var(--color-pink);">
+        <a href="{% url 'usuarios:mis_cursos' %}" class="hybrid-card-featured p-6 group block" style="border-inline-start-color: var(--color-pink);">
             <div class="flex items-start justify-between mb-4">
                 <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl" style="background-color: var(--color-pink-bg); color: var(--color-pink);">
                     <i class="bi bi-mortarboard-fill"></i>
@@ -136,19 +133,19 @@
         </a>
     </div>
 
-    <!-- Small stat cards -->
-    <div class="flex flex-col gap-4">
-        <a href="{% url 'certificados:mis_certificados' %}" class="flex-1 hybrid-card-stat p-4 flex flex-col justify-center items-center group fade-in">
+    <div class="flex flex-col gap-4 stagger-in">
+        <a href="{% url 'certificados:mis_certificados' %}" class="flex-1 hybrid-card-stat p-4 flex flex-col justify-center items-center group">
             <i class="bi bi-award-fill text-xl mb-1" style="color: var(--color-purple);"></i>
             <span class="text-xl font-bold" style="color: var(--color-text);">{{ mis_certificados_count|default:0 }}</span>
             <span class="text-xs" style="color: var(--color-text-secondary);">Certificados</span>
         </a>
     </div>
 
-    {% else %}
-    <!-- Colaborador -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <a href="{% url 'usuarios:mis_cursos' %}" class="hybrid-card-featured p-6 group block fade-in" style="border-inline-start-color: var(--color-pink);">
+    </div>
+
+{% else %}
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 stagger-in mb-8">
+    <a href="{% url 'usuarios:mis_cursos' %}" class="hybrid-card-featured p-6 group block" style="border-inline-start-color: var(--color-pink);">
             <div class="flex items-start justify-between mb-4">
                 <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl" style="background-color: var(--color-pink-bg); color: var(--color-pink);">
                     <i class="bi bi-mortarboard-fill"></i>
@@ -159,7 +156,7 @@
             <p class="text-sm" style="color: var(--color-text-secondary);">Cursos asignados y en progreso</p>
         </a>
 
-        <a href="{% url 'certificados:mis_certificados' %}" class="hybrid-card-featured p-6 group block fade-in" style="border-inline-start-color: var(--color-purple);">
+        <a href="{% url 'certificados:mis_certificados' %}" class="hybrid-card-featured p-6 group block" style="border-inline-start-color: var(--color-purple);">
             <div class="flex items-start justify-between mb-4">
                 <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl" style="background-color: var(--color-purple-bg); color: var(--color-purple);">
                     <i class="bi bi-award-fill"></i>
@@ -170,33 +167,28 @@
             <p class="text-sm" style="color: var(--color-text-secondary);">Diplomas obtenidos</p>
         </a>
     </div>
-    
-    <!-- Empty space for the rest of the layout -->
-    <div></div>
-    {% endif %}
-</div>
+{% endif %}
 
-<!-- Deadline Warnings -->
 {% if cursos_cercanos %}
 <div class="mb-8 fade-in">
     {% for curso in cursos_cercanos %}
-    <div class="flex items-center gap-4 p-4 rounded-xl mb-3" style="background-color: {% if curso.vencido %}var(--color-danger-bg, #fee2e2){% else %}var(--color-warning-bg, #fef3c7){% endif %}; border: 1px solid {% if curso.vencido %}var(--color-danger, #ef4444){% else %}var(--color-warning, #f59e0b){% endif %};">
-        <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: {% if curso.vencido %}rgba(239, 68, 68, 0.2){% else %}rgba(245, 158, 11, 0.2){% endif %};">
-            <i class="bi bi-{% if curso.vencido %}exclamation-triangle{% else %}clock{% endif %}" style="color: {% if curso.vencido %}var(--color-danger, #ef4444){% else %}var(--color-warning, #f59e0b){% endif %};"></i>
+    <div class="flex items-center gap-4 p-4 rounded-xl mb-3" style="background-color: {% if curso.vencido %}var(--color-danger-bg){% else %}var(--color-warning-bg){% endif %}; border: 1px solid {% if curso.vencido %}var(--color-danger){% else %}var(--color-warning){% endif %};">
+        <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: {% if curso.vencido %}var(--color-danger-bg){% else %}var(--color-warning-bg){% endif %};">
+            <i class="bi bi-{% if curso.vencido %}exclamation-triangle{% else %}clock{% endif %}" style="color: {% if curso.vencido %}var(--color-danger){% else %}var(--color-warning){% endif %};"></i>
         </div>
         <div class="flex-1">
-            <p class="font-medium" style="color: {% if curso.vencido %}var(--color-danger, #ef4444){% else %}var(--color-warning-text, #b45309){% endif %};">
+            <p class="font-medium" style="color: {% if curso.vencido %}var(--color-danger){% else %}var(--color-warning-text){% endif %};">
                 {% if curso.vencido %}
                 El curso "{{ curso.titulo }}" ha vencido
                 {% else %}
                 "{{ curso.titulo }}" vence en {{ curso.dias }} día{{ curso.dias|pluralize }}
                 {% endif %}
             </p>
-            <p class="text-sm opacity-80" style="color: {% if curso.vencido %}var(--color-danger, #ef4444){% else %}var(--color-warning-text, #b45309){% endif %};">
+            <p class="text-sm opacity-80" style="color: {% if curso.vencido %}var(--color-danger){% else %}var(--color-warning-text){% endif %};">
                 Fecha límite: {{ curso.fecha_limite|date:"d M Y" }}
             </p>
         </div>
-        <a href="{% url 'usuarios:mis_cursos' %}" class="btn-subtle px-3 py-1.5 rounded-lg text-sm" style="border-color: {% if curso.vencido %}var(--color-danger, #ef4444){% else %}var(--color-warning, #f59e0b){% endif %}; color: {% if curso.vencido %}var(--color-danger, #ef4444){% else %}var(--color-warning-text, #b45309){% endif %};">
+        <a href="{% url 'usuarios:mis_cursos' %}" class="btn-subtle px-3 py-1.5 rounded-lg text-sm" style="border-color: {% if curso.vencido %}var(--color-danger){% else %}var(--color-warning){% endif %}; color: {% if curso.vencido %}var(--color-danger){% else %}var(--color-warning-text){% endif %};">
             Ver curso
         </a>
     </div>
@@ -204,7 +196,6 @@
 </div>
 {% endif %}
 
-<!-- Featured Courses Section -->
 <div class="mb-8">
     <h2 class="section-title"><i class="bi bi-book"></i> Cursos Destacados / Actividad</h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-in">

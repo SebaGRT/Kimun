@@ -43,3 +43,8 @@ htmlcov/
 
 # venv
 venv/
+
+# Sisyphus
+.sisyphus/notepads/
+.sisyphus/drafts/
+.opencode/

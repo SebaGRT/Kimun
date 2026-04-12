@@ -40,6 +40,7 @@
             [data-theme="light"] {
                 --color-bg: #f8f9fa;
                 --color-surface: #ffffff;
+                --color-surface-raised: #f3f4f6;
                 --color-primary: #1e3a5f;
                 --color-primary-hover: #2d5a87;
                 --color-accent: #f57c00;
@@ -62,15 +63,16 @@
             }
 
             [data-theme="dark"] {
-                --color-bg: #0f172a;
-                --color-surface: #1e293b;
-                --color-primary: #60a5fa;
-                --color-primary-hover: #93c5fd;
-                --color-accent: #fbbf24;
-                --color-text: #f1f5f9;
-                --color-text-secondary: #94a3b8;
-                --color-border: #334155;
-                --color-card-hover: #334155;
+                --color-bg: #0a0f1a;
+                --color-surface: #111827;
+                --color-surface-raised: #1f2937;
+                --color-primary: #3b82f6;
+                --color-primary-hover: #60a5fa;
+                --color-accent: #f59e0b;
+                --color-text: #f9fafb;
+                --color-text-secondary: #9ca3af;
+                --color-border: #374151;
+                --color-card-hover: #1f2937;
                 --color-success: #4ade80;
                 --color-success-bg: rgba(74, 222, 128, 0.2);
                 --color-info: #60a5fa;
@@ -82,7 +84,35 @@
                 --color-pink: #f472b6;
                 --color-pink-bg: rgba(244, 114, 182, 0.2);
                 --gradient-start: #1e3a5f;
-                --gradient-end: #3b82f6;
+                --gradient-end: #0f172a;
+            }
+
+            [data-theme="dark"] {
+                .hover\:bg-gray-100:hover,
+                .hover\:bg-gray-50:hover {
+                    background-color: var(--color-card-hover) !important;
+                }
+
+                .bg-gray-50 { background-color: var(--color-surface) !important; }
+                .bg-gray-100 { background-color: var(--color-surface-raised) !important; }
+
+                .text-gray-500 { color: var(--color-text-secondary) !important; }
+                .text-gray-600 { color: var(--color-text-secondary) !important; }
+                .text-gray-700 { color: var(--color-text) !important; }
+                .text-gray-800 { color: var(--color-text) !important; }
+                .text-gray-900 { color: var(--color-text) !important; }
+
+                .border-gray-200 { border-color: var(--color-border) !important; }
+                .border-gray-300 { border-color: var(--color-border) !important; }
+
+                input.bg-gray-50,
+                input.bg-gray-100,
+                textarea.bg-gray-50,
+                textarea.bg-gray-100 {
+                    background-color: var(--color-surface) !important;
+                    color: var(--color-text) !important;
+                    border-color: var(--color-border) !important;
+                }
             }
 
             body {
@@ -99,6 +129,10 @@
                 transform: translateY(-4px);
                 box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.15);
                 background-color: var(--color-card-hover);
+            }
+            [data-theme="dark"] .hybrid-card:hover {
+                box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+                background-color: var(--color-surface-raised);
             }
 
             .btn-primary {
@@ -192,8 +226,8 @@
                 animation-delay: 0.4s;
             }
         </style>
+        <link rel="stylesheet" href="{% static 'css/kimun.css' %}" />
         <script>
-            // Theme toggle logic
             (function () {
                 const stored = localStorage.getItem("kimun-theme") || "light";
                 document.documentElement.setAttribute("data-theme", stored);
@@ -236,7 +270,6 @@
         {% block extra_head %}{% endblock %}
     </head>
     <body class="min-h-screen flex flex-col">
-        <!-- Navbar -->
         <header
             class="sticky top-0 z-50 border-b"
             style="
@@ -246,7 +279,6 @@
         >
             <div class="max-w-6xl mx-auto px-4 md:px-6 py-4">
                 <div class="flex justify-between items-center">
-                    <!-- Logo -->
 <a
                         href="{% url 'inicio' %}"
                         class="flex items-center gap-2 group"
@@ -259,7 +291,6 @@
                         />
                     </a>
 
-                    <!-- Mobile Menu Button -->
                     <button
                         id="mobile-menu-btn"
                         class="xl:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700"
@@ -269,9 +300,8 @@
                             class="bi bi-list text-2xl"
                             style="color: var(--color-text)"
                         ></i>
-                    </button>
+                        </button>
 
-                    <!-- Desktop Navigation -->
                     <nav class="hidden xl:flex items-center gap-8">
                         <a
                             href="{% url 'cursos:curso_list' %}"
@@ -295,34 +325,42 @@
                             class="nav-link text-base font-medium {% if '/certificados' in request.path and 'mis' in request.path %}active{% endif %}"
                             >Certificados</a
                         >
-                        {% if user.rol == 'admin' %}
-                        <a
-                            href="{% url 'usuarios:usuario_list' %}"
-                            class="nav-link text-base font-medium {% if '/usuarios/' in request.path and request.path != '/perfil/' %}active{% endif %}"
-                            >Usuarios</a
-                        >
-                        <a
-                            href="{% url 'cursos:categoria_list' %}"
-                            class="nav-link text-base font-medium {% if '/categorias' in request.path %}active{% endif %}"
-                            >Categorías</a
-                        >
-                        {% endif %} {% if user.rol == 'admin' %}
-                        <a
-                            href="{% url 'reportes:dashboard_reportes' %}"
-                            class="nav-link text-base font-medium {% if '/reportes' in request.path %}active{% endif %}"
-                            >Reportes</a
-                        >
-                        {% endif %}
-                        <a
-                            href="{% url 'anuncios:anuncio_list' %}"
-                            class="nav-link text-base font-medium flex items-center gap-1 {% if '/anuncios' in request.path %}active{% endif %}"
-                            ><i class="bi bi-bell"></i> Anuncios</a
-                        >
+                        <div x-data="{ open: false }" class="relative">
+                            <button @click="open = !open" class="nav-link text-base font-medium flex items-center gap-1">
+                                Más <i class="bi bi-three-dots text-xs"></i>
+                            </button>
+                            <div x-show="open" @click.outside="open = false" x-transition class="absolute right-0 mt-2 w-48 rounded-lg shadow-lg py-2 z-50 flex flex-col" style="background-color: var(--color-surface); border: 1px solid var(--color-border); display: none;">
+                                {% if user.rol == 'admin' %}
+                                <a
+                                    href="{% url 'cursos:categoria_list' %}"
+                                    class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                                    style="color: var(--color-text);"
+                                    >Categorías</a
+                                >
+                                <a
+                                    href="{% url 'reportes:dashboard_reportes' %}"
+                                    class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                                    style="color: var(--color-text);"
+                                    >Reportes</a
+                                >
+                                <a
+                                    href="{% url 'usuarios:usuario_list' %}"
+                                    class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                                    style="color: var(--color-text);"
+                                    >Usuarios</a
+                                >
+                                {% endif %}
+                                <a
+                                    href="{% url 'anuncios:anuncio_list' %}"
+                                    class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors flex items-center gap-2"
+                                    style="color: var(--color-text);"
+                                    ><i class="bi bi-bell"></i> Anuncios</a
+                                >
+                            </div>
+                        </div>
                     </nav>
 
-                    <!-- Right side: Theme toggle + User -->
                     <div class="hidden xl:flex items-center gap-4">
-                        <!-- Theme Toggle -->
                         <button
                             onclick="toggleTheme()"
                             class="p-2.5 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-slate-700"
@@ -376,7 +414,6 @@
                 </div>
             </div>
 
-            <!-- Mobile Navigation (Hidden by default) -->
             <div
                 id="mobile-menu"
                 class="hidden xl:hidden border-t"
@@ -489,7 +526,6 @@
             </div>
         </header>
 
-        <!-- Main Content -->
         <main class="flex-1 max-w-6xl mx-auto px-6 py-8 w-full">
             {% block breadcrumbs %}{% endblock %}
             
@@ -504,7 +540,6 @@
             {% block content %}{% endblock %}
         </main>
 
-        <!-- Footer -->
         <footer
             class="py-6 text-center border-t"
             style="
@@ -517,7 +552,6 @@
             </p>
         </footer>
 
-        <!-- Toast Notifications -->
         <link rel="stylesheet" href="{% static 'css/toast.css' %}" />
         <div id="toast-container"></div>
         <script src="{% static 'js/toast.js' %}"></script>

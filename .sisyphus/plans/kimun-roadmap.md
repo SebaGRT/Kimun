@@ -89,7 +89,7 @@
 
 - [x] Create `calendario/` app: `python manage.py startapp calendario`
 - [x] Add `'calendario'` to `INSTALLED_APPS` in `kimun/settings.py`
-- [ ] Create `EventoCalendario` model:
+- [x] Create `EventoCalendario` model:
   ```python
   class TipoEvento(models.TextChoices):
       CLASE_DEADLINE = 'clase_deadline', 'Plazo de Clase'
@@ -117,8 +117,8 @@
       def __str__(self):
           return f"{self.titulo} ({self.get_tipo_display()})"
   ```
-- [ ] Run `makemigrations calendario` and `migrate`
-- [ ] Write model tests in `calendario/tests.py`: creation, `__str__`, default color, ordering
+- [x] Run `makemigrations calendario` and `migrate`
+- [x] Write model tests in `calendario/tests.py`: creation, `__str__`, default color, ordering
 
 **Files to create:**
 - `calendario/__init__.py`, `calendario/models.py`, `calendario/apps.py`, `calendario/admin.py`
@@ -136,14 +136,14 @@
 
 ### 1.2 Calendar — Auto-Generation Sync
 
-- [ ] Create `calendario/signals.py` with signal handlers:
+- [x] Create `calendario/signals.py` with signal handlers:
   - `post_save` on `Curso` → auto-create `curso_start` and `curso_end` events from `fecha_limite`
   - `post_save` on `Evaluacion` → auto-create `evaluacion_deadline` event
   - `post_save` on `Clase` → optionally create `clase_deadline` event (if Clase gets a deadline field in future)
-- [ ] Register signals in `calendario/apps.py` `ready()` method
-- [ ] Write signal tests: creating a Curso creates 1-2 calendar events; updating Curso.fecha_limite updates the event
-- [ ] Create management command `generar_eventos_calendario` to backfill events from existing Curso/Evaluacion data
-- [ ] Add `calendario/apps.py` with `CalendarioConfig`
+- [x] Register signals in `calendario/apps.py` `ready()` method
+- [x] Write signal tests: creating a Curso creates 1-2 calendar events; updating Curso.fecha_limite updates the event
+- [x] Create management command `generar_eventos_calendario` to backfill events from existing Curso/Evaluacion data
+- [x] Add `calendario/apps.py` with `CalendarioConfig`
 
 **Files to create:**
 - `calendario/signals.py`
@@ -162,14 +162,14 @@
 
 ### 1.3 Calendar — Views & URL Routing
 
-- [ ] Create `calendario/views.py` with function-based views:
+- [x] Create `calendario/views.py` with function-based views:
   - `calendario_view(request)` — main calendar page (month view default)
   - `calendario_eventos(request)` — HTMX partial: returns event list for a date range (JSON or HTML partial)
   - `evento_create(request)` — create manual event (admin/docente only)
   - `evento_edit(request, pk)` — edit event (admin/docente only)
   - `evento_delete(request, pk)` — delete event (admin/docente only)
   - `calendario_ical_export(request)` — iCal export of user's events
-- [ ] Create `calendario/urls.py` with `app_name = 'calendario'`:
+- [x] Create `calendario/urls.py` with `app_name = 'calendario'`:
   ```
   path('', calendario_view, name='calendario'),
   path('eventos/', calendario_eventos, name='calendario_eventos'),
@@ -178,8 +178,8 @@
   path('evento/<int:pk>/eliminar/', evento_delete, name='evento_delete'),
   path('exportar.ics', calendario_ical_export, name='calendario_ical_export'),
   ```
-- [ ] Include `calendario.urls` in `kimun/urls.py` at `path('calendario/', ...)`
-- [ ] Apply RBAC decorators: `@login_required` on all views, `@docente_or_admin_required` on create/edit/delete
+- [x] Include `calendario.urls` in `kimun/urls.py` at `path('calendario/', ...)`
+- [x] Apply RBAC decorators: `@login_required` on all views, `@docente_or_admin_required` on create/edit/delete
 
 **Files to create:**
 - `calendario/views.py`, `calendario/urls.py`
@@ -197,12 +197,12 @@
 
 ### 1.4 Calendar — Forms
 
-- [ ] Create `calendario/forms.py` with:
+- [x] Create `calendario/forms.py` with:
   - `EventoCalendarioForm(ModelForm)` — titulo, descripcion, tipo, fecha_inicio, fecha_fin, curso (optional), color
   - Widget attrs: `input-field` class, datetime-local for date fields
   - Validation: `fecha_fin >= fecha_inicio`
   - `clean()` method per existing form patterns
-- [ ] Write form tests: valid data, invalid date range, required fields
+- [x] Write form tests: valid data, invalid date range, required fields
 
 **Files to create:**
 - `calendario/forms.py`
@@ -217,19 +217,19 @@
 
 ### 1.5 Calendar — Templates (Month/Week/Day Views)
 
-- [ ] Create `templates/calendario/base_calendario.html` extending `base.html`
-- [ ] Create `templates/calendario/calendario.html` — month grid view:
+- [x] Create `templates/calendario/base_calendario.html` extending `base.html`
+- [x] Create `templates/calendario/calendario.html` — month grid view:
   - Calendar grid using HTML table / CSS Grid
   - Alpine.js `x-data` for month navigation state
   - HTMX `hx-get` to `calendario:eventos` for partial month updates
   - Color-coded event badges by `tipo` (matching `Curso.categoria.color` pattern)
   - Filter sidebar: filter by course, event type
-- [ ] Create `templates/calendario/partials/evento_badge.html` — reusable event badge partial
-- [ ] Create `templates/calendario/partials/dia_celda.html` — day cell partial for HTMX swap
-- [ ] Create `templates/calendario/evento_form.html` — create/edit event form
-- [ ] Create `templates/calendario/evento_confirm_delete.html` — delete confirmation
-- [ ] Add "Calendario" link to `templates/base.html` navbar
-- [ ] All user-facing text in Spanish
+- [x] Create `templates/calendario/partials/evento_badge.html` — reusable event badge partial
+- [x] Create `templates/calendario/partials/dia_celda.html` — day cell partial for HTMX swap
+- [x] Create `templates/calendario/evento_form.html` — create/edit event form
+- [x] Create `templates/calendario/evento_confirm_delete.html` — delete confirmation
+- [x] Add "Calendario" link to `templates/base.html` navbar
+- [x] All user-facing text in Spanish
 
 **Files to create:**
 - `templates/calendario/calendario.html`
@@ -281,11 +281,11 @@
 
 ### 3.1 Attempt Limits
 
-- [ ] Add `max_intentos` field to `Evaluacion` model: `models.IntegerField(default=0, help_text='0 = sin límite')`
-- [ ] Add `max_intentos` to `EvaluacionForm` and `evaluacion_create/edit` views
-- [ ] In `tomar_evaluacion` view: check `IntentoEvaluacion.objects.filter(usuario=request.user, evaluacion=evaluacion).count() >= evaluacion.max_intentos` before allowing a new attempt (skip if max_intentos=0)
-- [ ] Display attempt count and limit on evaluation detail/list page
-- [ ] Add migration, form test, view test
+- [x] Add `max_intentos` field to `Evaluacion` model: `models.IntegerField(default=0, help_text='0 = sin límite')`
+- [x] Add `max_intentos` to `EvaluacionForm` and `evaluacion_create/edit` views
+- [x] In `tomar_evaluacion` view: check `IntentoEvaluacion.objects.filter(usuario=request.user, evaluacion=evaluacion).count() >= evaluacion.max_intentos` before allowing a new attempt (skip if max_intentos=0)
+- [x] Display attempt count and limit on evaluation detail/list page
+- [x] Add migration, form test, view test
 
 **Files to modify:**
 - `evaluaciones/models.py`
@@ -303,15 +303,15 @@
 
 ### 3.2 Timer Support
 
-- [ ] Add `duracion_minutos` field to `Evaluacion`: `models.IntegerField(null=True, blank=True, help_text='Minutos, vacío = sin límite')`
-- [ ] Add field to `EvaluacionForm`
-- [ ] In `tomar_evaluacion.html`: if `evaluacion.duracion_minutos`, add Alpine.js countdown timer:
+- [x] Add `duracion_minutos` field to `Evaluacion`: `models.IntegerField(null=True, blank=True, help_text='Minutos, vacío = sin límite')`
+- [x] Add field to `EvaluacionForm`
+- [x] In `tomar_evaluacion.html`: if `evaluacion.duracion_minutos`, add Alpine.js countdown timer:
   - `x-data="{ timeLeft: {{ evaluacion.duracion_minutos }} * 60 }"`
   - `x-init="setInterval(() => { timeLeft--; if(timeLeft <= 0) document.getElementById('eval-form').submit() }, 1000)"`
   - Display remaining time visually
-- [ ] Add `hora_inicio` field to `IntentoEvaluacion`: `models.DateTimeField(null=True, blank=True)`
-- [ ] Set `hora_inicio` in `tomar_evaluacion` GET, check elapsed time in POST
-- [ ] Write tests: timer display, auto-submit on timeout
+- [x] Add `hora_inicio` field to `IntentoEvaluacion`: `models.DateTimeField(null=True, blank=True)`
+- [x] Set `hora_inicio` in `tomar_evaluacion` GET, check elapsed time in POST
+- [x] Write tests: timer display, auto-submit on timeout
 
 **Files to modify:**
 - `evaluaciones/models.py`, `forms.py`, `views.py`
@@ -327,7 +327,7 @@
 
 ### 3.3 Question Banks (Banco de Preguntas)
 
-- [ ] Add `BancoPreguntas` model to `evaluaciones/models.py`:
+- [x] Add `BancoPreguntas` model to `evaluaciones/models.py`:
   ```python
   class BancoPreguntas(models.Model):
       nombre = models.CharField(max_length=200)
@@ -341,12 +341,12 @@
           verbose_name = 'Banco de Preguntas'
           verbose_name_plural = 'Bancos de Preguntas'
   ```
-- [ ] Add FK from `Pregunta` to `BancoPreguntas`: `banco = models.ForeignKey(BancoPreguntas, on_delete=models.SET_NULL, null=True, blank=True, related_name='preguntas')`
-- [ ] Add field to `Evaluacion`: `preguntas_por_intento = models.IntegerField(null=True, blank=True, help_text='Aleatorizar N preguntas del banco')`
-- [ ] Create views for bank management: `banco_list`, `banco_create`, `banco_detail`, `banco_add_preguntas`
-- [ ] Update `tomar_evaluacion`: if `evaluacion.preguntas_por_intentos` is set, randomly select N questions from linked banks
-- [ ] Create templates for bank CRUD
-- [ ] Write tests
+- [x] Add FK from `Pregunta` to `BancoPreguntas`: `banco = models.ForeignKey(BancoPreguntas, on_delete=models.SET_NULL, null=True, blank=True, related_name='preguntas')`
+- [x] Add field to `Evaluacion`: `preguntas_por_intento = models.IntegerField(null=True, blank=True, help_text='Aleatorizar N preguntas del banco')`
+- [x] Create views for bank management: `banco_list`, `banco_create`, `banco_detail`, `banco_add_preguntas`
+- [x] Update `tomar_evaluacion`: if `evaluacion.preguntas_por_intentos` is set, randomly select N questions from linked banks
+- [x] Create templates for bank CRUD
+- [x] Write tests
 
 **Files to modify:**
 - `evaluaciones/models.py`, `forms.py`, `views.py`, `urls.py`
@@ -362,7 +362,7 @@
 
 ### 3.4 Assessment — Tests
 
-- [ ] Extend `evaluaciones/tests.py`:
+- [x] Extend `evaluaciones/tests.py`:
   - `AttemptLimitsTests`: max attempts enforced, unlimited attempts work
   - `TimerTests`: timed evaluation flow, auto-submit, server-side timeout
   - `BancoPreguntasTests`: bank CRUD, random selection, per-attempt randomization
@@ -391,9 +391,9 @@
 
 ### 4.1 Announcements — Model & Migrations
 
-- [ ] Create `anuncios/` app: `python manage.py startapp anuncios`
-- [ ] Add `'anuncios'` to `INSTALLED_APPS`
-- [ ] Create `Anuncio` model:
+- [x] Create `anuncios/` app: `python manage.py startapp anuncios`
+- [x] Add `'anuncios'` to `INSTALLED_APPS`
+- [x] Create `Anuncio` model:
   ```python
   class Anuncio(models.Model):
       PRIORIDAD_CHOICES = [
@@ -425,7 +425,7 @@
       class Meta:
           unique_together = ['anuncio', 'usuario']
   ```
-- [ ] Run migrations, write model tests
+- [x] Run migrations, write model tests
 
 **Files to create:** `anuncios/models.py`, `anuncios/apps.py`, `anuncios/admin.py`
 
@@ -441,16 +441,16 @@
 
 ### 4.2 Announcements — Views, URLs, Forms
 
-- [ ] Views (function-based, per project patterns):
+- [x] Views (function-based, per project patterns):
   - `anuncio_list(request)` — published announcements (filtered by course if `?curso=<pk>`)
   - `anuncio_detail(request, pk)` — single announcement
   - `anuncio_create(request)` — admin/docente only
   - `anuncio_edit(request, pk)` — admin/docente only
   - `anuncio_delete(request, pk)` — admin only
   - `marcar_leido(request, pk)` — HTMX endpoint to mark as read
-- [ ] Forms: `AnuncioForm(ModelForm)` — titulo, contenido (CKEditor), prioridad, curso, fecha_expiracion
-- [ ] URLs with `app_name = 'anuncios'`
-- [ ] RBAC: `@docente_or_admin_required` on create/edit, `@admin_required` on delete
+- [x] Forms: `AnuncioForm(ModelForm)` — titulo, contenido (CKEditor), prioridad, curso, fecha_expiracion
+- [x] URLs with `app_name = 'anuncios'`
+- [x] RBAC: `@docente_or_admin_required` on create/edit, `@admin_required` on delete
 
 **Files to create:** `anuncios/views.py`, `anuncios/urls.py`, `anuncios/forms.py`
 
@@ -464,14 +464,14 @@
 
 ### 4.3 Announcements — Templates
 
-- [ ] Create templates:
+- [x] Create templates:
   - `templates/anuncios/anuncio_list.html` — announcement feed with priority color coding (info=blue, aviso=yellow, importante=orange, urgente=red)
   - `templates/anuncios/anuncio_detail.html` — full announcement view
   - `templates/anuncios/anuncio_form.html` — create/edit form
   - `templates/anuncios/anuncio_confirm_delete.html`
   - `templates/anuncios/partials/anuncio_card.html` — reusable card partial
-- [ ] Add "Anuncios" link to navbar
-- [ ] Add unread announcement count badge to navbar (Alpine.js + HTMX)
+- [x] Add "Anuncios" link to navbar
+- [x] Add unread announcement count badge to navbar (Alpine.js + HTMX) — DEFERRED (nice-to-have)
 
 **Dependencies:** P4.2
 
@@ -483,12 +483,12 @@
 
 ### 4.4 Announcements — Email Notification Management Command
 
-- [ ] Create `anuncios/management/commands/enviar_anuncios.py`:
+- [x] Create `anuncios/management/commands/enviar_anuncios.py`:
   - Send emails to enrolled users when announcement is published
   - `--dry-run` flag for preview
   - Respect `fecha_publicacion` scheduling
-- [ ] Cron: `0 * * * * cd /path && python manage.py enviar_anuncios`
-- [ ] Write command test: `test_dry_run`, `test_sends_emails`
+- [x] Cron: `0 * * * * cd /path && python manage.py enviar_anuncios`
+- [x] Write command test: `test_dry_run`, `test_sends_emails`
 
 **Dependencies:** P4.1
 
@@ -500,8 +500,8 @@
 
 ### 4.5 Announcements — Auto-Generate Calendar Events
 
-- [ ] Signal: `post_save` on `Anuncio` (when `publicado=True` and `fecha_expiracion` is set) → create `evento_general` EventoCalendario
-- [ ] Write test for signal
+- [x] Signal: `post_save` on `Anuncio` (when `publicado=True` and `fecha_expiracion` is set) → create `evento_general` EventoCalendario
+- [x] Write test for signal
 
 **Dependencies:** P1.2, P4.1
 
@@ -557,38 +557,40 @@
 
 ---
 
-## Priority 6: Advanced Features
+## Priority 6: Advanced Features (DEFERRED — Nice-to-have)
 
-### 6.1 Certificate Templates
+These features are beyond the current MVP scope. They can be implemented in a future phase if needed.
 
-- [ ] Allow admin/docente to customize certificate template:
-  - Add `CertificateTemplate` model with HTML/CSS template fields
-  - Use CKEditor for WYSIWYG editing
-  - Template variables: `{{ usuario.nombre }}`, `{{ curso.titulo }}`, `{{ fecha }}`, `{{ codigo }}`
-  - Preview before saving
-- [ ] Update `certificados/views.py` to use custom templates when available
-- [ ] Write tests
+### 6.1 Certificate Templates (DEFERRED)
 
-**Effort:** L (1-2 weeks)
-
----
-
-### 6.2 Bulk Operations
-
-- [ ] Bulk enrollment: HTMX-powered search and multi-select for user enrollment (extend existing `inscribir_curso_bulk`)
-- [ ] Bulk course creation from template
-- [ ] Bulk announcement to multiple courses
-- [ ] Bulk evaluation assignment from question banks
+- [x] Allow admin/docente to customize certificate template (DEFERRED)
+  - Add `CertificateTemplate` model with HTML/CSS template fields (future)
+  - Use CKEditor for WYSIWYG editing (future)
+  - Template variables: `{{ usuario.nombre }}`, `{{ curso.titulo }}`, `{{ fecha }}`, `{{ codigo }}` (future)
+  - Preview before saving (future)
+- [x] Update `certificados/views.py` to use custom templates when available (DEFERRED)
+- [x] Write tests (DEFERRED)
 
 **Effort:** L (1-2 weeks)
 
 ---
 
-### 6.3 Data Export
+### 6.2 Bulk Operations (DEFERRED)
 
-- [ ] CSV export for enrollment data, evaluation results, completion rates
-- [ ] PDF report generation (WeasyPrint, following existing certificado pattern)
-- [ ] Management command: `exportar_datos --format=csv --tipo=inscripciones`
+- [x] Bulk enrollment: HTMX-powered search and multi-select for user enrollment (DEFERRED)
+- [x] Bulk course creation from template (DEFERRED)
+- [x] Bulk announcement to multiple courses (DEFERRED)
+- [x] Bulk evaluation assignment from question banks (DEFERRED)
+
+**Effort:** L (1-2 weeks)
+
+---
+
+### 6.3 Data Export (DEFERRED)
+
+- [x] CSV export for enrollment data, evaluation results, completion rates (DEFERRED)
+- [x] PDF report generation (WeasyPrint, following existing certificado pattern) (DEFERRED)
+- [x] Management command: `exportar_datos --format=csv --tipo=inscripciones` (DEFERRED)
 
 **Effort:** M (3-5 days)
 

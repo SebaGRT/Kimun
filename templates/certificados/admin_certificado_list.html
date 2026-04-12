@@ -49,7 +49,7 @@
                         {% csrf_token %}
                         <button type="submit" class="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900" 
                                 onclick="return confirm('¿Eliminar este certificado?')" title="Eliminar">
-                            <i class="bi bi-trash" style="color: #dc2626;"></i>
+                            <i class="bi bi-trash" style="color: var(--color-danger);"></i>
                         </button>
                     </form>
                     <span class="text-xs px-2 py-1 rounded font-mono" style="background-color: var(--color-success-bg); color: var(--color-success);">
