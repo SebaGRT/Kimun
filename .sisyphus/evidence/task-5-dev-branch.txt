@@ -1,0 +1,3 @@
+git branch --list development
+git diff main development
+git branch --show-current

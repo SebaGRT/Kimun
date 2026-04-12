@@ -252,7 +252,7 @@ Max Concurrent: 3 (Wave 3)
 
   **Commit**: NO (verification only)
 
-- [ ] 2. Update .gitignore and Commit All Changes to Main
+- [x] 2. Update .gitignore and Commit All Changes to Main
 
   **What to do**:
   - Add to `.gitignore`: `.sisyphus/notepads/`, `.sisyphus/drafts/`, `.opencode/` (these are working artifacts, not tracked code)
@@ -347,7 +347,7 @@ Max Concurrent: 3 (Wave 3)
   - Files: `.gitignore`, all modified files, new management command
   - Pre-commit: `python manage.py test --verbosity=0`
 
-- [ ] 3. Move Stray Scripts to tools/ Directory
+- [x] 3. Move Stray Scripts to tools/ Directory
 
   **What to do**:
   - Create `tools/` directory in project root
