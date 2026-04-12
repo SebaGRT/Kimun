@@ -1,5 +1,7 @@
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ValidationError
+from ckeditor.fields import RichTextField
 
 
 class Categoria(models.Model):
@@ -91,3 +93,69 @@ class InscripcionCurso(models.Model):
 
     def __str__(self):
         return f"{self.usuario} - {self.curso} ({self.get_estado_display()})"
+
+
+class Clase(models.Model):
+    """Clase/Lección dentro de un curso - contenido rico con CKEditor"""
+    curso = models.ForeignKey(Curso, on_delete=models.CASCADE, related_name='clases')
+    titulo = models.CharField(max_length=200)
+    contenido = RichTextField(verbose_name='Contenido de la clase')
+    orden = models.PositiveIntegerField(default=1, help_text='Orden de la clase en el curso')
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Clase'
+        verbose_name_plural = 'Clases'
+        ordering = ['orden']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['curso', 'orden'],
+                name='clase_curso_orden_uniq'
+            ),
+            models.CheckConstraint(
+                condition=models.Q(orden__gte=1),
+                name='clase_orden_minimo'
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.orden}. {self.titulo}"
+
+    def clean(self):
+        super().clean()
+        if self.orden is not None and self.orden < 1:
+            raise ValidationError({'orden': 'El orden debe ser mayor a 0.'})
+
+    def get_clase_anterior(self):
+        """Retorna la clase anterior en el orden, o None si es la primera"""
+        return Clase.objects.filter(
+            curso=self.curso,
+            orden__lt=self.orden
+        ).order_by('-orden').first()
+
+    def get_siguiente_clase(self):
+        """Retorna la siguiente clase en el orden, o None si es la última"""
+        return Clase.objects.filter(
+            curso=self.curso,
+            orden__gt=self.orden
+        ).order_by('orden').first()
+
+
+class ClaseCompletado(models.Model):
+    """Registro de completación de una clase por un usuario"""
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='clases_completadas'
+    )
+    clase = models.ForeignKey(Clase, on_delete=models.CASCADE, related_name='completados')
+    fecha_completado = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Clase Completada'
+        verbose_name_plural = 'Clases Completadas'
+        unique_together = ['usuario', 'clase']
+
+    def __str__(self):
+        return f"{self.usuario} - {self.clase.titulo} ({self.fecha_completado.strftime('%d/%m/%Y')})"

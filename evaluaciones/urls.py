@@ -10,5 +10,10 @@ urlpatterns = [
     path('evaluacion/<int:pk>/eliminar/', views.evaluacion_delete, name='evaluacion_delete'),
     path('evaluacion/<int:pk>/tomar/', views.tomar_evaluacion, name='tomar_evaluacion'),
     path('evaluacion/<int:pk>/resultado/<int:intento_pk>/', views.resultado_evaluacion, name='resultado_evaluacion'),
-    path('evaluacion/<int:pk>/respuesta/', views.responder_pregunta_htmx, name='responder_pregunta_htmx'),
+    path('bancos/', views.banco_list, name='banco_list'),
+    path('bancos/crear/', views.banco_create, name='banco_create'),
+    path('bancos/<int:pk>/', views.banco_detail, name='banco_detail'),
+    path('bancos/<int:pk>/editar/', views.banco_edit, name='banco_edit'),
+    path('bancos/<int:pk>/eliminar/', views.banco_delete, name='banco_delete'),
+    path('bancos/<int:banco_pk>/agregar-pregunta/', views.banco_agregar_pregunta, name='banco_agregar_pregunta'),
 ]

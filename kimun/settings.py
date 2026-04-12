@@ -37,11 +37,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'ckeditor',
     'usuarios',
     'cursos',
     'evaluaciones',
     'certificados',
     'reportes',
+    'calendario',
+    'tareas',
+    'anuncios',
 ]
 
 MIDDLEWARE = [

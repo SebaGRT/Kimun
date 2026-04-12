@@ -3,7 +3,7 @@
 {% block title %}{% if accion == 'crear' %}Crear Categoría{% else %}Editar Categoría{% endif %} - Kimün{% endblock %}
 
 {% block breadcrumbs %}
-<nav class="text-sm mb-4" style="color: var(--color-text-secondary);">
+<nav class="text-sm mb-4 text-secondary">
     <a href="{% url 'inicio' %}">Inicio</a>
     <i class="bi bi-chevron-right text-xs mx-1"></i>
     <a href="{% url 'cursos:categoria_list' %}">Categorías</a>
@@ -14,11 +14,11 @@
 
 {% block content %}
 <div class="mb-6">
-    <h1 class="text-2xl font-bold" style="color: var(--color-text);">
-        <i class="bi bi-tag me-2" style="color: var(--color-primary);"></i>
+    <h1 class="section-title">
+        <i class="bi bi-tag me-2 text-primary"></i>
         {% if accion == 'crear' %}Crear Nueva Categoría{% else %}Editar Categoría{% endif %}
     </h1>
-    <p class="mt-1" style="color: var(--color-text-secondary);">
+    <p class="mt-1 text-secondary">
         Define una categoría para organizar tus cursos
     </p>
 </div>
@@ -28,36 +28,38 @@
         {% csrf_token %}
         
         <div class="mb-6">
-            <label class="block text-base font-medium mb-2" style="color: var(--color-text);">
+            <label class="block text-base font-medium mb-2">
                 Nombre <span class="text-red-500">*</span>
             </label>
-            <input type="text" name="nombre" required 
-                class="input-field w-full px-4 py-3 rounded-xl text-lg"
-                placeholder="Ej: Seguridad Laboral"
-                value="{{ categoria.nombre|default:'' }}">
+            {{ form.nombre }}
+            {% if form.nombre.errors %}
+            <p class="mt-2 text-sm text-red-500">{{ form.nombre.errors.0 }}</p>
+            {% endif %}
         </div>
         
         <div class="mb-6">
-            <label class="block text-base font-medium mb-2" style="color: var(--color-text);">
+            <label class="block text-base font-medium mb-2">
                 Color
             </label>
             <div class="flex items-center gap-4">
-                <input type="color" name="color" 
-                    class="w-12 h-12 rounded-lg cursor-pointer border-0"
-                    value="{{ categoria.color|default:'#6366f1' }}">
-                <span class="text-sm" style="color: var(--color-text-secondary);">
+                {{ form.color }}
+                {% if form.color.errors %}
+                <p class="mt-2 text-sm text-red-500">{{ form.color.errors.0 }}</p>
+                {% endif %}
+                <span class="text-sm text-secondary">
                     Selecciona un color para identificar la categoría
                 </span>
             </div>
         </div>
         
-        <div class="mb-8">
-            <label class="block text-base font-medium mb-2" style="color: var(--color-text);">
+        <div class="mb-6">
+            <label class="block text-base font-medium mb-2">
                 Descripción (opcional)
             </label>
-            <textarea name="descripcion" rows="3"
-                class="input-field w-full px-4 py-3 rounded-xl text-lg"
-                placeholder="Descripción breve de la categoría...">{{ categoria.descripcion|default:'' }}</textarea>
+            {{ form.descripcion }}
+            {% if form.descripcion.errors %}
+            <p class="mt-2 text-sm text-red-500">{{ form.descripcion.errors.0 }}</p>
+            {% endif %}
         </div>
         
         <div class="flex gap-4">

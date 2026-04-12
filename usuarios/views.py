@@ -8,6 +8,7 @@ from django import forms
 from django.db import models
 from django.core.paginator import Paginator
 from cursos.models import Curso, InscripcionCurso
+from usuarios.decorators import admin_required
 
 Usuario = get_user_model()
 
@@ -200,10 +201,8 @@ def password_change(request):
 
 
 @login_required
+@admin_required
 def usuario_list(request):
-    if request.user.rol != 'admin':
-        return HttpResponseForbidden('No tienes permisos para acceder a esta página.')
-    
     usuarios = Usuario.objects.select_related('cargo').order_by('-date_joined')
     paginator = Paginator(usuarios, 20)
     page_number = request.GET.get('page', 1)
@@ -216,10 +215,8 @@ def usuario_list(request):
 
 
 @login_required
+@admin_required
 def usuario_create(request):
-    if request.user.rol != 'admin':
-        return HttpResponseForbidden('No tienes permisos para acceder a esta página.')
-    
     from usuarios.models import AreaCargo
     areas = AreaCargo.objects.all()
     
@@ -240,10 +237,8 @@ def usuario_create(request):
 
 
 @login_required
+@admin_required
 def usuario_edit(request, pk):
-    if request.user.rol != 'admin':
-        return HttpResponseForbidden('No tienes permisos para acceder a esta página.')
-    
     from usuarios.models import AreaCargo
     areas = AreaCargo.objects.all()
     usuario = get_object_or_404(Usuario, pk=pk)
@@ -266,10 +261,8 @@ def usuario_edit(request, pk):
 
 
 @login_required
+@admin_required
 def usuario_delete(request, pk):
-    if request.user.rol != 'admin':
-        return HttpResponseForbidden('No tienes permisos para acceder a esta página.')
-    
     usuario = get_object_or_404(Usuario, pk=pk)
     
     if request.method == 'POST':
@@ -286,11 +279,9 @@ def usuario_delete(request, pk):
 
 
 @login_required
+@admin_required
 def inscribir_curso(request, curso_id):
     """Admin: Inscribir usuarios a un curso"""
-    if request.user.rol != 'admin':
-        return HttpResponseForbidden('No tienes permisos para inscribir usuarios.')
-    
     curso = get_object_or_404(Curso, pk=curso_id)
     
     if request.method == 'POST':
@@ -324,11 +315,9 @@ def inscribir_curso(request, curso_id):
 
 
 @login_required
+@admin_required
 def inscribir_curso_bulk(request, curso_id):
     """Admin: Inscribir múltiples usuarios a un curso"""
-    if request.user.rol != 'admin':
-        return HttpResponseForbidden('No tienes permisos para inscribir usuarios.')
-    
     curso = get_object_or_404(Curso, pk=curso_id)
     
     query = request.GET.get('q', '')

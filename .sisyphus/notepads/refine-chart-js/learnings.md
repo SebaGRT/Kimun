@@ -1,0 +1,1 @@
+Successfully integrated context variables into Chart.js elements using data-* attributes and template tags inside the dashboard view. Chart.js options successfully updated to handle dynamic themes (var(--color-text)) and spanish titles.

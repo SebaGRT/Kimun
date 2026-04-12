@@ -11,6 +11,9 @@ urlpatterns = [
     path('evaluaciones/', include('evaluaciones.urls')),
     path('certificados/', include('certificados.urls')),
     path('reportes/', include('reportes.urls')),
+    path('calendario/', include('calendario.urls')),
+    path('anuncios/', include('anuncios.urls')),
+    path('tareas/', include('tareas.urls')),
     path('', inicio, name='inicio'),
 ]
 

@@ -64,18 +64,8 @@
         {% endfor %}
     </div>
     {% else %}
-    <div class="text-center py-16">
-        <div class="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center" style="background-color: var(--color-purple-bg);">
-            <i class="bi bi-award text-2xl" style="color: var(--color-purple);"></i>
-        </div>
-        <h3 class="text-xl font-medium">No tienes cursos completados</h3>
-        <p class="mt-2" style="color: var(--color-text-secondary);">
-            Completa tus cursos y evaluaciones para obtener certificados.
-        </p>
-        <a href="{% url 'usuarios:mis_cursos' %}" class="btn-primary px-5 py-2.5 rounded-lg font-medium inline-block mt-4">
-            <i class="bi bi-book me-1"></i>Ver Mis Cursos
-        </a>
-    </div>
+    {% url 'usuarios:mis_cursos' as mis_cursos_url %}
+    {% include 'partials/empty_state.html' with illustration_path='img/illustrations/empty-certificates.svg' title='No tienes cursos completados' description='Completa tus cursos y evaluaciones para obtener certificados.' action_url=mis_cursos_url action_text='Ver Mis Cursos' %}
     {% endif %}
 </div>
 {% endblock %}

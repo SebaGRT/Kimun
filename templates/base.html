@@ -30,6 +30,7 @@
                 },
             };
         </script>
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
         <style>
             body {
                 font-family: "Inter", sans-serif;
@@ -246,22 +247,22 @@
             <div class="max-w-6xl mx-auto px-4 md:px-6 py-4">
                 <div class="flex justify-between items-center">
                     <!-- Logo -->
-                    <a
+<a
                         href="{% url 'inicio' %}"
                         class="flex items-center gap-2 group"
                     >
                         <img
                             src="{% static 'alumco.png' %}"
                             alt="ALUMCO"
-                            class="h-12 md:h-16 w-auto rounded-lg"
-                            style="max-width: 350px"
+                            class="h-14 w-32 object-contain rounded-lg"
+                            style="max-width: 180px"
                         />
                     </a>
 
                     <!-- Mobile Menu Button -->
                     <button
                         id="mobile-menu-btn"
-                        class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700"
+                        class="xl:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700"
                         onclick="toggleMobileMenu()"
                     >
                         <i
@@ -271,13 +272,18 @@
                     </button>
 
                     <!-- Desktop Navigation -->
-                    <nav class="hidden md:flex items-center gap-8">
+                    <nav class="hidden xl:flex items-center gap-8">
                         <a
                             href="{% url 'cursos:curso_list' %}"
                             class="nav-link text-base font-medium {% if request.path|slice:':8' == '/cursos/' %}active{% endif %}"
                             >Cursos</a
                         >
-                        {% if user.rol in 'colaborador docente' %}
+                        <a
+                            href="{% url 'calendario:calendario' %}"
+                            class="nav-link text-base font-medium {% if request.path|slice:':12' == '/calendario/' %}active{% endif %}"
+                            >Calendario</a
+                        >
+                        {% if user.rol == 'colaborador' or user.rol == 'docente' %}
                         <a
                             href="{% url 'usuarios:mis_cursos' %}"
                             class="nav-link text-base font-medium {% if request.path|slice:':12' == '/mis-cursos' %}active{% endif %}"
@@ -307,10 +313,15 @@
                             >Reportes</a
                         >
                         {% endif %}
+                        <a
+                            href="{% url 'anuncios:anuncio_list' %}"
+                            class="nav-link text-base font-medium flex items-center gap-1 {% if '/anuncios' in request.path %}active{% endif %}"
+                            ><i class="bi bi-bell"></i> Anuncios</a
+                        >
                     </nav>
 
                     <!-- Right side: Theme toggle + User -->
-                    <div class="hidden md:flex items-center gap-4">
+                    <div class="hidden xl:flex items-center gap-4">
                         <!-- Theme Toggle -->
                         <button
                             onclick="toggleTheme()"
@@ -368,7 +379,7 @@
             <!-- Mobile Navigation (Hidden by default) -->
             <div
                 id="mobile-menu"
-                class="hidden md:hidden border-t"
+                class="hidden xl:hidden border-t"
                 style="
                     border-color: var(--color-border);
                     background-color: var(--color-surface);
@@ -381,6 +392,13 @@
                         style="color: var(--color-text)"
                     >
                         <i class="bi bi-book me-2"></i>Cursos
+                    </a>
+                    <a
+                        href="{% url 'calendario:calendario' %}"
+                        class="block py-3 px-4 rounded-lg {% if request.path|slice:':12' == '/calendario/' %}bg-gray-100 dark:bg-slate-700{% endif %}"
+                        style="color: var(--color-text)"
+                    >
+                        <i class="bi bi-calendar me-2"></i>Calendario
                     </a>
                     {% if user.rol in 'colaborador docente' %}
                     <a
@@ -421,6 +439,13 @@
                         <i class="bi bi-bar-chart me-2"></i>Reportes
                     </a>
                     {% endif %}
+                    <a
+                        href="{% url 'anuncios:anuncio_list' %}"
+                        class="block py-3 px-4 rounded-lg {% if '/anuncios' in request.path %}bg-gray-100 dark:bg-slate-700{% endif %}"
+                        style="color: var(--color-text)"
+                    >
+                        <i class="bi bi-bell me-2"></i>Anuncios
+                    </a>
                     <div
                         class="pt-2 border-t"
                         style="border-color: var(--color-border)"
@@ -466,14 +491,17 @@
 
         <!-- Main Content -->
         <main class="flex-1 max-w-6xl mx-auto px-6 py-8 w-full">
-            {% block breadcrumbs %}{% endblock %} {% if messages %} {% for
-            message in messages %}
-            <div
-                class="mb-4 p-4 rounded-lg {% if message.tags == 'success' %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200{% else %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200{% endif %}"
-            >
-                {{ message }}
-            </div>
-            {% endfor %} {% endif %} {% block content %}{% endblock %}
+            {% block breadcrumbs %}{% endblock %}
+            
+            {% if messages %}
+                {% for message in messages %}
+                <div class="mb-4 p-4 rounded-lg {% if message.tags == 'success' %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200{% else %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+            
+            {% block content %}{% endblock %}
         </main>
 
         <!-- Footer -->

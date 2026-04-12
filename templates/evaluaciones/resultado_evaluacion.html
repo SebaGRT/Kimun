@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% extends 'base.html' %}
+{% load evaluaciones_filters %}
 
 {% block title %}Resultado - {{ evaluacion.titulo }}{% endblock %}
 
@@ -30,7 +31,7 @@
         </div>
         
         <h1 class="text-3xl font-bold">
-            {% if intento.aprobado %}¡Felicitaciones!{% else %}No aprobbaste{% endif %}
+            {% if intento.aprobado %}¡Felicitaciones!{% else %}No aprobaste{% endif %}
         </h1>
         <p class="mt-2 text-lg" style="color: var(--color-text-secondary);">
             {{ evaluacion.titulo }}
@@ -71,35 +72,38 @@
         <h2 class="text-lg font-semibold mb-4">Resumen de Preguntas</h2>
         
         {% for pregunta in preguntas %}
+        {% with user_answer=intento.respuestas|get_item:pregunta.pk %}
+        {% with correct_alt=pregunta.alternativas.all|get_correct_alt %}
         <div class="mb-4 p-4 rounded-lg" style="background-color: var(--color-bg);">
             <div class="flex items-start gap-3">
                 <div class="w-6 h-6 rounded-full flex items-center justify-center text-sm
-                    {% for alt in pregunta.alternativas.all %}
-                    {% if alt.es_correcta %}
-                    {% if pregunta.pk|stringformat:"s" in request.POST.respuestas %}
-                    bg-green-100 text-green-600
-                    {% else %}
-                    bg-yellow-100 text-yellow-600
-                    {% endif %}
-                    {% endif %}
-                    {% endfor %}">
-                    {% for alt in pregunta.alternativas.all %}
-                    {% if alt.es_correcta %}
+                    {% if user_answer == correct_alt.pk|stringformat:"s" %}bg-green-100 text-green-600{% else %}bg-red-100 text-red-600{% endif %}">
+                    {% if user_answer == correct_alt.pk|stringformat:"s" %}
                     <i class="bi bi-check"></i>
+                    {% else %}
+                    <i class="bi bi-x"></i>
                     {% endif %}
-                    {% endfor %}
                 </div>
                 <div class="flex-1">
                     <p class="font-medium">{{ pregunta.texto }}</p>
                     <div class="mt-2 text-sm" style="color: var(--color-text-secondary);">
                         {% for alt in pregunta.alternativas.all %}
                         <div class="flex items-center gap-2">
-                            {% if alt.es_correcta %}
-                            <i class="bi bi-check-circle text-green-600"></i>
+                            {% if alt.pk|stringformat:"s" == user_answer %}
+                                {% if alt.es_correcta %}
+                                <i class="bi bi-check-circle text-green-600"></i>
+                                {% else %}
+                                <i class="bi bi-x-circle text-red-600"></i>
+                                {% endif %}
                             {% else %}
-                            <i class="bi bi-circle"></i>
+                                {% if alt.es_correcta %}
+                                <i class="bi bi-check-circle text-green-600"></i>
+                                {% else %}
+                                <i class="bi bi-circle"></i>
+                                {% endif %}
                             {% endif %}
-                            <span {% if alt.es_correcta %}class="text-green-600 font-medium"{% endif %}>
+                            <span {% if alt.es_correcta %}class="text-green-600 font-medium"{% endif %}
+                                  {% if alt.pk|stringformat:"s" == user_answer and not alt.es_correcta %}class="text-red-600"{% endif %}>
                                 {{ alt.texto }}
                             </span>
                         </div>
@@ -108,6 +112,8 @@
                 </div>
             </div>
         </div>
+        {% endwith %}
+        {% endwith %}
         {% endfor %}
     </div>
 

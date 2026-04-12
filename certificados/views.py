@@ -1,28 +1,27 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import FileResponse, Http404
+from django.http import FileResponse, Http404, HttpResponseForbidden
+from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
 from django.core.paginator import Paginator
-from io import BytesIO
 from weasyprint import HTML
 from .models import Certificado
 from cursos.models import Curso, InscripcionCurso
+from usuarios.decorators import admin_required, docente_or_admin_required
 
 
 @login_required
+@admin_required
 def certificado_list(request):
-    if request.user.rol == 'admin':
-        certificados = Certificado.objects.select_related('usuario', 'curso').order_by('-fecha_emision')
-        paginator = Paginator(certificados, 20)
-        page_number = request.GET.get('page', 1)
-        certificados_page = paginator.get_page(page_number)
-        return render(request, 'certificados/admin_certificado_list.html', {
-            'certificados': certificados_page,
-            'page_obj': certificados_page
-        })
-    else:
-        return redirect('certificados:mis_certificados')
+    certificados = Certificado.objects.select_related('usuario', 'curso').order_by('-fecha_emision')
+    paginator = Paginator(certificados, 20)
+    page_number = request.GET.get('page', 1)
+    certificados_page = paginator.get_page(page_number)
+    return render(request, 'certificados/admin_certificado_list.html', {
+        'certificados': certificados_page,
+        'page_obj': certificados_page
+    })
 
 
 @login_required
@@ -56,12 +55,12 @@ def mis_certificados(request):
 
 
 @login_required
+@docente_or_admin_required
 def generar_certificado(request, curso_pk):
     curso = get_object_or_404(Curso, pk=curso_pk)
     
-    if request.user.rol not in ['admin', 'docente']:
-        messages.error(request, 'No tienes permisos para generar certificados.')
-        return redirect('cursos:curso_detail', pk=curso_pk)
+    if request.user.rol == 'docente' and curso.docente_creador != request.user:
+        return HttpResponseForbidden('No puedes generar certificados para este curso.')
     
     try:
         from django.utils import timezone
@@ -74,12 +73,11 @@ def generar_certificado(request, curso_pk):
         })
         
         pdf_file = HTML(string=html_string).write_pdf()
-        pdf_buffer = BytesIO(pdf_file)
         
         Certificado.objects.create(
             usuario=request.user,
             curso=curso,
-            archivo_pdf=pdf_buffer
+            archivo_pdf=ContentFile(pdf_file)
         )
         
         for inscripcion in InscripcionCurso.objects.filter(curso=curso):
@@ -91,11 +89,10 @@ def generar_certificado(request, curso_pk):
                     break
             
             if tiene_certificado:
-                pdf_copy = BytesIO(pdf_file)
                 Certificado.objects.get_or_create(
                     usuario=inscripcion.usuario,
                     curso=curso,
-                    defaults={'archivo_pdf': pdf_copy}
+                    defaults={'archivo_pdf': ContentFile(pdf_file)}
                 )
         
         messages.success(request, 'Certificado generado exitosamente.')
@@ -122,11 +119,8 @@ def descargar_certificado(request, pk):
 
 
 @login_required
+@admin_required
 def eliminar_certificado(request, pk):
-    if request.user.rol != 'admin':
-        messages.error(request, 'No tienes permisos para eliminar certificados.')
-        return redirect('certificados:certificado_list')
-    
     certificado = get_object_or_404(Certificado, pk=pk)
     
     if request.method == 'POST':

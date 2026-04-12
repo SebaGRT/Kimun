@@ -3,7 +3,7 @@
 {% block title %}Agregar Material - Kimün{% endblock %}
 
 {% block breadcrumbs %}
-<nav class="text-sm mb-4" style="color: var(--color-text-secondary);">
+<nav class="text-sm mb-4 text-secondary">
     <a href="{% url 'inicio' %}">Inicio</a>
     <i class="bi bi-chevron-right text-xs mx-1"></i>
     <a href="{% url 'cursos:curso_list' %}">Cursos</a>
@@ -17,14 +17,14 @@
 {% block content %}
 <!-- Header -->
 <div class="mb-6">
-    <a href="{% url 'cursos:curso_detail' pk=curso.id %}" class="text-sm mb-2 inline-block" style="color: var(--color-text-secondary);">
+    <a href="{% url 'cursos:curso_detail' pk=curso.id %}" class="text-sm mb-2 inline-block text-secondary">
         <i class="bi bi-arrow-left me-1"></i> Volver al curso
     </a>
-    <h1 class="text-2xl font-bold" style="color: var(--color-text);">
-        <i class="bi bi-folder-plus me-2" style="color: var(--color-primary);"></i>
+    <h1 class="section-title">
+        <i class="bi bi-folder-plus me-2 text-primary"></i>
         Agregar Material
     </h1>
-    <p class="mt-1" style="color: var(--color-text-secondary);">
+    <p class="mt-1 text-secondary">
         Curso: {{ curso.titulo }}
     </p>
 </div>
@@ -36,71 +36,50 @@
         
         <!-- Título -->
         <div class="mb-6">
-            <label class="block text-base font-medium mb-2" style="color: var(--color-text);">
+            <label class="block text-base font-medium mb-2">
                 Título del Material <span class="text-red-500">*</span>
             </label>
-            <input type="text" name="titulo" required 
-                class="input-field w-full px-4 py-3 rounded-xl text-lg"
-                placeholder="Ej: Manual de Primeros Auxilios">
+            {{ form.titulo }}
+            {% if form.titulo.errors %}
+            <p class="mt-2 text-sm text-red-500">{{ form.titulo.errors.0 }}</p>
+            {% endif %}
         </div>
         
         <!-- Tipo -->
         <div class="mb-6">
-            <label class="block text-base font-medium mb-2" style="color: var(--color-text);">
+            <label class="block text-base font-medium mb-2">
                 Tipo de Material <span class="text-red-500">*</span>
             </label>
-            <div class="grid grid-cols-2 gap-4">
-                <label class="flex items-center p-4 rounded-xl border-2 cursor-pointer transition-colors"
-                       style="border-color: var(--color-border);">
-                    <input type="radio" name="tipo" value="pdf" checked
-                        class="w-5 h-5" style="accent-color: var(--color-primary);">
-                    <div class="ml-3">
-                        <span class="font-medium" style="color: var(--color-text);">
-                            <i class="bi bi-file-earmark-pdf me-2"></i>PDF
-                        </span>
-                        <p class="text-sm" style="color: var(--color-text-secondary);">
-                            Subir archivo PDF
-                        </p>
-                    </div>
-                </label>
-                <label class="flex items-center p-4 rounded-xl border-2 cursor-pointer transition-colors"
-                       style="border-color: var(--color-border);">
-                    <input type="radio" name="tipo" value="video"
-                        class="w-5 h-5" style="accent-color: var(--color-primary);">
-                    <div class="ml-3">
-                        <span class="font-medium" style="color: var(--color-text);">
-                            <i class="bi bi-play-circle me-2"></i>Video URL
-                        </span>
-                        <p class="text-sm" style="color: var(--color-text-secondary);">
-                            Enlace a video
-                        </p>
-                    </div>
-                </label>
-            </div>
+            {{ form.tipo }}
+            {% if form.tipo.errors %}
+            <p class="mt-2 text-sm text-red-500">{{ form.tipo.errors.0 }}</p>
+            {% endif %}
         </div>
         
         <!-- Archivo (para PDF) -->
         <div class="mb-6" id="archivo-field">
-            <label class="block text-base font-medium mb-2" style="color: var(--color-text);">
+            <label class="block text-base font-medium mb-2">
                 Archivo PDF
             </label>
-            <input type="file" name="archivo" accept=".pdf"
-                class="input-field w-full px-4 py-3 rounded-xl text-lg"
-                style="padding-top: 0.75rem;">
-            <p class="mt-2 text-sm" style="color: var(--color-text-secondary);">
+            {{ form.archivo }}
+            {% if form.archivo.errors %}
+            <p class="mt-2 text-sm text-red-500">{{ form.archivo.errors.0 }}</p>
+            {% endif %}
+            <p class="mt-2 text-sm text-secondary">
                 Máximo 50MB. Formato: PDF
             </p>
         </div>
         
         <!-- URL (para Video) -->
         <div class="mb-6" id="url-field" style="display: none;">
-            <label class="block text-base font-medium mb-2" style="color: var(--color-text);">
+            <label class="block text-base font-medium mb-2">
                 URL del Video
             </label>
-            <input type="url" name="url" 
-                class="input-field w-full px-4 py-3 rounded-xl text-lg"
-                placeholder="https://www.youtube.com/watch?v=...">
-            <p class="mt-2 text-sm" style="color: var(--color-text-secondary);">
+            {{ form.url }}
+            {% if form.url.errors %}
+            <p class="mt-2 text-sm text-red-500">{{ form.url.errors.0 }}</p>
+            {% endif %}
+            <p class="mt-2 text-sm text-secondary">
                 Puede ser YouTube, Vimeo, o cualquier URL de video pública
             </p>
         </div>
@@ -118,20 +97,22 @@
 </div>
 
 <script>
-    // Toggle between PDF and Video fields
-    document.querySelectorAll('input[name="tipo"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            const archivoField = document.getElementById('archivo-field');
-            const urlField = document.getElementById('url-field');
-            
-            if (this.value === 'pdf') {
-                archivoField.style.display = 'block';
-                urlField.style.display = 'none';
-            } else {
-                archivoField.style.display = 'none';
-                urlField.style.display = 'block';
-            }
-        });
-    });
+    
+    const tipoSelect = document.querySelector('select[name="tipo"]');
+    const archivoField = document.getElementById('archivo-field');
+    const urlField = document.getElementById('url-field');
+
+    function toggleFields() {
+        if (tipoSelect.value === 'pdf') {
+            archivoField.style.display = 'block';
+            urlField.style.display = 'none';
+        } else {
+            archivoField.style.display = 'none';
+            urlField.style.display = 'block';
+        }
+    }
+
+    tipoSelect.addEventListener('change', toggleFields);
+    toggleFields();
 </script>
 {% endblock %}

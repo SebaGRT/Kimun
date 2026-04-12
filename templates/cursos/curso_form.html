@@ -3,7 +3,7 @@
 {% block title %}{% if accion == 'crear' %}Crear Curso{% else %}Editar Curso{% endif %} - Kimün{% endblock %}
 
 {% block breadcrumbs %}
-<nav class="text-sm mb-4" style="color: var(--color-text-secondary);">
+<nav class="text-sm mb-4 text-secondary">
     <a href="{% url 'inicio' %}">Inicio</a>
     <i class="bi bi-chevron-right text-xs mx-1"></i>
     <a href="{% url 'cursos:curso_list' %}">Cursos</a>
@@ -15,11 +15,11 @@
 {% block content %}
 <!-- Header -->
 <div class="mb-6">
-    <h1 class="text-2xl font-bold" style="color: var(--color-text);">
-        <i class="bi bi-book me-2" style="color: var(--color-primary);"></i>
+    <h1 class="section-title">
+        <i class="bi bi-book me-2 text-primary"></i>
         {% if accion == 'crear' %}Crear Nuevo Curso{% else %}Editar Curso{% endif %}
     </h1>
-    <p class="mt-1" style="color: var(--color-text-secondary);">
+    <p class="mt-1 text-secondary">
         Completa los datos del curso de capacitación
     </p>
 </div>
@@ -31,77 +31,61 @@
         
         <!-- Título -->
         <div class="mb-6">
-            <label class="block text-base font-medium mb-2" style="color: var(--color-text);">
+            <label class="block text-base font-medium mb-2">
                 Título del Curso <span class="text-red-500">*</span>
             </label>
-            <input type="text" name="titulo" required 
-                class="input-field w-full px-4 py-3 rounded-xl text-lg"
-                placeholder="Ej: Primeros Auxilios"
-                value="{{ curso.titulo|default:'' }}">
+            {{ form.titulo }}
+            {% if form.titulo.errors %}
+            <p class="mt-2 text-sm text-red-500">{{ form.titulo.errors.0 }}</p>
+            {% endif %}
         </div>
         
         <!-- Descripción -->
         <div class="mb-6">
-            <label class="block text-base font-medium mb-2" style="color: var(--color-text);">
+            <label class="block text-base font-medium mb-2">
                 Descripción <span class="text-red-500">*</span>
             </label>
-            <textarea name="descripcion" rows="4" required
-                class="input-field w-full px-4 py-3 rounded-xl text-lg"
-                placeholder="Describe el contenido y objetivos del curso...">{{ curso.descripcion|default:'' }}</textarea>
+            {{ form.descripcion }}
+            {% if form.descripcion.errors %}
+            <p class="mt-2 text-sm text-red-500">{{ form.descripcion.errors.0 }}</p>
+            {% endif %}
         </div>
         
         <!-- Categoría -->
         <div class="mb-6">
-            <label class="block text-base font-medium mb-2" style="color: var(--color-text);">
+            <label class="block text-base font-medium mb-2">
                 <i class="bi bi-tag me-2"></i>Categoría (opcional)
             </label>
-            <select name="categoria" class="input-field w-full px-4 py-3 rounded-xl">
-                <option value="">Sin categoría</option>
-                {% for cat in categorias %}
-                <option value="{{ cat.pk }}" {% if curso.categoria_id == cat.pk %}selected{% endif %}>
-                    {{ cat.nombre }}
-                </option>
-                {% endfor %}
-            </select>
+            {{ form.categoria }}
+            {% if form.categoria.errors %}
+            <p class="mt-2 text-sm text-red-500">{{ form.categoria.errors.0 }}</p>
+            {% endif %}
         </div>
         
         <!-- Estado -->
-        <div class="mb-8">
-            <label class="block text-base font-medium mb-2" style="color: var(--color-text);">
+        <div class="mb-6">
+            <label class="block text-base font-medium mb-2">
                 Estado
             </label>
-            <div class="flex gap-4">
-                <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" name="estado" value="borrador" 
-                        {% if curso.estado == 'borrador' or not curso %}checked{% endif %}
-                        class="w-5 h-5" style="accent-color: var(--color-primary);">
-                    <span style="color: var(--color-text);">
-                        <i class="bi bi-pencil me-1"></i>Borrador
-                    </span>
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" name="estado" value="publicado" 
-                        {% if curso.estado == 'publicado' %}checked{% endif %}
-                        class="w-5 h-5" style="accent-color: var(--color-success);">
-                    <span style="color: var(--color-text);">
-                        <i class="bi bi-globe me-1"></i>Publicado
-                    </span>
-                </label>
-            </div>
-            <p class="mt-2 text-sm" style="color: var(--color-text-secondary);">
+            {{ form.estado }}
+            {% if form.estado.errors %}
+            <p class="mt-2 text-sm text-red-500">{{ form.estado.errors.0 }}</p>
+            {% endif %}
+            <p class="mt-2 text-sm text-secondary">
                 Los cursos en borrador solo son visibles para ti. Los publicados son visibles para todos.
             </p>
         </div>
         
         <!-- Fecha límite -->
-        <div class="mb-8">
-            <label class="block text-base font-medium mb-2" style="color: var(--color-text);">
+        <div class="mb-6">
+            <label class="block text-base font-medium mb-2">
                 <i class="bi bi-calendar-event me-2"></i>Fecha límite (opcional)
             </label>
-            <input type="datetime-local" name="fecha_limite" 
-                class="input-field w-full px-4 py-3 rounded-xl"
-                {% if curso.fecha_limite %}value="{{ curso.fecha_limite|date:'Y-m-d H:i' }}"{% endif %}>
-            <p class="mt-2 text-sm" style="color: var(--color-text-secondary);">
+            {{ form.fecha_limite }}
+            {% if form.fecha_limite.errors %}
+            <p class="mt-2 text-sm text-red-500">{{ form.fecha_limite.errors.0 }}</p>
+            {% endif %}
+            <p class="mt-2 text-sm text-secondary">
                 Define una fecha límite para completar el curso. Los usuarios inscritos recibirán recordatorios automáticos.
             </p>
         </div>
