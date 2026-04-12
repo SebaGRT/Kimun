@@ -438,7 +438,7 @@ Max Concurrent: 3 (Wave 3)
   - Files: `tools/` (new), 10 removed from root, `.gitignore` (updated)
   - Pre-commit: `python manage.py test --verbosity=0`
 
-- [ ] 4. Create Stable Branch from Main
+- [x] 4. Create Stable Branch from Main
 
   **What to do**:
   - Create `stable` branch from current `main`: `git branch stable main`
@@ -501,7 +501,7 @@ Max Concurrent: 3 (Wave 3)
 
   **Commit**: NO (branch operation only)
 
-- [ ] 5. Create Development Branch from Main
+- [x] 5. Create Development Branch from Main
 
   **What to do**:
   - Create `development` branch from current `main`: `git branch development main`
@@ -568,7 +568,7 @@ Max Concurrent: 3 (Wave 3)
 
   **Commit**: NO (branch operation only)
 
-- [ ] 6. Update README.md with Architecture Section
+- [x] 6. Update README.md with Architecture Section
 
   **What to do**:
   - Add an "Arquitectura" section to `README.md` (in Spanish) after the existing content
