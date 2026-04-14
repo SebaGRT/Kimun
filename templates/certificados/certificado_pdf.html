@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <title>Certificado - {{ curso.titulo }}</title>
     <style>
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
+        
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Open+Sans:wght@300;400;600&display=swap');
         
         * {
@@ -14,9 +19,8 @@
         
         body {
             font-family: 'Open Sans', sans-serif;
-            width: 842px;
-            height: 595px;
-            /* A subtle off-white/cream background for the paper */
+            width: 297mm;
+            height: 210mm;
             background-color: #FDFBF7;
             display: flex;
             justify-content: center;
