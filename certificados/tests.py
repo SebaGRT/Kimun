@@ -35,7 +35,7 @@ class CertificadoModelTests(TestCase):
         self.assertIsNotNone(self.certificado.fecha_emision)
 
     def test_certificado_str_method(self):
-        expected = f'Certificado {self.colaborador} - Curso Test'
+        expected = f'Certificado {self.colaborador} - Curso Test (Pendiente)'
         self.assertEqual(str(self.certificado), expected)
 
     def test_certificado_codigo_unico(self):
@@ -48,6 +48,20 @@ class CertificadoModelTests(TestCase):
     def test_certificado_related_names(self):
         self.assertEqual(self.colaborador.certificados.count(), 1)
         self.assertEqual(self.curso.certificados.count(), 1)
+
+    def test_certificado_default_estado(self):
+        cert = Certificado.objects.create(usuario=self.colaborador, curso=self.curso)
+        self.assertEqual(cert.estado, 'pendiente')
+
+    def test_certificado_estado_choices(self):
+        choices = dict(Certificado.ESTADO_CHOICES)
+        self.assertIn('pendiente', choices)
+        self.assertIn('aprobado', choices)
+        self.assertIn('rechazado', choices)
+
+    def test_certificado_str_includes_estado(self):
+        cert = Certificado.objects.create(usuario=self.colaborador, curso=self.curso)
+        self.assertIn('Pendiente', str(cert))
 
 
 class CertificadoListViewTests(TestCase):
