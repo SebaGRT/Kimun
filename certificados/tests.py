@@ -149,7 +149,8 @@ class DescargarCertificadoViewTests(TestCase):
         self.certificado = Certificado.objects.create(
             usuario=self.colaborador,
             curso=self.curso,
-            archivo_pdf=pdf_content
+            archivo_pdf=pdf_content,
+            estado='aprobado'
         )
 
     def test_descargar_requires_login(self):
@@ -173,6 +174,20 @@ class DescargarCertificadoViewTests(TestCase):
         self.client.login(username='colab2', password='testpass')
         response = self.client.get(reverse('certificados:descargar_certificado', kwargs={'pk': self.certificado.pk}))
         self.assertEqual(response.status_code, 302)
+
+    def test_descargar_pending_certificado_blocked(self):
+        cert = Certificado.objects.create(usuario=self.colaborador, curso=self.curso, estado='pendiente')
+        self.client.login(username='colaborador', password='testpass')
+        response = self.client.get(reverse('certificados:descargar_certificado', args=[cert.pk]))
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('certificados:mis_certificados'))
+
+    def test_descargar_rejected_certificado_blocked(self):
+        cert = Certificado.objects.create(usuario=self.colaborador, curso=self.curso, estado='rechazado')
+        self.client.login(username='colaborador', password='testpass')
+        response = self.client.get(reverse('certificados:descargar_certificado', args=[cert.pk]))
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('certificados:mis_certificados'))
 
 
 class VerificarCertificadoViewTests(TestCase):

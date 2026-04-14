@@ -47,7 +47,7 @@ def mis_certificados(request):
         disponibles.append({
             'curso': inscripcion.curso,
             'certificado': cert,
-            'aprobado': True
+            'estado': cert.estado if cert else None
         })
     
     context = {'certificados': disponibles}
@@ -92,7 +92,7 @@ def generar_certificado(request, curso_pk):
                 Certificado.objects.get_or_create(
                     usuario=inscripcion.usuario,
                     curso=curso,
-                    defaults={'archivo_pdf': ContentFile(pdf_file)}
+                    defaults={'estado': 'pendiente'}
                 )
         
         messages.success(request, 'Certificado generado exitosamente.')
@@ -110,6 +110,10 @@ def descargar_certificado(request, pk):
     
     if request.user != certificado.usuario and request.user.rol != 'admin':
         messages.error(request, 'No tienes permisos para descargar este certificado.')
+        return redirect('certificados:mis_certificados')
+    
+    if certificado.estado != 'aprobado':
+        messages.error(request, 'El certificado aún no ha sido aprobado.')
         return redirect('certificados:mis_certificados')
     
     if certificado.archivo_pdf:
@@ -132,7 +136,15 @@ def eliminar_certificado(request, pk):
 
 def verificar_certificado(request, codigo):
     certificado = get_object_or_404(Certificado, codigo_verificacion=codigo)
-    context = {'certificado': certificado, 'valido': True}
+    context = {'certificado': certificado}
+    if certificado.estado == 'aprobado':
+        context['valido'] = True
+    elif certificado.estado == 'rechazado':
+        context['valido'] = False
+        context['razon'] = 'Este certificado ha sido rechazado.'
+    else:
+        context['valido'] = False
+        context['razon'] = 'Este certificado aún no ha sido aprobado.'
     return render(request, 'certificados/verificar_certificado.html', context)
 
 
