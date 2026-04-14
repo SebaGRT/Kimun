@@ -200,3 +200,41 @@ class VerificarCertificadoViewTests(TestCase):
             'codigo': self.certificado.codigo_verificacion
         }))
         self.assertEqual(response.status_code, 200)
+
+
+class CertificadosPendientesViewTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.admin = Usuario.objects.create_user(username='admin', password='testpass', rol='admin', rut='11111111-1')
+        self.docente = Usuario.objects.create_user(username='docente', password='testpass', rol='docente', rut='22222222-2')
+        self.colaborador = Usuario.objects.create_user(username='colaborador', password='testpass', rol='colaborador', rut='33333333-3')
+        self.curso = Curso.objects.create(titulo='Test Curso', descripcion='...', estado='publicado', docente_creador=self.docente)
+
+    def test_admin_sees_all_pending(self):
+        self.client.login(username='admin', password='testpass')
+        response = self.client.get(reverse('certificados:certificados_pendientes'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_docente_sees_own_pending(self):
+        self.client.login(username='docente', password='testpass')
+        response = self.client.get(reverse('certificados:certificados_pendientes'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_colaborador_blocked(self):
+        self.client.login(username='colaborador', password='testpass')
+        response = self.client.get(reverse('certificados:certificados_pendientes'))
+        self.assertEqual(response.status_code, 403)
+
+    def test_aprobar_changes_estado(self):
+        cert = Certificado.objects.create(usuario=self.colaborador, curso=self.curso, estado='pendiente')
+        self.client.login(username='docente', password='testpass')
+        response = self.client.post(reverse('certificados:aprobar_certificado', args=[cert.pk]))
+        cert.refresh_from_db()
+        self.assertEqual(cert.estado, 'aprobado')
+
+    def test_rechazar_changes_estado(self):
+        cert = Certificado.objects.create(usuario=self.colaborador, curso=self.curso, estado='pendiente')
+        self.client.login(username='docente', password='testpass')
+        response = self.client.post(reverse('certificados:rechazar_certificado', args=[cert.pk]))
+        cert.refresh_from_db()
+        self.assertEqual(cert.estado, 'rechazado')

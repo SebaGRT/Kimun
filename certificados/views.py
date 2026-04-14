@@ -134,3 +134,79 @@ def verificar_certificado(request, codigo):
     certificado = get_object_or_404(Certificado, codigo_verificacion=codigo)
     context = {'certificado': certificado, 'valido': True}
     return render(request, 'certificados/verificar_certificado.html', context)
+
+
+@login_required
+@docente_or_admin_required
+def certificados_pendientes(request):
+    """Show pending certificates for approval."""
+    if request.user.rol == 'admin':
+        certificados = Certificado.objects.filter(
+            estado='pendiente'
+        ).select_related('usuario', 'curso')
+    else:
+        certificados = Certificado.objects.filter(
+            estado='pendiente',
+            curso__docente_creador=request.user
+        ).select_related('usuario', 'curso')
+
+    return render(request, 'certificados/certificados_pendientes.html', {
+        'certificados': certificados
+    })
+
+
+@login_required
+@docente_or_admin_required
+def aprobar_certificado(request, pk):
+    """Approve a pending certificate."""
+    certificado = get_object_or_404(Certificado, pk=pk)
+
+    # Permission check: docente can only approve their own course certs
+    if request.user.rol == 'docente' and certificado.curso.docente_creador != request.user:
+        return HttpResponseForbidden('No tienes permisos para aprobar este certificado.')
+
+    if request.method == 'POST':
+        from django.utils import timezone
+        certificado.estado = 'aprobado'
+        certificado.fecha_aprobacion = timezone.now()
+        certificado.aprobado_por = request.user
+        certificado.save()
+        messages.success(request, f'Certificado de {certificado.usuario.get_full_name()} aprobado.')
+
+    return redirect('certificados:certificados_pendientes')
+
+
+@login_required
+@docente_or_admin_required
+def rechazar_certificado(request, pk):
+    """Reject a pending certificate."""
+    certificado = get_object_or_404(Certificado, pk=pk)
+
+    # Permission check
+    if request.user.rol == 'docente' and certificado.curso.docente_creador != request.user:
+        return HttpResponseForbidden('No tienes permisos para rechazar este certificado.')
+
+    if request.method == 'POST':
+        certificado.estado = 'rechazado'
+        certificado.save()
+        messages.warning(request, f'Certificado de {certificado.usuario.get_full_name()} rechazado.')
+
+    return redirect('certificados:certificados_pendientes')
+
+
+@login_required
+@docente_or_admin_required
+def resetear_certificado(request, pk):
+    """Reset a rejected certificate back to pending."""
+    certificado = get_object_or_404(Certificado, pk=pk)
+
+    # Permission check
+    if request.user.rol == 'docente' and certificado.curso.docente_creador != request.user:
+        return HttpResponseForbidden('No tienes permisos para resetear este certificado.')
+
+    if request.method == 'POST':
+        certificado.estado = 'pendiente'
+        certificado.save()
+        messages.info(request, f'Certificado de {certificado.usuario.get_full_name()} reseteado a pendiente.')
+
+    return redirect('certificados:certificados_pendientes')
