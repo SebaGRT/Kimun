@@ -329,7 +329,12 @@ def tomar_evaluacion(request, pk):
 @login_required
 def resultado_evaluacion(request, pk, intento_pk):
     evaluacion = get_object_or_404(Evaluacion, pk=pk)
-    intento = get_object_or_404(IntentoEvaluacion, pk=intento_pk, usuario=request.user, evaluacion=evaluacion)
+    
+    try:
+        intento = IntentoEvaluacion.objects.get(pk=intento_pk, usuario=request.user, evaluacion=evaluacion)
+    except IntentoEvaluacion.DoesNotExist:
+        messages.error(request, 'No se encontró el intento de evaluación.')
+        return redirect('evaluaciones:evaluacion_list', curso_pk=evaluacion.curso.pk)
 
     preguntas = evaluacion.preguntas.prefetch_related('alternativas').all()
 
