@@ -472,15 +472,33 @@ class CursoListViewTests(TestCase):
     def test_curso_list_colaborador_only_publicados(self):
         self.client.login(username='colaborador', password='testpass')
         response = self.client.get(reverse('cursos:curso_list'))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Curso Publicado')
-        self.assertNotContains(response, 'Curso Borrador')
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('usuarios:mis_cursos'))
 
     def test_curso_list_search_filter(self):
         self.client.login(username='admin', password='testpass')
         response = self.client.get(reverse('cursos:curso_list') + '?q=Publicado')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Curso Publicado')
+
+    def test_curso_list_colaborador_redirected(self):
+        """Colaborador should be redirected to mis_cursos"""
+        self.client.login(username='colaborador', password='testpass')
+        response = self.client.get(reverse('cursos:curso_list'))
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('usuarios:mis_cursos'))
+
+    def test_curso_list_admin_not_redirected(self):
+        """Admin should see curso_list normally"""
+        self.client.login(username='admin', password='testpass')
+        response = self.client.get(reverse('cursos:curso_list'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_curso_list_docente_not_redirected(self):
+        """Docente should see curso_list normally"""
+        self.client.login(username='docente', password='testpass')
+        response = self.client.get(reverse('cursos:curso_list'))
+        self.assertEqual(response.status_code, 200)
 
 
 class CursoDetailViewTests(TestCase):

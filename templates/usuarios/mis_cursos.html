@@ -164,8 +164,8 @@
 </div>
 {% else %}
 <!-- Estado vacío para colaborador -->
-{% url 'cursos:curso_list' as list_url %}
-{% include 'partials/empty_state.html' with illustration_path='img/illustrations/empty-courses.svg' title='No tienes cursos asignados' description='Contacta a tu administrador para que te asigne cursos de capacitación.' action_url=list_url action_text='Ver cursos disponibles' %}
+{% url 'usuarios:mis_cursos' as mis_cursos_url %}
+{% include 'partials/empty_state.html' with illustration_path='img/illustrations/empty-courses.svg' title='No tienes cursos asignados' description='Contacta a tu administrador para que te asigne cursos de capacitación.' action_url=mis_cursos_url action_text='Actualizar' %}
 {% endif %}
 
 <style>

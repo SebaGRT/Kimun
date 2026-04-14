@@ -13,6 +13,8 @@ from usuarios.decorators import admin_required, docente_or_admin_required, cours
 
 @login_required
 def curso_list(request):
+    if request.user.rol == 'colaborador':
+        return redirect('usuarios:mis_cursos')
     query = request.GET.get('q', '')
     estado_filter = request.GET.get('estado', '')
     categoria_filter = request.GET.get('categoria', '')
