@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Certificado - {{ curso.titulo }}</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Open+Sans:wght@300;400;600&display=swap');
         
         * {
             margin: 0;
@@ -16,159 +16,258 @@
             font-family: 'Open Sans', sans-serif;
             width: 842px;
             height: 595px;
-            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+            /* A subtle off-white/cream background for the paper */
+            background-color: #FDFBF7;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 40px;
+            padding: 25px;
         }
         
-        .certificate {
-            background: white;
+        .certificate-wrapper {
+            background: #FFFFFF;
             width: 100%;
             height: 100%;
-            padding: 60px;
-            border: 8px solid #f57c00;
+            padding: 12px;
+            /* Outer navy border */
+            border: 2px solid #0F2439;
             position: relative;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
         }
-        
-        .header {
+
+        .certificate-inner {
+            width: 100%;
+            height: 100%;
+            border: 3px solid #D4AF37; /* Gold inner border */
+            padding: 40px 50px;
+            position: relative;
             text-align: center;
-            margin-bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Ornamental Corners using CSS */
+        .corner {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 2px solid #0F2439;
+        }
+        .corner-tl { top: -6px; left: -6px; border-right: none; border-bottom: none; }
+        .corner-tr { top: -6px; right: -6px; border-left: none; border-bottom: none; }
+        .corner-bl { bottom: -6px; left: -6px; border-right: none; border-top: none; }
+        .corner-br { bottom: -6px; right: -6px; border-left: none; border-top: none; }
+
+        .header {
+            margin-bottom: 15px;
         }
         
-        .logo {
-            font-size: 48px;
-            color: #1e3a5f;
-            margin-bottom: 10px;
+        .org-logo {
+            margin: 0 auto 15px auto;
+            width: 60px;
+            height: 60px;
+        }
+        
+        .org-name-top {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            color: #D4AF37;
+            text-transform: uppercase;
+            margin-bottom: 20px;
         }
         
         .title {
             font-family: 'Playfair Display', serif;
-            font-size: 42px;
+            font-size: 46px;
             font-weight: 700;
-            color: #1e3a5f;
-            margin-bottom: 10px;
+            color: #0F2439;
             text-transform: uppercase;
-            letter-spacing: 4px;
+            letter-spacing: 6px;
+            margin-bottom: 5px;
         }
         
         .subtitle {
-            font-size: 18px;
-            color: #6c757d;
-            margin-bottom: 30px;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 20px;
+            color: #555555;
+            margin-bottom: 25px;
         }
         
         .content {
-            text-align: center;
-            margin: 40px 0;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .certifies-text {
+            font-size: 15px;
+            color: #666666;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
         }
         
         .student-name {
             font-family: 'Playfair Display', serif;
-            font-size: 32px;
+            font-size: 40px;
             font-weight: 700;
-            color: #1e3a5f;
-            margin: 20px 0;
-            text-decoration: underline;
-            text-decoration-color: #f57c00;
+            color: #0F2439;
+            margin: 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #D4AF37;
+            display: inline-block;
+            min-width: 60%;
         }
         
-        .course-info {
-            font-size: 18px;
-            color: #495057;
-            margin: 20px 0;
+        .course-text {
+            font-size: 15px;
+            color: #666666;
+            margin: 20px 0 10px 0;
         }
         
         .course-title {
-            font-size: 24px;
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
             font-weight: 600;
-            color: #1e3a5f;
-            margin: 10px 0;
-        }
-        
-        .date {
-            font-size: 14px;
-            color: #6c757d;
-            margin-top: 30px;
+            color: #0F2439;
+            margin: 0 auto;
+            max-width: 80%;
+            line-height: 1.3;
         }
         
         .footer {
             display: flex;
             justify-content: space-between;
-            margin-top: 50px;
-            padding-top: 30px;
-            border-top: 2px solid #dee2e6;
+            align-items: flex-end;
+            margin-top: 30px;
+            padding: 0 40px;
         }
         
-        .signature {
+        .signature-block {
             text-align: center;
+            width: 220px;
         }
         
         .signature-line {
-            width: 200px;
-            border-bottom: 2px solid #1e3a5f;
-            margin-bottom: 10px;
+            border-bottom: 1px solid #0F2439;
+            margin-bottom: 8px;
+            height: 40px; /* Space for a signature */
         }
         
         .signature-name {
             font-size: 14px;
             font-weight: 600;
-            color: #1e3a5f;
+            color: #0F2439;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .signature-role {
             font-size: 12px;
-            color: #6c757d;
+            color: #666666;
+            margin-top: 3px;
         }
         
-        .org-name {
-            font-family: 'Playfair Display', serif;
-            font-size: 20px;
-            font-weight: 700;
-            color: #1e3a5f;
-            margin-bottom: 5px;
+        .date-block {
+            text-align: center;
+            width: 220px;
+        }
+        
+        .date-text {
+            font-size: 14px;
+            color: #0F2439;
+            font-weight: 600;
+            border-bottom: 1px solid #0F2439;
+            padding-bottom: 4px;
+            margin-bottom: 8px;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .seal {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
         }
         
         .verification-code {
             position: absolute;
-            bottom: 20px;
-            right: 30px;
-            font-size: 10px;
-            color: #adb5bd;
+            bottom: 15px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 9px;
+            color: #999999;
+            font-family: monospace;
+            letter-spacing: 1px;
         }
     </style>
 </head>
 <body>
-    <div class="certificate">
-        <div class="header">
-            <div class="logo">🎓</div>
-            <div class="title">Certificado</div>
-            <div class="subtitle">Otorgado por ALUMCO - Adultos Mayores en Confianza</div>
-        </div>
-        
-        <div class="content">
-            <p style="font-size: 16px; color: #495057;">Se certifica que</p>
-            <div class="student-name">{{ nombre_usuario|default:"ONG ALUMCO" }}</div>
-            <p style="font-size: 16px; color: #495057;">ha completado satisfactoriamente el curso</p>
-            <div class="course-title">{{ curso.titulo }}</div>
-            <div class="date">Emitido el {{ fecha }}</div>
-        </div>
-        
-        <div class="footer">
-            <div class="signature">
-                <div class="signature-line"></div>
-                <div class="signature-name">Dirección de Capacitación</div>
-                <div class="signature-role">ALUMCO</div>
+    <div class="certificate-wrapper">
+        <div class="certificate-inner">
+            <div class="corner corner-tl"></div>
+            <div class="corner corner-tr"></div>
+            <div class="corner corner-bl"></div>
+            <div class="corner corner-br"></div>
+            
+            <div class="header">
+                <div class="org-logo">
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="48" stroke="#D4AF37" stroke-width="2"/>
+                        <circle cx="50" cy="50" r="42" stroke="#0F2439" stroke-width="1"/>
+                        <path d="M50 20 L80 40 L80 80 L50 95 L20 80 L20 40 Z" stroke="#D4AF37" stroke-width="1.5"/>
+                        <text x="50" y="55" font-family="'Playfair Display', serif" font-size="28" font-weight="bold" fill="#0F2439" text-anchor="middle" dominant-baseline="middle">A</text>
+                        <text x="50" y="75" font-family="'Open Sans', sans-serif" font-size="8" fill="#D4AF37" text-anchor="middle" letter-spacing="2">ONG</text>
+                    </svg>
+                </div>
+                <div class="org-name-top">ONG ALUMCO - Adultos Mayores en Confianza</div>
+                <div class="title">Certificado</div>
+                <div class="subtitle">de finalización y aprovechamiento</div>
             </div>
-            <div class="signature">
-                <div class="org-name">ONG ALUMCO</div>
-                <div style="font-size: 12px; color: #6c757d;">Adultos Mayores en Confianza</div>
+            
+            <div class="content">
+                <div class="certifies-text">Por la presente se certifica que</div>
+                <div>
+                    <span class="student-name">{{ nombre_usuario|default:"ONG ALUMCO" }}</span>
+                </div>
+                <div class="course-text">ha completado satisfactoriamente el curso de capacitación denominado</div>
+                <div class="course-title">"{{ curso.titulo }}"</div>
             </div>
-        </div>
-        
-        <div class="verification-code">
-            Código: {{ curso.id }}-{{ fecha }}
+            
+            <div class="footer">
+                <div class="date-block">
+                    <div class="date-text">{{ fecha }}</div>
+                    <div class="signature-role">Fecha de Emisión</div>
+                </div>
+                
+                <div class="seal">
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M50 5 L55 18 L69 18 L64 30 L75 39 L63 46 L66 60 L54 55 L46 68 L40 56 L26 62 L32 49 L19 43 L32 35 L26 22 L39 24 L46 11 Z" fill="#FDFBF7" stroke="#D4AF37" stroke-width="1"/>
+                        <circle cx="50" cy="40" r="18" stroke="#0F2439" stroke-width="1"/>
+                        <circle cx="50" cy="40" r="14" fill="#D4AF37" opacity="0.1"/>
+                        <path d="M43 85 L50 70 L57 85 L60 95 L50 90 L40 95 Z" fill="#D4AF37" opacity="0.8"/>
+                    </svg>
+                </div>
+
+                <div class="signature-block">
+                    <div class="signature-line"></div>
+                    <div class="signature-name">Dirección de Capacitación</div>
+                    <div class="signature-role">ONG ALUMCO</div>
+                </div>
+            </div>
+            
+            <div class="verification-code">
+                CÓDIGO DE VERIFICACIÓN: {{ curso.id }}-{{ fecha }}
+            </div>
         </div>
     </div>
 </body>
