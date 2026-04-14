@@ -621,6 +621,9 @@ class InscribirCursoBulkViewTests(TestCase):
 class MisCursosViewTests(TestCase):
     def setUp(self):
         self.client = Client()
+        self.admin = Usuario.objects.create_user(
+            username='admin', password='testpass', rol='admin', rut='00000000-0'
+        )
         self.docente = Usuario.objects.create_user(
             username='docente', password='testpass', rol='docente', rut='11111111-1'
         )
@@ -654,6 +657,33 @@ class MisCursosViewTests(TestCase):
         response = self.client.get(reverse('usuarios:mis_cursos'))
         self.assertEqual(response.status_code, 200)
         self.assertIn('inscripciones', response.context)
+
+    def test_mis_cursos_admin_sees_all_cursos(self):
+        """Admin should see all courses in mis_cursos"""
+        self.client.login(username='admin', password='testpass')
+        response = self.client.get(reverse('usuarios:mis_cursos'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['es_admin'])
+        # Admin should see all cursos, not inscripciones
+        self.assertIn('cursos', response.context)
+
+    def test_mis_cursos_docente_only_sees_own(self):
+        """Docente should only see courses they created"""
+        # Create second docente with separate course
+        docente2 = Usuario.objects.create_user(
+            username='docente2', password='testpass',
+            rol='docente', rut='99999999-9'
+        )
+        Curso.objects.create(titulo='Other Course', descripcion='...', estado='publicado', docente_creador=docente2)
+
+        self.client.login(username='docente', password='testpass')
+        response = self.client.get(reverse('usuarios:mis_cursos'))
+        self.assertEqual(response.status_code, 200)
+        # Should only see their own curso, not docente2's
+        self.assertIn('cursos', response.context)
+        cursos = response.context['cursos']
+        self.assertEqual(cursos.count(), 1)
+        self.assertEqual(cursos.first().docente_creador, self.docente)
 
 
 class PerfilViewTests(TestCase):

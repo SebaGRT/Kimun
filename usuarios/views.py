@@ -121,7 +121,15 @@ def mis_cursos(request):
     from django.utils import timezone
     now = timezone.now()
     
-    if request.user.rol == 'docente':
+    if request.user.rol == 'admin':
+        cursos = Curso.objects.all().order_by('-fecha_creacion')
+        return render(request, 'usuarios/mis_cursos.html', {
+            'cursos': cursos,
+            'es_docente': True,
+            'es_admin': True,
+            'now': now
+        })
+    elif request.user.rol == 'docente':
         cursos = Curso.objects.filter(docente_creador=request.user).order_by('-fecha_creacion')
         return render(request, 'usuarios/mis_cursos.html', {
             'cursos': cursos,
