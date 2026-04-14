@@ -315,6 +315,14 @@ def tomar_evaluacion(request, pk):
                 if inscripcion and inscripcion.estado != 'completado':
                     inscripcion.estado = 'completado'
                     inscripcion.save()
+                
+                # Auto-create pending certificate
+                from certificados.models import Certificado
+                Certificado.objects.get_or_create(
+                    usuario=request.user,
+                    curso=curso,
+                    defaults={'estado': 'pendiente'}
+                )
         
         return redirect('evaluaciones:resultado_evaluacion', pk=pk, intento_pk=intento.pk)
     
