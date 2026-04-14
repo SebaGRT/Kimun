@@ -283,7 +283,7 @@ def tomar_evaluacion(request, pk):
             respuesta_seleccionada = respuestas.get(str(pregunta.pk))
             if respuesta_seleccionada:
                 alternativa_correcta = pregunta.alternativas.filter(es_correcta=True).first()
-                if alternativa_correcta and str(alternativa_correcta.pk) == respuesta_seleccionada:
+                if alternativa_correcta and str(respuesta_seleccionada) == str(alternativa_correcta.pk):
                     respuestas_correctas += 1
 
         puntaje = int((respuestas_correctas / total_preguntas) * 100) if total_preguntas > 0 else 0

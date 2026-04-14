@@ -71,9 +71,9 @@
         </div>
     </div>
 
-    <form method="post" x-ref="evalForm" @submit="handleSubmit($event)">
+    <form method="post" id="evalForm" @submit="handleSubmit($event)">
         {% csrf_token %}
-        <input type="hidden" name="respuestas" x-ref="respuestasInput" value="{}">
+        <input type="hidden" name="respuestas" id="respuestasInput" value="{}">
 
         <template x-for="(pregunta, index) in preguntas" :key="pregunta.pk">
             <div x-show="index === preguntaActual" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-x-4" x-transition:enter-end="opacity-100 transform translate-x-0" class="space-y-6 stagger-in" style="animation-delay: 100ms;">
@@ -194,7 +194,7 @@ function evaluacionApp() {
         seleccionarRespuesta(preguntaPk, alternativaPk) {
             this.respuestas[preguntaPk] = alternativaPk;
             this.iniciarTimer();
-            this.$refs.respuestasInput.value = JSON.stringify(this.respuestas);
+            document.getElementById('respuestasInput').value = JSON.stringify(this.respuestas);
         },
         formatTime(seconds) {
             const mins = Math.floor(seconds / 60);
@@ -207,7 +207,7 @@ function evaluacionApp() {
                 alert('Por favor responde todas las preguntas antes de enviar.');
                 return;
             }
-            this.$refs.respuestasInput.value = JSON.stringify(this.respuestas);
+            document.getElementById('respuestasInput').value = JSON.stringify(this.respuestas);
         },
         init() {}
     };
