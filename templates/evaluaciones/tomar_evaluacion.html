@@ -71,7 +71,7 @@
         </div>
     </div>
 
-    <form method="post" @submit.prevent="enviarEvaluacion()" @click="iniciarTimer()">
+    <form method="post" @submit.prevent="handleSubmit($event)">
         {% csrf_token %}
         <input type="hidden" name="respuestas" :value="JSON.stringify(respuestas)">
 
@@ -134,10 +134,10 @@
                 Siguiente <i class="bi bi-arrow-right"></i>
             </button>
 
-            <button type="button" 
+            <button type="submit" 
                     x-show="preguntaActual === preguntas.length - 1"
-                    @click="enviarEvaluacion()"
-                    class="px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg hover:-translate-y-1 transition-transform"
+                    :disabled="!todasRespondidas"
+                    class="px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg hover:-translate-y-1 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
                     :style="todasRespondidas ? 'background-color: var(--color-success); color: white;' : 'background-color: var(--color-primary); color: white;'">
                 <i class="bi bi-send-check-fill text-lg"></i> Finalizar Evaluación
             </button>
@@ -204,12 +204,13 @@ function evaluacionApp() {
             const secs = seconds % 60;
             return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
         },
-        enviarEvaluacion() {
+        handleSubmit(event) {
+            this.iniciarTimer();
             if (!this.todasRespondidas) {
                 alert('Por favor responde todas las preguntas antes de enviar.');
                 return;
             }
-            document.querySelector('form').submit();
+            event.target.submit();
         },
         init() {}
     };
