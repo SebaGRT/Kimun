@@ -53,16 +53,19 @@ def curso_list(request):
 @docente_or_admin_required
 def curso_create(request):
     if request.method == 'POST':
-        form = CursoForm(request.POST)
+        form = CursoForm(request.POST, user=request.user)
         if form.is_valid():
             curso = form.save(commit=False)
-            curso.docente_creador = request.user
+            if request.user.rol == 'docente':
+                curso.docente_creador = request.user
+            else:
+                curso.docente_creador = form.cleaned_data['docente_creador']
             curso.save()
             messages.success(request, f'Curso "{curso.titulo}" creado exitosamente.')
             return redirect('cursos:curso_detail', pk=curso.id)
     else:
-        form = CursoForm(initial={'estado': 'borrador'})
-    
+        form = CursoForm(initial={'estado': 'borrador'}, user=request.user)
+
     return render(request, 'cursos/curso_form.html', {
         'accion': 'crear',
         'curso': None,

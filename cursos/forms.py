@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 from .models import Curso, Material, Categoria, Clase
 
 
@@ -29,11 +30,24 @@ class CursoForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         self.fields['categoria'].required = False
         self.fields['fecha_limite'].required = False
         if self.instance and self.instance.fecha_limite:
             self.initial['fecha_limite'] = self.instance.fecha_limite.strftime('%Y-%m-%dT%H:%M')
+        
+        if self.user and self.user.rol == 'admin':
+            from usuarios.models import Usuario
+            self.fields['docente_creador'] = forms.ModelChoiceField(
+                queryset=Usuario.objects.filter(rol='docente').order_by('first_name', 'last_name'),
+                required=True,
+                label='Docente Instructor',
+                widget=forms.Select(attrs={
+                    'class': 'input-field w-full px-4 py-3 rounded-xl'
+                })
+            )
+            self.order_fields(['titulo', 'descripcion', 'categoria', 'estado', 'docente_creador', 'fecha_limite'])
 
 
 class MaterialForm(forms.ModelForm):
