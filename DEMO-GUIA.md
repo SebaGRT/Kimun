@@ -178,20 +178,23 @@ Abrir en el navegador: `http://127.0.0.1:8000`
 
 ---
 
-### 3.8 Certificados PDF — 2 minutos
+### 3.8 Certificados PDF — 3 minutos
 
 **Navegar a**: `http://127.0.0.1:8000/certificados/`
 
 **Qué decir**:
-> "Al aprobar todas las evaluaciones de un curso, el sistema genera automáticamente un certificado en PDF con código QR único de verificación."
+> "Al aprobar todas las evaluaciones de un curso, el sistema crea automáticamente un certificado en estado 'pendiente'. El docente o administrador debe aprobarlo antes de que el colaborador pueda descargarlo."
 
-**Acción**: Ver/Descargar un certificado existente.
+**Flujo de aprobación**:
+1. Como administrador, navegar a "Certificados Pendientes" en el menú
+2. Ver los certificados pendientes de aprobación
+3. Aprobar o rechazar un certificado
 
 **Elementos a señalar**:
-- Tabla con historial de certificados
-- Columna de verificación (código único)
-- Botón de descarga PDF
-- Diseño profesional del PDF (WeasyPrint)
+- Estados de certificado: Pendiente (amarillo), Aprobado (verde), Rechazado (rojo)
+- Botón de descarga solo aparece para certificados aprobados
+- Diseño profesional del PDF con tema dorado/azul (WeasyPrint)
+- Código de verificación único en cada certificado
 
 ---
 
