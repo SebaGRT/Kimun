@@ -35,9 +35,19 @@
                         <h3 class="text-xl font-semibold">{{ item.curso.titulo }}</h3>
                         <p class="text-sm" style="color: var(--color-text-secondary);">
                             {% if item.certificado %}
-                            <span style="color: var(--color-success);">
-                                <i class="bi bi-check-circle me-1"></i>Certificado disponible
-                            </span>
+                                {% if item.certificado.estado == 'aprobado' %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" style="background-color: var(--color-success-bg); color: var(--color-success);">
+                                    <i class="bi bi-check-circle me-1"></i>Aprobado
+                                </span>
+                                {% elif item.certificado.estado == 'pendiente' %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" style="background-color: var(--color-warning-bg); color: var(--color-warning);">
+                                    <i class="bi bi-clock me-1"></i>Pendiente de aprobación
+                                </span>
+                                {% elif item.certificado.estado == 'rechazado' %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" style="background-color: var(--color-danger-bg); color: var(--color-danger);">
+                                    <i class="bi bi-x-circle me-1"></i>Rechazado
+                                </span>
+                                {% endif %}
                             {% else %}
                             <span style="color: var(--color-warning);">
                                 <i class="bi bi-clock me-1"></i>Completa las evaluaciones para obtener tu certificado
@@ -47,11 +57,15 @@
                     </div>
                 </div>
                 <div>
-                    {% if item.certificado %}
+                    {% if item.certificado.estado == 'aprobado' %}
                     <a href="{% url 'certificados:descargar_certificado' pk=item.certificado.pk %}" 
                        class="btn-primary px-4 py-2 rounded-lg font-medium">
                         <i class="bi bi-download me-1"></i>Descargar PDF
                     </a>
+                    {% elif item.certificado.estado == 'rechazado' %}
+                    <span class="text-sm" style="color: var(--color-text-secondary);">
+                        Contacta a tu docente para más información
+                    </span>
                     {% else %}
                     <a href="{% url 'cursos:curso_detail' pk=item.curso.pk %}" 
                        class="btn-outline px-4 py-2 rounded-lg font-medium">

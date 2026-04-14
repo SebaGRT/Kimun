@@ -352,6 +352,15 @@
                                     >Usuarios</a
                                 >
                                 {% endif %}
+                                {% if user.rol == 'admin' or user.rol == 'docente' %}
+                                <a
+                                    href="{% url 'certificados:certificados_pendientes' %}"
+                                    class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                                    style="color: var(--color-text);"
+                                >
+                                    <i class="bi bi-hourglass-split me-2"></i>Certificados Pendientes
+                                </a>
+                                {% endif %}
                                 <a
                                     href="{% url 'anuncios:anuncio_list' %}"
                                     class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors flex items-center gap-2"
