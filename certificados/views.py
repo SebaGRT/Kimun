@@ -116,10 +116,27 @@ def descargar_certificado(request, pk):
         messages.error(request, 'El certificado aún no ha sido aprobado.')
         return redirect('certificados:mis_certificados')
     
-    if certificado.archivo_pdf:
-        certificado.archivo_pdf.seek(0)
-        return FileResponse(certificado.archivo_pdf, content_type='application/pdf')
-    raise Http404("Certificado no encontrado")
+    # Lazy PDF generation: create PDF on first download if it doesn't exist
+    if not certificado.archivo_pdf:
+        from django.template.loader import render_to_string
+        from django.utils import timezone
+        from django.core.files.base import ContentFile
+        from weasyprint import HTML
+        
+        fecha_str = timezone.now().strftime('%d de %B de %Y')
+        html_string = render_to_string('certificados/certificado_pdf.html', {
+            'curso': certificado.curso,
+            'fecha': fecha_str,
+            'nombre_usuario': certificado.usuario.get_full_name() or certificado.usuario.username,
+        })
+        pdf_file = HTML(string=html_string).write_pdf()
+        certificado.archivo_pdf.save(
+            f'certificado_{certificado.pk}.pdf',
+            ContentFile(pdf_file)
+        )
+    
+    certificado.archivo_pdf.seek(0)
+    return FileResponse(certificado.archivo_pdf, content_type='application/pdf')
 
 
 @login_required
