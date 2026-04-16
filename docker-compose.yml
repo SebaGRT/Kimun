@@ -1,0 +1,16 @@
+services:
+  web:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.docker
+    volumes:
+      - kimun_data:/app/data
+      - kimun_media:/app/media
+    restart: unless-stopped
+
+volumes:
+  kimun_data:
+  kimun_media:
