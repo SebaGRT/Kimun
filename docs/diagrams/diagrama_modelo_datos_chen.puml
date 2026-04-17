@@ -1,0 +1,273 @@
+@startuml "Modelo Conceptual de Datos - Kimün LMS (Notación Chen)"
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontColor #333333
+skinparam shadowing false
+
+/' ============================================
+   MODELO CONCEPTUAL DE DATOS - KIMÜN LMS
+   Notación Chen (Entidad-Relación)
+   ============================================ '/
+
+/' ====== LEYENDA ====== '/
+legend right
+|= Símbolo |= Significado |
+| [[#333333 **Rectángulo**]] | Entidad |
+| [[#333333 **Diamante**]] | Relación |
+| [[#333333 **Óvalo**]] | Atributo |
+| [[#333333 **Óvalo doble**]] | Atributo Clave (PK) |
+| **(1,1)** | Exactamente uno |
+| **(1,N)** | Uno a muchos |
+| **(N,M)** | Muchos a muchos |
+endlegend
+
+title Modelo Conceptual de Datos - Kimün LMS (Notación Chen)
+
+/' ============================================
+   PAQUETE: USUARIOS
+   ============================================ '/
+
+package "Usuarios" #LightBlue {
+   
+   entity "AreaCargo" as ac <<E>> #F5F5F5 {
+       +nombre: CharField
+   }
+   
+   entity "Usuario" as usr <<E>> #F5F5F5 {
+       +rut: CharField **PK**
+       +username: CharField
+       +first_name: CharField
+       +last_name: CharField
+       +email: EmailField
+       +rol: CharField
+   }
+   
+   entity "Recordatorio" as rec <<E>> #F5F5F5 {
+       +tipo: CharField
+       +fecha_envio: DateTimeField
+   }
+}
+
+/' ============================================
+   PAQUETE: CURSOS
+   ============================================ '/
+
+package "Cursos" #LightGreen {
+   
+   entity "Categoria" as cat <<E>> #F5F5F5 {
+       +nombre: CharField
+       +color: CharField
+       +descripcion: TextField
+   }
+   
+   entity "Curso" as cur <<E>> #F5F5F5 {
+       +titulo: CharField
+       +descripcion: TextField
+       +estado: CharField
+       +fecha_creacion: DateTimeField
+       +fecha_limite: DateTimeField
+   }
+   
+   entity "Material" as mat <<E>> #F5F5F5 {
+       +titulo: CharField
+       +tipo: CharField
+       +archivo: FileField
+       +url: URLField
+   }
+   
+   entity "Clase" as cla <<E>> #F5F5F5 {
+       +titulo: CharField
+       +contenido: RichTextField
+       +orden: Integer
+       +fecha_creacion: DateTimeField
+   }
+   
+   entity "InscripcionCurso" as insc <<E>> #F5F5F5 {
+       +estado: CharField
+       +fecha_asignacion: DateTimeField
+   }
+   
+   entity "ClaseCompletado" as clac <<E>> #F5F5F5 {
+       +fecha_completado: DateTimeField
+   }
+   
+   entity "Tarea" as tar <<E>> #F5F5F5 {
+       +titulo: CharField
+       +descripcion: TextField
+       +fecha_limite: DateTimeField
+       +puntaje_maximo: DecimalField
+   }
+   
+   entity "EntregaTarea" as ent <<E>> #F5F5F5 {
+       +archivo: FileField
+       +comentario: TextField
+       +estado: CharField
+       +puntaje_obtenido: DecimalField
+       +retroalimentacion: TextField
+   }
+}
+
+/' ============================================
+   PAQUETE: EVALUACIONES
+   ============================================ '/
+
+package "Evaluaciones" #LightYellow {
+   
+   entity "Evaluacion" as ev <<E>> #F5F5F5 {
+       +titulo: CharField
+       +porcentaje_aprobacion: Integer
+       +max_intentos: Integer
+       +duracion_minutos: Integer
+   }
+   
+   entity "BancoPreguntas" as bp <<E>> #F5F5F5 {
+       +nombre: CharField
+       +descripcion: TextField
+       +es_publico: BooleanField
+   }
+   
+   entity "Pregunta" as preg <<E>> #F5F5F5 {
+       +texto: TextField
+   }
+   
+   entity "Alternativa" as alt <<E>> #F5F5F5 {
+       +texto: CharField
+       +es_correcta: BooleanField
+   }
+   
+   entity "IntentoEvaluacion" as int <<E>> #F5F5F5 {
+       +puntaje_obtenido: DecimalField
+       +aprobado: BooleanField
+       +fecha_intento: DateTimeField
+       +respuestas: JSONField
+   }
+}
+
+/' ============================================
+   PAQUETE: CERTIFICADOS
+   ============================================ '/
+
+package "Certificados" #LightPink {
+   
+   entity "Certificado" as cert <<E>> #F5F5F5 {
+       +codigo_verificacion: UUIDField
+       +fecha_emision: DateTimeField
+       +estado: CharField
+       +fecha_aprobacion: DateTimeField
+   }
+}
+
+/' ============================================
+   PAQUETE: CALENDARIO Y ANUNCIOS
+   ============================================ '/
+
+package "Calendario y Anuncios" #LightCyan {
+   
+   entity "EventoCalendario" as ec <<E>> #F5F5F5 {
+       +titulo: CharField
+       +descripcion: TextField
+       +tipo: CharField
+       +fecha_inicio: DateTimeField
+       +fecha_fin: DateTimeField
+       +color: CharField
+   }
+   
+   entity "Anuncio" as an <<E>> #F5F5F5 {
+       +titulo: CharField
+       +contenido: TextField
+       +prioridad: Integer
+       +publicado: BooleanField
+       +fecha_publicacion: DateTimeField
+       +fecha_expiracion: DateTimeField
+   }
+   
+   entity "LecturaAnuncio" as la <<E>> #F5F5F5 {
+       +fecha_lectura: DateTimeField
+   }
+}
+
+/' ============================================
+   RELACIONES (DIAMANTES)
+   ============================================ '/
+
+/'-- USUARIO Y AREACARGO --'/
+usr --(0,N,1,1) ac : CREAD_BY >
+ac --(1,N) usr : tiene >
+
+/'-- USUARIO Y CURSO (INSCRIPCIÓN) --'/
+usr --(1,N,1,1) insc : INSCRIBE_EN >
+insc --(1,1) cur : corresponde_a >
+cur --(1,N) insc : tiene >
+
+/'-- USUARIO CREA CURSO --'/
+usr --(1,N,0,1) cur : CREA >
+cur --(0,1) usr : docente_creador >
+
+/'-- USUARIO COMPLETA CLASE --'/
+usr --(1,N,1,1) clac : COMPLETA >
+clac --(1,1) cla : corresponde_a >
+cla --(1,N) clac : completada_en >
+
+/'-- USUARIO APRUEBA EVALUACION --'/
+usr --(1,N,1,1) int : APRUEBA >
+int --(1,1) ev : corresponde_a >
+ev --(1,N) int : registra >
+
+/'-- USUARIO RECIBE CERTIFICADO --'/
+usr --(1,N,0,1) cert : RECIBE >
+cert --(0,1) usr : aprobado_por >
+
+/'-- USUARIO RECIBE ANUNCIO --'/
+usr --(1,N,1,1) la : RECIBE >
+la --(1,1) an : corresponde_a >
+an --(1,N) la : tiene >
+
+/'-- USUARIO ENTREGA TAREA --'/
+usr --(1,N,1,1) ent : ENTREGA >
+ent --(1,1) tar : corresponde_a >
+tar --(1,N) ent : tiene >
+
+/'-- USUARIO RECIBE RECORDATORIO --'/
+usr --(1,N,0,N) rec : RECIBE >
+rec --(0,N) cur : relacionado_con >
+
+/'-- CURSO CONTIENE MATERIAL --'/
+cur --(1,N) mat : CONTIENE >
+mat --(1,1) cur : pertenece_a >
+
+/'-- CURSO CONTIENE CLASE --'/
+cur --(1,N) cla : CONTIENE >
+cla --(1,1) cur : pertenece_a >
+
+/'-- CURSO TIENE EVALUACION --'/
+cur --(1,N) ev : TIENE >
+ev --(1,1) cur : pertenece_a >
+
+/'-- CURSO TIENE TAREA --'/
+cur --(1,N) tar : TIENE >
+tar --(1,1) cur : pertenece_a >
+
+/'-- CURSO GENERA EVENTO CALENDARIO --'/
+cur --(1,N) ec : GENERA >
+ec --(0,N) cur : relacionado_con >
+
+/'-- CURSO PUBLICADO EN CATEGORIA --'/
+cur --(0,N,1,1) cat : PUBLICADO_EN >
+cat --(1,N) cur : clasifica >
+
+/'-- EVALUACION USA BANCO PREGUNTAS --'/
+ev --(0,N,1,1) bp : USA >
+bp --(1,N) preg : contiene >
+
+/'-- EVALUACION CONTIENE PREGUNTA --'/
+ev --(1,N) preg : CONTIENE >
+preg --(1,1) ev : pertenece_a >
+
+/'-- PREGUNTA TIENE ALTERNATIVA --'/
+preg --(1,N) alt : TIENE >
+alt --(1,1) preg : pertenece_a >
+
+/'-- CERTIFICADO EMITIDO POR USUARIO --'/
+cert --(0,1,1,1) usr : EMITIDO_POR >
+usr --(1,N) cert : emite >
+
+@enduml
