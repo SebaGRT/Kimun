@@ -1,0 +1,184 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam rectangleFontSize 12
+skinparam packageTitleFontSize 14
+skinparam arrowThickness 1.5
+skinparam boxPadding 20
+skinparam maxMessageSize 200
+skinparam titleFontSize 16
+skinparam legendFontSize 11
+
+title **Arquitectura de Software - Kimün LMS**\n**(Arquitectura en Capas)**
+
+' ==============================================================================
+' CAPAS DEL SISTEMA
+' ==============================================================================
+
+package "CAPA 4 - PRESENTACIÓN" #LightBlue {
+    rectangle "Django Templates (HTML)" as Pres_Templates
+    rectangle "Tailwind CSS (estilos)" as Pres_CSS
+    rectangle "Alpine.js (interactividad)" as Pres_Alpine
+    rectangle "Chart.js (gráficos)" as Pres_Chart
+    rectangle "Bootstrap Icons" as Pres_Icons
+
+    note right of Pres_Templates
+        - Plantillas base
+        - Plantillas de cursos
+        - Plantillas de usuarios
+        - Plantillas de evaluaciones
+        - Plantillas de certificados
+    end note
+
+    note right of Pres_CSS
+        - Sistema de diseño Kimün
+        - Variables CSS centralizadas
+        - Modo oscuro integrado
+        - Responsivo (móvil)
+    end note
+}
+
+package "CAPA 3 - LÓGICA DE NEGOCIO" #LightGreen {
+    rectangle "<b>usuarios</b>\n(Gestión de usuarios y auth)" as App_Usuarios
+    rectangle "<b>cursos</b>\n(Gestión de cursos y materiales)" as App_Cursos
+    rectangle "<b>evaluaciones</b>\n(Evaluaciones auto-corrigidas)" as App_Evaluaciones
+    rectangle "<b>certificados</b>\n(Generación PDF, aprobación)" as App_Certificados
+    rectangle "<b>calendario</b>\n(Eventos y fechas límite)" as App_Calendario
+    rectangle "<b>anuncios</b>\n(Notificaciones y anuncios)" as App_Anuncios
+    rectangle "<b>tareas</b>\n(Entregas y retroalimentación)" as App_Tareas
+
+    note bottom of App_Usuarios
+        - Modelos: Usuario, Perfil
+        - Vistas: CRUD usuarios
+        - Auth: 3 roles (Admin, Docente, Colaborador)
+    end note
+
+    note bottom of App_Cursos
+        - Modelos: Curso, Clase, Material
+        - InscripcionCurso, ClaseCompletado
+        - Vistas: Course CRUD, Inscripción
+    end note
+
+    note bottom of App_Evaluaciones
+        - Modelos: Evaluacion, Pregunta
+        - Alternativa, IntentoEvaluacion
+        - Corrección automática
+    end note
+
+    note bottom of App_Certificados
+        - Modelo: Certificado
+        - Código único de verificación
+        - Generación con WeasyPrint
+    end note
+}
+
+package "CAPA 2 - ACCESO A DATOS" #LightYellow {
+    rectangle "<b>Django ORM</b>\n(Patrón Model-Template-View)" as ORM
+    rectangle "<b>Django Models</b>\n(15 entidades)" as Models
+    rectangle "<b>Migrations</b>\n(Control de versiones)" as Migrations
+
+    note right of ORM
+        - QuerySet API
+        - Relaciones entre modelos
+        - Validación de datos
+    end note
+
+    note right of Models
+        - ForeignKey, ManyToMany
+        - Herencia de modelos
+        - Restricciones unique, check
+    end note
+}
+
+package "CAPA 1 - BASE DE DATOS" #LightPink {
+    rectangle "<b>SQLite</b>\n(Desarrollo local)" as DB_SQLite
+    rectangle "<b>PostgreSQL</b>\n(Producción)" as DB_Postgres
+    rectangle "<b>File Storage</b>\n(Certificados, materiales, entregas)" as FileStorage
+
+    note right of DB_SQLite
+        - Desarrollo
+        - db.sqlite3
+    end note
+
+    note right of DB_Postgres
+        - Producción
+        - PostgreSQL 14+
+    end note
+}
+
+' ==============================================================================
+' CONCERNS TRANSVERSALES
+' ==============================================================================
+
+package "CONCERNS TRANSVERSALES" #LightCyan {
+    rectangle "<b>Authentication</b>\n(LoginRequiredMixin, decorators)" as Auth
+    rectangle "<b>Signals</b>\n(Email en anuncios)" as Signals
+    rectangle "<b>Middleware</b>\n(Session, CSRF)" as Middleware
+
+    note bottom of Auth
+        - admin_required
+        - docente_or_admin_required
+        - LoginRequiredMixin
+    end note
+
+    note bottom of Signals
+        - post_save para notificaciones
+        - Email automático en anuncios
+    end note
+}
+
+' ==============================================================================
+' FLECHAS DE FLUJO DE DATOS
+' ==============================================================================
+
+' Presentación → Lógica de Negocio
+Pres_Templates -down-> App_Usuarios : Peticiones HTTP ↑
+Pres_CSS -down-> App_Cursos
+Pres_Alpine -down-> App_Evaluaciones
+Pres_Chart -down-> App_Certificados
+Pres_Icons -down-> App_Calendario
+
+' Lógica de Negocio → Acceso a Datos
+App_Usuarios -down-> ORM : Django ORM ↑
+App_Cursos -down-> ORM
+App_Evaluaciones -down-> ORM
+App_Certificados -down-> ORM
+App_Tareas -down-> ORM
+
+' Acceso a Datos → Base de Datos
+ORM -down-> DB_SQLite : SQL ↑
+ORM -down-> DB_Postgres
+Models -down-> Migrations
+Migrations -down-> DB_SQLite
+
+' Concerns Transversales
+Auth -left-> App_Usuarios : protege
+Signals -left-> App_Anuncios : notifica
+Middleware -left-> ORM : atraviesa
+
+' File Storage
+App_Certificados -right-> FileStorage : almacena PDFs
+App_Cursos -right-> FileStorage : almacena materiales
+App_Tareas -right-> FileStorage : almacena entregas
+
+' ==============================================================================
+' LEYENDA
+' ==============================================================================
+legend right
+    | **Capa** | **Color** | **Componentes** |
+    | Presentación | LightBlue | Templates, CSS, JS, Gráficos |
+    | Aplicación | LightGreen | 7 Apps Django |
+    | Framework | LightYellow | Django ORM, Models, Migrations |
+    | Datos | LightPink | SQLite, PostgreSQL, File Storage |
+    | Transversales | LightCyan | Auth, Signals, Middleware |
+endlegend
+
+' Flechas de flujo entre capas
+note top of Pres_Templates
+    **Flujo de datos entre capas:**
+    1. Usuario → Presentación (HTTP)
+    2. Presentación → Lógica (Views)
+    3. Lógica → Datos (ORM)
+    4. Datos → BD (SQL)
+end note
+
+@enduml
