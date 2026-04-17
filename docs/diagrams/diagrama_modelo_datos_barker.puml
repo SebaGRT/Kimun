@@ -1,0 +1,404 @@
+@startuml Diagrama_Modelo_Datos_Barker
+
+' ============================================
+' Modelo Lógico de Datos - Kimün LMS
+' Notación Barker
+' ============================================
+
+skinparam backgroundColor #FEFCF3
+skinparam defaultFontColor #333333
+skinparam defaultFontSize 10
+skinparam shadowing false
+
+' ============================================
+' LEGENDA - Notación Barker
+' ============================================
+legend right
+|= |= Notación Barker |
+|<back:#E8E8E8>**Entidad**</back>| Caja con bordes redondeados |
+|<back:#ADD8E6>**PK #**</back>| Clave Primaria |
+|<back:#90EE90>**FK ***</back>| Clave Foránea |
+|<back:#FFE4B5>**Obligatorio •**</back>| Participación obligatoria |
+|<back:#D3D3D3>**Opcional ○**</back>| Participación opcional |
+|= Relación | Cardinalidad |
+|<back:#FFFFFF>│</back>| Uno (1) |
+|<back:#FFFFFF>│<</back>| Muchos (*) |
+|<back:#FFFFFF>○</back>| Cero o uno (0..1) |
+|<back:#FFFFFF>──</back>| Línea continua = Obligatorio |
+|<back:#FFFFFF>┄┄</back>| Línea punteada = Opcional |
+end legend
+
+title Modelo Lógico de Datos - Kimün LMS\n(Notación Barker)
+
+' ============================================
+' PACKAGE: SEGURIDAD Y USUARIOS
+' ============================================
+package "Seguridad y Usuarios" #LightBlue {
+    entity "AreaCargo" as ac <<entity>> {
+        +id: INTEGER <<PK>>
+        ..
+        nombre: VARCHAR(100)
+    }
+
+    entity "Usuario" as usr <<entity>> {
+        +id: INTEGER <<PK>>
+        ..
+        rut: VARCHAR(12) <<UNIQUE>>
+        rol: VARCHAR(20)
+        ..
+        *cargo_id: INTEGER <<FK>>
+    }
+
+    entity "Recordatorio" as rec <<entity>> {
+        +id: INTEGER <<PK>>
+        ..
+        tipo: VARCHAR(20)
+        fecha_envio: DATETIME
+        ..
+        *usuario_id: INTEGER <<FK>>
+        *curso_id: INTEGER <<FK>>
+    }
+
+    usr ||--o{ rec : "recibe"
+    ac ||--o{ usr : "desempeña"
+}
+
+' ============================================
+' PACKAGE: GESTIÓN DE CURSOS
+' ============================================
+package "Gestión de Cursos" #LightGreen {
+    entity "Categoria" as cat <<entity>> {
+        +id: INTEGER <<PK>>
+        ..
+        nombre: VARCHAR(100) <<UNIQUE>>
+        color: VARCHAR(7)
+        descripcion: TEXT
+    }
+
+    entity "Curso" as cur <<entity>> {
+        +id: INTEGER <<PK>>
+        ..
+        titulo: VARCHAR(200)
+        descripcion: TEXT
+        estado: VARCHAR(20)
+        fecha_creacion: DATETIME
+        fecha_limite: DATETIME
+        ..
+        *categoria_id: INTEGER <<FK>>
+        *docente_creador_id: INTEGER <<FK>>
+    }
+
+    entity "Material" as mat <<entity>> {
+        +id: INTEGER <<PK>>
+        ..
+        titulo: VARCHAR(200)
+        tipo: VARCHAR(20)
+        archivo: FILE
+        url: URL
+        ..
+        *curso_id: INTEGER <<FK>>
+    }
+
+    entity "InscripcionCurso" as ic <<entity>> {
+        +id: INTEGER <<PK>>
+        ..
+        estado: VARCHAR(20)
+        fecha_asignacion: DATETIME
+        ..
+        *usuario_id: INTEGER <<FK>>
+        *curso_id: INTEGER <<FK>>
+    }
+
+    entity "Clase" as cla <<entity>> {
+        +id: INTEGER <<PK>>
+        ..
+        titulo: VARCHAR(200)
+        contenido: RICHTEXT
+        orden: INTEGER
+        fecha_creacion: DATETIME
+        fecha_actualizacion: DATETIME
+        ..
+        *curso_id: INTEGER <<FK>>
+    }
+
+    entity "ClaseCompletado" as cc <<entity>> {
+        +id: INTEGER <<PK>>
+        ..
+        fecha_completado: DATETIME
+        ..
+        *usuario_id: INTEGER <<FK>>
+        *clase_id: INTEGER <<FK>>
+    }
+
+    cat ||--o{ cur : "clasifica"
+    usr ||--o{ cur : "crea"
+    cur ||--o{ ic : "tiene"
+    usr ||--o{ ic : "inscrito_en"
+    cur ||--o{ mat : "contiene"
+    cur ||--o{ cla : "contiene"
+    cla ||--o{ cc : "completada_en"
+    usr ||--o{ cc : "completa"
+}
+
+' ============================================
+' PACKAGE: EVALUACIONES
+' ============================================
+package "Evaluaciones" #LightYellow {
+    entity "Evaluacion" as ev <<entity>> {
+        +id: INTEGER <<PK>>
+        ..
+        titulo: VARCHAR(200)
+        porcentaje_aprobacion: INTEGER
+        max_intentos: INTEGER
+        duracion_minutos: INTEGER
+        preguntas_por_intento: INTEGER
+        ..
+        *curso_id: INTEGER <<FK>>
+    }
+
+    entity "BancoPreguntas" as bp <<entity>> {
+        +id: INTEGER <<PK>>
+        ..
+        nombre: VARCHAR(200)
+        descripcion: TEXT
+        es_publico: BOOLEAN
+        fecha_creacion: DATETIME
+        ..
+        *curso_id: INTEGER <<FK>>
+        *creado_por_id: INTEGER <<FK>>
+    }
+
+    entity "Pregunta" as preg <<entity>> {
+        +id: INTEGER <<PK>>
+        ..
+        texto: TEXT
+        ..
+        *evaluacion_id: INTEGER <<FK>>
+        *banco_id: INTEGER <<FK>>
+    }
+
+    entity "Alternativa" as alt <<entity>> {
+        +id: INTEGER <<PK>>
+        ..
+        texto: VARCHAR(500)
+        es_correcta: BOOLEAN
+        ..
+        *pregunta_id: INTEGER <<FK>>
+    }
+
+    entity "IntentoEvaluacion" as ie <<entity>> {
+        +id: INTEGER <<PK>>
+        ..
+        puntaje_obtenido: INTEGER
+        aprobado: BOOLEAN
+        fecha_intento: DATETIME
+        hora_inicio: DATETIME
+        respuestas: JSON
+        ..
+        *usuario_id: INTEGER <<FK>>
+        *evaluacion_id: INTEGER <<FK>>
+    }
+
+    cur ||--o{ ev : "evalua"
+    usr ||--o{ ev : "crea"
+    ev ||--o{ preg : "contiene"
+    preg ||--o{ alt : "tiene"
+    usr ||--o{ ie : "intenta"
+    ev ||--o{ ie : "registra"
+    preg }o--|| bp : "pertenece_a"
+    usr ||--o{ bp : "crea"
+}
+
+' ============================================
+' PACKAGE: CERTIFICADOS
+' ============================================
+package "Certificados" #LightPink {
+    entity "Certificado" as cert <<entity>> {
+        +id: INTEGER <<PK>>
+        ..
+        codigo_verificacion: UUID <<UNIQUE>>
+        fecha_emision: DATETIME
+        archivo_pdf: FILE
+        estado: VARCHAR(20)
+        fecha_aprobacion: DATETIME
+        ..
+        *usuario_id: INTEGER <<FK>>
+        *curso_id: INTEGER <<FK>>
+        *aprobado_por_id: INTEGER <<FK>>
+    }
+
+    usr ||--o{ cert : "recibe"
+    cur ||--o{ cert : "emite"
+    usr ||--o{ cert : "aprueba"
+}
+
+' ============================================
+' PACKAGE: CALENDARIO Y EVENTOS
+' ============================================
+package "Calendario y Eventos" #LightCyan {
+    entity "EventoCalendario" as ec <<entity>> {
+        +id: INTEGER <<PK>>
+        ..
+        titulo: VARCHAR(200)
+        descripcion: TEXT
+        tipo: VARCHAR(25)
+        fecha_inicio: DATETIME
+        fecha_fin: DATETIME
+        color: VARCHAR(7)
+        ..
+        *curso_id: INTEGER <<FK>>
+        *evaluacion_id: INTEGER <<FK>>
+        *creado_por_id: INTEGER <<FK>>
+    }
+
+    cur ||--o{ ec : "programa"
+    ev ||--o{ ec : "relacionado"
+    usr ||--o{ ec : "crea"
+}
+
+' ============================================
+' PACKAGE: ANUNCIOS
+' ============================================
+package "Anuncios" #Lavender {
+    entity "Anuncio" as anu <<entity>> {
+        +id: INTEGER <<PK>>
+        ..
+        titulo: VARCHAR(200)
+        contenido: TEXT
+        prioridad: VARCHAR(15)
+        publicado: BOOLEAN
+        fecha_publicacion: DATETIME
+        fecha_expiracion: DATETIME
+        fecha_creacion: DATETIME
+        ..
+        *curso_id: INTEGER <<FK>>
+        *creado_por_id: INTEGER <<FK>>
+    }
+
+    entity "LecturaAnuncio" as la <<entity>> {
+        +id: INTEGER <<PK>>
+        ..
+        fecha_lectura: DATETIME
+        ..
+        *anuncio_id: INTEGER <<FK>>
+        *usuario_id: INTEGER <<FK>>
+    }
+
+    cur ||--o{ anu : "publica_en"
+    usr ||--o{ anu : "crea"
+    anu ||--o{ la : "leido"
+    usr ||--o{ la : "lee"
+}
+
+' ============================================
+' PACKAGE: TAREAS
+' ============================================
+package "Tareas" #MistyRose {
+    entity "Tarea" as tar <<entity>> {
+        +id: INTEGER <<PK>>
+        ..
+        titulo: VARCHAR(200)
+        descripcion: TEXT
+        fecha_limite: DATETIME
+        puntaje_maximo: INTEGER
+        fecha_creacion: DATETIME
+        ..
+        *curso_id: INTEGER <<FK>>
+        *creado_por_id: INTEGER <<FK>>
+    }
+
+    entity "EntregaTarea" as et <<entity>> {
+        +id: INTEGER <<PK>>
+        ..
+        archivo: FILE
+        comentario: TEXT
+        fecha_entrega: DATETIME
+        estado: VARCHAR(15)
+        puntaje_obtenido: INTEGER
+        retroalimentacion: TEXT
+        fecha_calificacion: DATETIME
+        ..
+        *tarea_id: INTEGER <<FK>>
+        *estudiante_id: INTEGER <<FK>>
+        *calificado_por_id: INTEGER <<FK>>
+    }
+
+    cur ||--o{ tar : "tiene"
+    usr ||--o{ tar : "crea"
+    tar ||--o{ et : "recibe"
+    usr ||--o{ et : "entrega"
+    usr ||--o{ et : "califica"
+}
+
+' ============================================
+' NOTAS ACLARATORIAS
+' ============================================
+
+note "FK = Clave Foránea\nPK = Clave Primaria" as N1
+note top of ac
+  <b>AreaCargo</b>
+  Define los cargos/roles
+  dentro de la organización
+end note
+
+note top of usr
+  <b>Usuario</b>
+  Extiende AbstractUser de Django
+  Roles: admin, docente, colaborador
+end note
+
+note top of cur
+  <b>Curso</b>
+  Estados: borrador, publicado
+  Fecha_limite puede ser NULL
+end note
+
+note top of ic
+  <b>InscripcionCurso</b>
+  UNIQUE(usuario_id, curso_id)
+  Estados: asignado, en_progreso, completado
+end note
+
+note top of cla
+  <b>Clase</b>
+  UNIQUE(curso_id, orden)
+  Contenido en formato RICHTEXT
+end note
+
+note top of ev
+  <b>Evaluacion</b>
+  Porcentaje_aprobacion default: 70
+  Max_intentos 0 = sin límite
+end note
+
+note top of cc
+  <b>ClaseCompletado</b>
+  UNIQUE(usuario_id, clase_id)
+  Registra progreso del estudiante
+end note
+
+note top of cert
+  <b>Certificado</b>
+  UUID para verificación pública
+  Estados: pendiente, aprobado, rechazado
+end note
+
+note top of la
+  <b>LecturaAnuncio</b>
+  UNIQUE(anuncio_id, usuario_id)
+  Tracking de lectura
+end note
+
+note top of et
+  <b>EntregaTarea</b>
+  UNIQUE(tarea_id, estudiante_id)
+  Estados: enviado, calificado, devuelto
+end note
+
+note top of rec
+  <b>Recordatorio</b>
+  Tipos: 7_dias, 3_dias, 1_dia, vencimiento
+  UNIQUE(usuario_id, curso_id, tipo)
+end note
+
+@enduml
