@@ -72,6 +72,10 @@ class IntentoEvaluacion(models.Model):
     class Meta:
         verbose_name = 'Intento de Evaluación'
         verbose_name_plural = 'Intentos de Evaluación'
+        indexes = [
+            models.Index(fields=['usuario', 'evaluacion']),
+            models.Index(fields=['evaluacion', '-fecha_intento']),
+        ]
 
     def __str__(self):
         return f"{self.usuario} - {self.evaluacion.titulo} ({self.puntaje_obtenido}%)"
