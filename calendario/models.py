@@ -25,6 +25,9 @@ class EventoCalendario(models.Model):
         verbose_name = 'Evento de Calendario'
         verbose_name_plural = 'Eventos de Calendario'
         ordering = ['fecha_inicio']
+        indexes = [
+            models.Index(fields=['fecha_inicio', 'fecha_fin']),
+        ]
 
     def __str__(self):
         return f"{self.titulo} ({self.get_tipo_display()})"

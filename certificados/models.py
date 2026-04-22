@@ -36,6 +36,9 @@ class Certificado(models.Model):
     class Meta:
         verbose_name = 'Certificado'
         verbose_name_plural = 'Certificados'
+        indexes = [
+            models.Index(fields=['estado']),
+        ]
 
     def __str__(self):
         return f"Certificado {self.usuario} - {self.curso.titulo} ({self.get_estado_display()})"
