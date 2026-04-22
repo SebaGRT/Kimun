@@ -45,6 +45,10 @@ class Curso(models.Model):
     class Meta:
         verbose_name = 'Curso'
         verbose_name_plural = 'Cursos'
+        indexes = [
+            models.Index(fields=['estado', '-fecha_creacion']),
+            models.Index(fields=['docente_creador']),
+        ]
 
     def __str__(self):
         return self.titulo
@@ -90,6 +94,11 @@ class InscripcionCurso(models.Model):
         verbose_name = 'Inscripción'
         verbose_name_plural = 'Inscripciones'
         unique_together = ['usuario', 'curso']
+        indexes = [
+            models.Index(fields=['usuario', 'estado']),
+            models.Index(fields=['curso', 'estado']),
+            models.Index(fields=['fecha_asignacion']),
+        ]
 
     def __str__(self):
         return f"{self.usuario} - {self.curso} ({self.get_estado_display()})"
@@ -156,6 +165,9 @@ class ClaseCompletado(models.Model):
         verbose_name = 'Clase Completada'
         verbose_name_plural = 'Clases Completadas'
         unique_together = ['usuario', 'clase']
+        indexes = [
+            models.Index(fields=['usuario', 'clase']),
+        ]
 
     def __str__(self):
         return f"{self.usuario} - {self.clase.titulo} ({self.fecha_completado.strftime('%d/%m/%Y')})"
