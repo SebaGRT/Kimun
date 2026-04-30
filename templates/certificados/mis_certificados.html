@@ -47,6 +47,14 @@
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" style="background-color: var(--color-danger-bg); color: var(--color-danger);">
                                     <i class="bi bi-x-circle me-1"></i>Rechazado
                                 </span>
+                                {% elif item.certificado.estado == 'expirado' %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" style="background-color: var(--color-info-bg); color: var(--color-info);">
+                                    <i class="bi bi-calendar-x me-1"></i>Expirado
+                                </span>
+                                {% elif item.certificado.estado == 'revocado' %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" style="background-color: var(--color-danger-bg); color: var(--color-danger);">
+                                    <i class="bi bi-shield-x me-1"></i>Revocado
+                                </span>
                                 {% endif %}
                             {% else %}
                             <span style="color: var(--color-warning);">
@@ -54,6 +62,11 @@
                             </span>
                             {% endif %}
                         </p>
+                        {% if item.certificado and item.certificado.fecha_vencimiento %}
+                        <p class="text-xs mt-1" style="color: var(--color-text-secondary);">
+                            <i class="bi bi-calendar-event me-1"></i>Válido hasta: {{ item.certificado.fecha_vencimiento|date:"d M Y" }}
+                        </p>
+                        {% endif %}
                     </div>
                 </div>
                 <div>
@@ -74,6 +87,14 @@
                     {% endif %}
                 </div>
             </div>
+            {% if item.certificado and item.certificado.estado == 'revocado' and item.certificado.motivo_revocacion %}
+            <div class="mt-4 pt-3 border-t" style="border-color: var(--color-border);">
+                <p class="text-sm" style="color: var(--color-danger);">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    <strong>Motivo de revocación:</strong> {{ item.certificado.motivo_revocacion }}
+                </p>
+            </div>
+            {% endif %}
         </div>
         {% endfor %}
     </div>

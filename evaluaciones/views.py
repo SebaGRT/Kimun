@@ -9,7 +9,7 @@ from django.db.models import Q
 from .models import Evaluacion, Pregunta, Alternativa, IntentoEvaluacion, BancoPreguntas
 from .forms import EvaluacionForm, BancoPreguntasForm
 from cursos.models import Curso, InscripcionCurso
-from usuarios.decorators import docente_or_admin_required
+from usuarios.decorators import docente_or_admin_required, course_owner_or_admin, owner_or_admin
 from datetime import datetime
 import json
 import random
@@ -53,12 +53,10 @@ def evaluacion_list(request, curso_pk):
 
 
 @login_required
+@course_owner_or_admin
 @docente_or_admin_required
 def evaluacion_create(request, curso_pk):
     curso = get_object_or_404(Curso, pk=curso_pk)
-    
-    if request.user.rol == 'docente' and curso.docente_creador != request.user:
-        return HttpResponseForbidden('No puedes crear evaluaciones en este curso.')
     
     if request.method == 'POST':
         form = EvaluacionForm(request.POST)
@@ -113,13 +111,11 @@ def evaluacion_create(request, curso_pk):
 
 
 @login_required
+@owner_or_admin(Evaluacion, 'curso.docente_creador')
 @docente_or_admin_required
 def evaluacion_edit(request, pk):
     evaluacion = get_object_or_404(Evaluacion, pk=pk)
     curso = evaluacion.curso
-    
-    if request.user.rol == 'docente' and curso.docente_creador != request.user:
-        return HttpResponseForbidden('No puedes editar evaluaciones de este curso.')
     
     if request.method == 'POST':
         form = EvaluacionForm(request.POST, instance=evaluacion)
@@ -183,13 +179,11 @@ def evaluacion_edit(request, pk):
 
 
 @login_required
+@owner_or_admin(Evaluacion, 'curso.docente_creador')
 @docente_or_admin_required
 def evaluacion_delete(request, pk):
     evaluacion = get_object_or_404(Evaluacion, pk=pk)
     curso = evaluacion.curso
-    
-    if request.user.rol == 'docente' and curso.docente_creador != request.user:
-        return HttpResponseForbidden('No puedes eliminar evaluaciones de este curso.')
     
     if request.method == 'POST':
         curso_pk = evaluacion.curso.pk
@@ -246,8 +240,10 @@ def tomar_evaluacion(request, pk):
             preguntas_disponibles = list(evaluacion.preguntas.prefetch_related('alternativas').all())
             if len(preguntas_disponibles) >= evaluacion.preguntas_por_intento:
                 preguntas = random.sample(preguntas_disponibles, evaluacion.preguntas_por_intento)
+                random.shuffle(preguntas)
             else:
                 preguntas = preguntas_disponibles
+                random.shuffle(preguntas)
             preguntas_ids = [p.pk for p in preguntas]
             request.session[session_key_preguntas] = preguntas_ids
         else:
@@ -259,7 +255,7 @@ def tomar_evaluacion(request, pk):
     if request.method == 'POST':
         if evaluacion.duracion_minutos and hora_inicio_dt:
             elapsed_seconds = (timezone.now() - hora_inicio_dt).total_seconds()
-            if elapsed_seconds > evaluacion.duracion_minutos * 60:
+            if elapsed_seconds > evaluacion.duracion_minutos * 60 + 30:
                 messages.error(request, 'El tiempo para responder la evaluación ha expirado.')
                 return redirect('evaluaciones:evaluacion_list', curso_pk=evaluacion.curso.pk)
 
@@ -315,15 +311,10 @@ def tomar_evaluacion(request, pk):
                 if inscripcion and inscripcion.estado != 'completado':
                     inscripcion.estado = 'completado'
                     inscripcion.save()
-                
-                # Auto-create pending certificate
-                from certificados.models import Certificado
-                Certificado.objects.get_or_create(
-                    usuario=request.user,
-                    curso=curso,
-                    defaults={'estado': 'pendiente'}
-                )
         
+        request.session.pop(session_key_hora_inicio, None)
+        request.session.pop(session_key_preguntas, None)
+
         return redirect('evaluaciones:resultado_evaluacion', pk=pk, intento_pk=intento.pk)
     
     context = {
@@ -387,12 +378,10 @@ def banco_create(request):
 
 
 @login_required
+@owner_or_admin(BancoPreguntas, 'creado_por')
 @docente_or_admin_required
 def banco_edit(request, pk):
     banco = get_object_or_404(BancoPreguntas, pk=pk)
-
-    if request.user.rol == 'docente' and banco.creado_por != request.user:
-        return HttpResponseForbidden('No puedes editar este banco de preguntas.')
 
     if request.method == 'POST':
         form = BancoPreguntasForm(request.POST, instance=banco)
@@ -408,12 +397,10 @@ def banco_edit(request, pk):
 
 
 @login_required
+@owner_or_admin(BancoPreguntas, 'creado_por')
 @docente_or_admin_required
 def banco_delete(request, pk):
     banco = get_object_or_404(BancoPreguntas, pk=pk)
-
-    if request.user.rol == 'docente' and banco.creado_por != request.user:
-        return HttpResponseForbidden('No puedes eliminar este banco de preguntas.')
 
     if request.method == 'POST':
         banco.delete()
@@ -439,12 +426,10 @@ def banco_detail(request, pk):
 
 
 @login_required
+@owner_or_admin(BancoPreguntas, 'creado_por', pk_kwarg='banco_pk')
 @docente_or_admin_required
 def banco_agregar_pregunta(request, banco_pk):
     banco = get_object_or_404(BancoPreguntas, pk=banco_pk)
-
-    if request.user.rol == 'docente' and banco.creado_por != request.user:
-        return HttpResponseForbidden('No puedes agregar preguntas a este banco.')
 
     if request.method == 'POST':
         try:

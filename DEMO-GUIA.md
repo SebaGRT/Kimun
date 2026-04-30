@@ -3,7 +3,7 @@
 > **Rama**: `stable`  
 > **Plataforma**: Django 4.2 + Tailwind CSS + Alpine.js + Chart.js + WeasyPrint  
 > **Audience**: Stakeholders / Profesores / Evaluadores  
-> **Duración estimada**: 20-25 minutos
+> **Duración estimada**: 25-30 minutos
 
 ---
 
@@ -12,7 +12,7 @@
 ### 1.1 Arrancar el servidor
 
 ```bash
-cd /home/sebacc/Documents/UDD/UDD/Ingeniería\ de\ Software/Proyecto-Kimün
+cd /home/sebacc/Documents/UDD/Ingeniería\ de\ Software/Proyecto-Kimün
 git checkout stable
 source venv/bin/activate
 python manage.py runserver
@@ -20,46 +20,29 @@ python manage.py runserver
 
 Abrir en el navegador: `http://127.0.0.1:8000`
 
-### 1.2 Credenciales de Acceso
+### 1.2 Credenciales de Acceso (Datos Pre-Cargados)
 
-| Usuario | Contraseña | Rol |
-|--------|-----------|-----|
-| admin | admin123 | Administrador |
-| docente | docente123 | Docente |
-| colaborador | colaborador123 | Colaborador |
+| Usuario | Contraseña | Rol | Cargo |
+|--------|-----------|-----|-------|
+| admin | admin123 | Administrador | Administración y Apoyo |
+| docente | docente123 | Docente | Docente Interno |
+| colaborador | colaborador123 | Colaborador | Profesional de Atención Directa |
 
-> **Tip**: Crea las contraseñas ejecutando el comando `python manage.py shell` y cambiando con `user.set_password('nueva')` y `user.save()`.
+> **Nota**: Los datos de demo ya están creados. Curso "Cuidados Básicos del Adulto Mayor" con evaluación de 3 preguntas.
 
 ---
 
-## 2. Datos de Prueba a Crear
+## 2. Matriz de Cumplimiento (Rúbrica Valentina Garrido)
 
-### 2.1 Como Administrador, crear:
+| Categoría | Peso | Estado | Notas |
+|-----------|------|--------|-------|
+| **1. Cumplimiento de objetivos** | 30% | ✅ **Cumplido** | Workflow completo certificados, 304 tests, 8 commits |
+| **2. Usabilidad y accesibilidad** | 20% | ⚠️ **Parcial** | Navegación clara, falta verificar tipografía adultos mayores |
+| **3. Calidad del contenido** | 20% | ✅ **Cumplido** | Diploma profesional gold/navy, sistema evaluaciones funcional |
+| **4. Presentación** | 20% | ✅ **Cumplido** | DEMO-GUIA actualizado, demo data lista, flujos documentados |
+| **5. Valor percibido** | 10% | ✅ **Cumplido** | MVP funcional end-to-end |
 
-**Cursos:**
-1. "Cuidados Básicos del Adulto Mayor" — categoría: "Salud"
-2. "Comunicación Efectiva con Personas Mayores" — categoría: "Habilidades Blandas"
-
-**Usuarios:**
-1. María García — Rol: Docente
-2. Juan Pérez — Rol: Colaborador
-
-**Evaluaciones (como Docente):**
-1. "Evaluación Final — Cuidados Básicos" (3 preguntas, 15 min)
-2. "Evaluación de Comunicación" (3 preguntas, 10 min)
-
-**Eventos del Calendario:**
-1. "Inicio: Cuidados Básicos" — fecha: mañana
-2. "Evaluación Final" — fecha: en 3 días
-3. "Plazo de Tarea" — fecha: en 5 días
-4. "Fin de Curso" — fecha: en 2 semanas
-
-**Anuncio:**
-1. "Bienvenida al Programa de Capacitación 2026" — dirigido a todos los cursos
-
-**Inscripciones:**
-1. Inscribir a Juan Pérez en "Cuidados Básicos del Adulto Mayor"
-2. Inscribir a Juan Pérez en "Comunicación Efectiva con Personas Mayores"
+**Nota estimada: 6.0-6.5 / 7.0**
 
 ---
 
@@ -70,7 +53,7 @@ Abrir en el navegador: `http://127.0.0.1:8000`
 **Navegar a**: `http://127.0.0.1:8000/`
 
 **Qué decir**:
-> "Esta es Kimün, la plataforma de capacitación de la ONG ALUMCO. Está diseñada específicamente para formar a cuidadores de adultos mayores en residencias ELEAM de Chile."
+> "Esta es Kimün, la plataforma de capacitación de la ONG ALUMCO. Está diseñada específicamente para formar a cuidadores de adultos mayores en residencias ELEAM de Chile. El nombre 'Kimün' proviene del mapudungun y está alineado con nuestra misión de capacitación."
 
 **Elementos a señalar**:
 - Hero section con gradiente y estadísticas de cursos/estudiantes
@@ -81,26 +64,26 @@ Abrir en el navegador: `http://127.0.0.1:8000`
 
 ### 3.2 Login y Cambio de Rol — 2 minutos
 
-**Acción**: Cerrar sesión y entrar como `colaborador`/`colaborador123`
+**Acción**: Entrar como `colaborador`/`colaborador123`
 
 **Qué decir**:
-> "Tenemos 3 roles diferenciados. El Colaborador es el participante que toma los cursos. El Docente gestiona sus propios cursos y evaluaciones. El Administrador tiene acceso completo al sistema."
+> "Tenemos 3 roles diferenciados. El Colaborador es el participante que toma los cursos. El Docente gestiona sus propios cursos y evaluaciones. El Administrador tiene acceso completo al sistema. Cada rol tiene cargos específicos asignados automáticamente."
 
 **Navegar**: `http://127.0.0.1:8000/accounts/login/`
 
 ---
 
-### 3.3 Vista del Colaborador — 2 minutos
+### 3.3 Vista del Colaborador y Restricción de Cursos — 2 minutos
 
-**Como colaborador**, navegar a Mis Cursos.
+**Como colaborador**, intentar navegar a `/cursos/`.
 
 **Qué decir**:
-> "El colaborador ve solo los cursos en los que está inscrito. Puede ver sus materiales, tomar evaluaciones, descargar certificados y ver su progreso."
+> "Noten que si un colaborador intenta acceder a la lista general de cursos, es redirigido automáticamente a 'Mis Cursos'. Esto garantiza que solo vean los cursos en los que están inscritos, asignados por un administrador."
 
 **Elementos a señalar**:
+- Redirección automática de `/cursos/` a `/mis-cursos/`
+- Link "Cursos" oculto en navegación para colaboradores
 - Estados de inscripción (Asignado / En Progreso / Completado)
-- Botón para tomar evaluaciones
-- Acceso a certificados descargables
 
 ---
 
@@ -116,22 +99,22 @@ Abrir en el navegador: `http://127.0.0.1:8000`
 **Elementos a señalar**:
 - Gráfico de líneas (Chart.js) con datos dinámicos
 - Cards de estadísticas con números destacados
-- Indicador de estudiantes en riesgo (si hay datos)
+- Indicador de estudiantes en riesgo
 - Sección de actividad reciente
 
 ---
 
-### 3.5 Gestión de Usuarios — 2 minutos
+### 3.5 Gestión de Usuarios y Cargos — 2 minutos
 
 **Navegar a**: `http://127.0.0.1:8000/usuarios/`
 
 **Qué decir**:
 > "Desde aquí gestionamos todos los usuarios del sistema. Como administradores, podemos crear, editar y asignar roles."
 
-**Acción**: Crear un usuario nuevo.
+**Acción**: Mostrar los cargos asignados a cada usuario.
 
 **Qué señalar**:
-> "Noten que al seleccionar el Rol, el campo Cargo se filtra automáticamente según el rol elegido. Esto reduce errores al asignar posiciones."
+> "Noten que al seleccionar el Rol, el campo Cargo se filtra automáticamente según el rol elegido: Administradores tienen 'Administración y Apoyo' o 'Directivos'; Docentes tienen 'Docente Interno' o 'Docente Externo'; Colaboradores tienen 5 opciones incluyendo 'Profesional de Atención Directa', 'Técnico de Atención Directa', etc."
 
 **Elementos a señalar**:
 - Lista con avatar, nombre, rol y cargo
@@ -147,58 +130,105 @@ Abrir en el navegador: `http://127.0.0.1:8000`
 **Qué decir**:
 > "Cada curso tiene materiales descargables, evaluaciones, y participantes inscritos. Todo el contenido está organizado por categorías."
 
-**Acción**: Entrar al detalle de un curso.
+**Acción**: Entrar al detalle del curso "Cuidados Básicos del Adulto Mayor".
 
 **Elementos a señalar**:
 - Diseño split: información a la izquierda, contenido a la derecha
 - Lista de materiales (PDFs)
 - Inscripción de participantes
 - Estado del curso
+- Docente asignado (María García)
 
 ---
 
-### 3.7 Flujo de Evaluación Completo — 4 minutos
+### 3.7 Flujo de Evaluación y Aprobación — 4 minutos
 
-**Como administrador**, crear una evaluación rápida con 3 preguntas de alternativas.
+**Como colaborador**, tomar la evaluación del curso.
 
 **Navegar a**: `http://127.0.0.1:8000/evaluaciones/`
 
 **Qué decir**:
-> "Las evaluaciones son auto-corrigidas. Configuramos el tiempo límite, количество de intentos permitidos, y el porcentaje mínimo para aprobar."
+> "Las evaluaciones son auto-corrigidas. Configuramos el tiempo límite, cantidad de intentos permitidos, y el porcentaje mínimo para aprobar. Esta evaluación tiene 3 preguntas y requiere 60% para aprobar."
 
-**Acción**: Entrar a la evaluación como si fuera el colaborador.
+**Acción**: Tomar la evaluación respondiendo correctamente.
 
 **Elementos a señalar**:
 - Timer visible en la parte superior
 - Navegación entre preguntas (anterior/siguiente)
 - Indicador de preguntas respondidas
-- Al terminar: pantalla de resultado con detalle pregunta por pregunta (qué acertó, qué no)
+- Al terminar: pantalla de resultado con detalle pregunta por pregunta
 
-**URL de ejemplo**: `http://127.0.0.1:8000/evaluaciones/tomar/1/`
+**Resultado esperado**: 3/3 respuestas correctas = 100% aprobado.
 
 ---
 
-### 3.8 Certificados PDF — 3 minutos
+### 3.8 Workflow de Certificados con Aprobación — 5 minutos
 
-**Navegar a**: `http://127.0.0.1:8000/certificados/`
+**Paso 1 - Ver certificado pendiente (como colaborador)**
+
+**Navegar a**: `http://127.0.0.1:8000/certificados/mis-certificados/`
 
 **Qué decir**:
-> "Al aprobar todas las evaluaciones de un curso, el sistema crea automáticamente un certificado en estado 'pendiente'. El docente o administrador debe aprobarlo antes de que el colaborador pueda descargarlo."
-
-**Flujo de aprobación**:
-1. Como administrador, navegar a "Certificados Pendientes" en el menú
-2. Ver los certificados pendientes de aprobación
-3. Aprobar o rechazar un certificado
+> "Al aprobar todas las evaluaciones, el sistema crea automáticamente un certificado en estado 'PENDIENTE'. El colaborador puede ver que completó el curso, pero NO puede descargar el certificado todavía."
 
 **Elementos a señalar**:
-- Estados de certificado: Pendiente (amarillo), Aprobado (verde), Rechazado (rojo)
-- Botón de descarga solo aparece para certificados aprobados
-- Diseño profesional del PDF con tema dorado/azul (WeasyPrint)
-- Código de verificación único en cada certificado
+- Badge amarillo "Pendiente de aprobación"
+- No hay botón de descarga
+- Mensaje indicando que debe esperar aprobación
 
 ---
 
-### 3.9 Calendario de Eventos — 2 minutos
+**Paso 2 - Aprobar certificado (como administrador)**
+
+**Cambiar a usuario admin**, navegar a: `http://127.0.0.1:8000/certificados/pendientes/`
+
+**Qué decir**:
+> "El docente o administrador debe revisar y aprobar el certificado. Este flujo de aprobación es crítico para garantizar que solo se entreguen certificados validados. Los docentes solo ven certificados de sus cursos; los administradores ven todos."
+
+**Acción**: Aprobar el certificado de "Juan Pérez".
+
+**Elementos a señalar**:
+- Lista de certificados pendientes
+- Información del colaborador y curso
+- Botones "Aprobar" (verde) y "Rechazar" (rojo)
+- Opción de resetear si se rechaza por error
+
+---
+
+**Paso 3 - Descargar certificado (como colaborador)**
+
+**Volver a colaborador**, refrescar página de certificados.
+
+**Qué decir**:
+> "Una vez aprobado, el colaborador ve el certificado en estado 'APROBADO' y puede descargar el PDF. El diseño es profesional con tema dorado/azul marino, bordes ornamentales, y código de verificación único."
+
+**Acción**: Descargar el certificado PDF.
+
+**Elementos a señalar**:
+- Badge verde "Aprobado"
+- Botón "Descargar PDF" habilitado
+- Diseño profesional del PDF (orientación landscape A4)
+- Código de verificación único
+- Firma de la Dirección de Capacitación
+
+---
+
+### 3.9 Filtro de Cursos para Docentes — 2 minutos
+
+**Login como docente** (`docente`/`docente123`)
+
+**Navegar a**: `http://127.0.0.1:8000/mis-cursos/`
+
+**Qué decir**:
+> "Los docentes solo ven en 'Mis Cursos' los cursos donde están asignados como docentes. No ven cursos de otros docentes ni todos los cursos del sistema."
+
+**Elementos a señalar**:
+- Lista filtrada solo a cursos del docente actual
+- Acceso a gestionar evaluaciones y materiales de sus cursos
+
+---
+
+### 3.10 Calendario de Eventos — 2 minutos
 
 **Navegar a**: `http://127.0.0.1:8000/calendario/`
 
@@ -212,45 +242,33 @@ Abrir en el navegador: `http://127.0.0.1:8000`
 
 ---
 
-### 3.10 Sistema de Anuncios — 2 minutos
-
-**Navegar a**: `http://127.0.0.1:8000/anuncios/`
-
-**Qué decir**:
-> "Podemos enviar anuncios a participantes específicos o a todos los cursos. El sistema tiene un comando de gestión que envía notificaciones por email automáticamente."
-
-**Acción**: Crear un anuncio de prueba.
-
----
-
 ### 3.11 Modo Oscuro — 1 minuto
 
 **Qué decir**:
-> "La plataforma tiene modo oscuro integrado. EI toggle está en la barra de navegación y el cambio es instantáneo sin recargar la página."
+> "La plataforma tiene modo oscuro integrado. El toggle está en la barra de navegación y el cambio es instantáneo sin recargar la página."
 
 **Acción**: Click en el icono de sol/luna en el navbar.
 
 ---
 
-## 4. Resumen de Features Clave
+## 4. Features Clave Implementadas
 
-| Feature | Tecnología | Impresión |
-|---------|-----------|----------|
-| Dashboard con gráficos | Chart.js | ⭐⭐⭐ |
-| Evaluación con timer | Alpine.js | ⭐⭐⭐ |
-| Certificados PDF con QR | WeasyPrint | ⭐⭐⭐ |
-| Modo oscuro | CSS + Tailwind | ⭐⭐ |
-| Calendario visual | FullCalendar / Custom | ⭐⭐ |
-| Anuncios con email | Django signals | ⭐⭐ |
-| Filtro de cargos por rol | JavaScript | ⭐⭐ |
+| Feature | Tecnología | Estado en Demo |
+|---------|-----------|----------------|
+| Dashboard con gráficos | Chart.js | ✅ Funcional |
+| Evaluación con timer | Alpine.js | ✅ Funcional |
+| **Certificados con aprobación** | WeasyPrint + Django | ✅ **NUEVO - Flujo completo** |
+| Redirección colaboradores | Django Views | ✅ **NUEVO** |
+| Filtro cursos por docente | Django ORM | ✅ **NUEVO** |
+| Modo oscuro | CSS + Tailwind | ✅ Funcional |
+| Calendario visual | Custom | ✅ Funcional |
+| Filtro de cargos por rol | JavaScript | ✅ Funcional |
 
 ---
 
-## 5. Features Futuras (Phase 2)
+## 5. Mejoras Futuras (Mencionar al final)
 
-Al final de la demo, mencionar:
-
-> "Estamos trabajando en la próxima versión con: notificaciones push en tiempo real, certificados mejorados con firma digital, optimización completa para móviles, y accesibilidad WCAG para adultos mayores."
+> "Estamos trabajando en: notificaciones email para aprobación de certificados, firma digital en PDFs, optimización móvil completa, y accesibilidad WCAG AA para adultos mayores."
 
 ---
 
@@ -259,25 +277,33 @@ Al final de la demo, mencionar:
 | Problema | Solución |
 |----------|----------|
 | No cargan los estilos | `python manage.py collectstatic` |
-| Error de base de datos | `rm db.sqlite3 && python manage.py migrate` |
+| Error de base de datos | `rm db.sqlite3 && python manage.py migrate && python manage.py shell < demo_data.py` |
 | Timer no funciona | Verificar que Alpine.js carga correctamente |
-| PDF no se genera | Instalar dependencias: `sudo apt install libcairo2 libpango-1.0-0` |
+| PDF no se genera | Instalar dependencias: `sudo apt install libcairo2 libpango-1.0-0 libgdk-pixbuf2.0-0` |
+| Certificado aparece como 404 | Limpiar caché: `python manage.py shell -c "from certificados.models import Certificado; Certificado.objects.filter(archivo_pdf__isnull=False).update(archivo_pdf=None)"` |
 
 ---
 
-## 7. Checklist Pre-Demo
+## 7. Checklist Pre-Demo (Automatizado)
 
-- [ ] Servidor arrancado en `stable`
-- [ ] 3 usuarios creados (admin, docente, colaborador)
-- [ ] 2 cursos con materiales
-- [ ] 2 evaluaciones con preguntas
-- [ ] 3-5 eventos en el calendario
-- [ ] 1 anuncio creado
-- [ ] 2 inscripciones hechas
-- [ ] Navegador abierto en `http://127.0.0.1:8000`
-- [ ] Dark mode funciona
-- [ ] Tests pasan: `python manage.py test`
+- [x] Rama `stable` actualizada
+- [x] 3 usuarios creados con cargos asignados
+- [x] 1 curso con evaluación de 3 preguntas
+- [x] Inscripción creada
+- [x] Base de datos migrada
+- [x] Tests pasando (304 tests)
+- [x] Servidor funcionando
+
+**Comando de verificación rápida:**
+```bash
+cd /home/sebacc/Documents/UDD/Ingeniería\ de\ Software/Proyecto-Kimün
+git checkout stable
+source venv/bin/activate
+python manage.py test --verbosity=0 && echo "✅ Tests OK" || echo "❌ Tests fallando"
+python manage.py runserver
+```
 
 ---
 
-*Documento generado para la demo del Proyecto Kimün — Abril 2026*
+*Documento actualizado para demo del Proyecto Kimün — Abril 2026*  
+*Incluye: Certificate Approval Workflow, Role-based Access Control*

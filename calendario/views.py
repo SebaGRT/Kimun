@@ -6,7 +6,7 @@ from django.db.models import Q
 from datetime import datetime, timedelta
 import calendar as cal_module
 from .models import EventoCalendario, TipoEvento
-from usuarios.decorators import docente_or_admin_required
+from usuarios.decorators import docente_or_admin_required, owner_or_admin
 
 
 @login_required
@@ -143,13 +143,10 @@ def evento_create(request):
 
 
 @login_required
+@owner_or_admin(EventoCalendario, 'creado_por')
 @docente_or_admin_required
 def evento_edit(request, pk):
     evento = get_object_or_404(EventoCalendario, pk=pk)
-    
-    if request.user.rol != 'admin' and evento.creado_por != request.user:
-        from django.http import HttpResponseForbidden
-        return HttpResponseForbidden('No tienes permisos para editar este evento.')
     
     if request.method == 'POST':
         from .forms import EventoCalendarioForm
@@ -166,13 +163,10 @@ def evento_edit(request, pk):
 
 
 @login_required
+@owner_or_admin(EventoCalendario, 'creado_por')
 @docente_or_admin_required
 def evento_delete(request, pk):
     evento = get_object_or_404(EventoCalendario, pk=pk)
-    
-    if request.user.rol != 'admin' and evento.creado_por != request.user:
-        from django.http import HttpResponseForbidden
-        return HttpResponseForbidden('No tienes permisos para eliminar este evento.')
     
     if request.method == 'POST':
         titulo = evento.titulo

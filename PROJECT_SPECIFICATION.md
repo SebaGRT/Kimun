@@ -8,7 +8,7 @@
 - **Framework:** Django 6.0.3
 - **Database:** SQLite (development), PostgreSQL (production-ready)
 - **Frontend:** Django Templates + TailwindCSS
-- **Rich Text:** django-ckeditor (CKEditor 4)
+- **Rich Text:** django-ckeditor-5 (CKEditor 5)
 - **Authentication:** Custom User model with role-based access
 
 ---
@@ -81,13 +81,17 @@ kimun/
 
 #### 4. `certificados` - Certificate Management
 **Models:**
-- `Certificado` - Certificates with UUID verification codes
+- `Certificado` - Certificates with UUID verification codes, including expiration and revocation status.
 
 **Key Features:**
-- PDF generation (ReportLab)
-- UUID-based verification
-- Download functionality
-- Admin and personal certificate lists
+- **Signal-driven Auto-generation:** Certificates are automatically created when a user completes all course requirements (classes and/or evaluations).
+- **Auto-approval:** Newly generated certificates are set to 'aprobado' status immediately upon creation.
+- **Eligibility Engine:** `CertificateEligibilityService` validates enrollment, class completion percentage, and evaluation results before issuance.
+- **Expiration System:** Certificates can have a validity period defined per course; a management command `actualizar_venimientos` handles automated expiration.
+- **Revocation:** Administrators and teachers can revoke certificates, requiring a mandatory reason for the action.
+- **PDF Generation:** Dynamic PDF creation using WeasyPrint with lazy loading on first download.
+- **Verification:** Public UUID-based verification page to validate certificate authenticity and status.
+- **Per-Course Settings:** Granular control over certificate issuance (active status, required classes/evaluations, and validity duration).
 
 #### 5. `reportes` - Reporting & Analytics
 **Views:**
@@ -161,10 +165,13 @@ Curso (1) ───< (N) Categoria
 - [x] Evaluation required for completion
 
 **Certificates:**
-- [x] PDF certificate generation
+- [x] PDF certificate generation (WeasyPrint)
 - [x] UUID verification codes
 - [x] Certificate verification page
 - [x] Download functionality
+- [x] Signal-driven auto-issuance
+- [x] Revocation with mandatory reason
+- [x] Automated expiration system
 
 **Reporting:**
 - [x] Admin dashboard
@@ -183,9 +190,8 @@ Curso (1) ───< (N) Categoria
 
 ### Missing Features
 1. **Evaluation Enhancements** - No attempt limits, timers, or question randomization
-2. **Automatic Certificates** - Manual generation only (no auto-issuance on completion)
-3. **Audit Logging** - No tracking of who did what
-4. **API Layer** - No REST API for mobile/frontend apps
+2. **Audit Logging** - No tracking of who did what
+3. **API Layer** - No REST API for mobile/frontend apps
 
 ---
 
@@ -244,7 +250,7 @@ Curso (1) ───< (N) Categoria
 ## Key Technologies
 
 ### Django Packages
-- `django-ckeditor` - Rich text editing
+- `django-ckeditor-5` - Rich text editing
 - `django-crispy-forms` - Form rendering (partially used)
 - `reportlab` - PDF generation
 - `openpyxl` - Excel export for reports
@@ -299,11 +305,8 @@ Build comprehensive test coverage
 ### Priority 4: Evaluation Engine ⏱️
 Add timers, attempt limits, randomization
 
-### Priority 5: Auto Certificates 📜
-Auto-issue on course completion
-
-### Priority 6: Progress Model 📊
-Unified progress tracking
+### Priority 5: Unified Progress Tracking 📊
+Unified progress tracking across all apps
 
 ### Priority 7: Audit Logging 🔍
 Track all significant actions
@@ -364,7 +367,7 @@ Track all significant actions
 - CRUD Categorías
 - CRUD Cursos (todos)
 - Inscribir usuarios a cursos
-- Generar certificados manualmente
+- Revocar certificados (requiere motivo)
 - Ver dashboard con estadísticas
 - Gestión de anuncios
 - Generar reportes
@@ -455,10 +458,14 @@ class Curso
   - categoria: ForeignKey(Categoria)
   - docente_creador: ForeignKey(Usuario)
   - estado: CharField(borrador/publicado)
-  - fecha_inicio: DateTimeField
-  - fecha_fin: DateTimeField
-  - porcentaje_aprobacion: IntegerField
-  - methods: clean(), save(), es_completado_por(usuario)
+  - fecha_creacion: DateTimeField
+  - fecha_limite: DateTimeField
+  - certificado_activo: BooleanField
+  - certificado_requiere_clases: BooleanField
+  - certificado_porcentaje_minimo_clases: PositiveIntegerField
+  - certificado_requiere_evaluaciones: BooleanField
+  - certificado_vigencia_meses: PositiveIntegerField
+  - methods: clean(), save()
 
 class Material
   - curso: ForeignKey(Curso)
@@ -470,7 +477,7 @@ class Material
 class Clase
   - curso: ForeignKey(Curso)
   - titulo: CharField
-  - contenido: RichTextField(ckeditor)
+  - contenido: CKEditor5Field
   - orden: PositiveIntegerField
   - methods: es_accesible_para(usuario)
 
@@ -528,9 +535,11 @@ class Certificado
   - curso: ForeignKey(Curso)
   - codigo_verificacion: UUIDField(unique)
   - fecha_emision: DateTimeField
-  - fecha_expiracion: DateTimeField
-  - pdf: FileField
-  - methods: generar_pdf(), verificar()
+  - fecha_vencimiento: DateTimeField
+  - estado: CharField(choices: pendiente/aprobado/rechazado/revocado/expirado)
+  - motivo_revocacion: TextField
+  - archivo_pdf: FileField
+  - methods: descargar_pdf(), verificar()
 ```
 
 **calendario App:**

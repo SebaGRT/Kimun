@@ -568,7 +568,7 @@ class InscribirCursoViewTests(TestCase):
     def test_inscribir_curso_post_valid(self):
         self.client.login(username='admin', password='testpass')
         response = self.client.post(reverse('usuarios:inscribir_curso', kwargs={'curso_id': self.curso.pk}), {
-            'usuario_id': self.colaborador.pk
+            'usuario': self.colaborador.pk
         })
         self.assertEqual(response.status_code, 302)
         from cursos.models import InscripcionCurso

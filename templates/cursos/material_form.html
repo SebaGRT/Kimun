@@ -56,17 +56,17 @@
             {% endif %}
         </div>
         
-        <!-- Archivo (para PDF) -->
+        <!-- Archivo (para PDF, Video archivo, Office) -->
         <div class="mb-6" id="archivo-field">
             <label class="block text-base font-medium mb-2">
-                Archivo PDF
+                Archivo
             </label>
             {{ form.archivo }}
             {% if form.archivo.errors %}
             <p class="mt-2 text-sm text-red-500">{{ form.archivo.errors.0 }}</p>
             {% endif %}
             <p class="mt-2 text-sm text-secondary">
-                Máximo 50MB. Formato: PDF
+                Máximo 50MB. Formatos: PDF, Video (MP4, MOV, AVI, MKV, WEBM), Office (DOC, DOCX, XLS, XLSX, PPT, PPTX)
             </p>
         </div>
         
@@ -103,12 +103,12 @@
     const urlField = document.getElementById('url-field');
 
     function toggleFields() {
-        if (tipoSelect.value === 'pdf') {
-            archivoField.style.display = 'block';
-            urlField.style.display = 'none';
-        } else {
+        if (tipoSelect.value === 'video') {
             archivoField.style.display = 'none';
             urlField.style.display = 'block';
+        } else {
+            archivoField.style.display = 'block';
+            urlField.style.display = 'none';
         }
     }
 

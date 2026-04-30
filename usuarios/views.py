@@ -8,6 +8,7 @@ from django import forms
 from django.db import models
 from django.core.paginator import Paginator
 from cursos.models import Curso, InscripcionCurso
+from cursos.forms import InscripcionDirectaForm
 from usuarios.decorators import admin_required
 
 Usuario = get_user_model()
@@ -175,7 +176,13 @@ def perfil(request):
     recent_inscripciones = InscripcionCurso.objects.filter(
         usuario=request.user
     ).select_related('curso').order_by('-fecha_asignacion')[:5]
-    
+
+    from cursos.models import ProgresoCurso
+    progresos = ProgresoCurso.objects.filter(usuario=request.user).select_related('curso')
+    progreso_promedio = 0
+    if progresos.exists():
+        progreso_promedio = int(progresos.aggregate(avg=models.Avg('porcentaje'))['avg'] or 0)
+
     context = {
         'intentos': intentos,
         'certificados': certificados,
@@ -187,6 +194,8 @@ def perfil(request):
         'evaluations_passed': evaluations_passed,
         'completion_rate': completion_rate,
         'recent_inscripciones': recent_inscripciones,
+        'progreso_promedio': progreso_promedio,
+        'progresos': progresos,
     }
     return render(request, 'usuarios/perfil.html', context)
 
@@ -337,31 +346,23 @@ def inscribir_curso(request, curso_id):
     curso = get_object_or_404(Curso, pk=curso_id)
     
     if request.method == 'POST':
-        usuario_id = request.POST.get('usuario_id')
-        
-        try:
-            usuario = Usuario.objects.get(pk=usuario_id)
-            
-            if InscripcionCurso.objects.filter(usuario=usuario, curso=curso).exists():
-                messages.error(request, f'El usuario {usuario.get_full_name()} ya está inscrito en este curso.')
-            else:
-                inscripcion = InscripcionCurso.objects.create(
-                    usuario=usuario,
-                    curso=curso,
-                    estado='asignado'
-                )
-                from usuarios.utils import notificar_inscripcion
-                notificar_inscripcion(inscripcion)
-                messages.success(request, f'{usuario.get_full_name()} ha sido inscrito en {curso.titulo}')
-                return redirect('cursos:curso_detail', pk=curso.id)
-        except Usuario.DoesNotExist:
-            messages.error(request, 'Usuario no encontrado.')
+        form = InscripcionDirectaForm(request.POST, curso=curso)
+        if form.is_valid():
+            inscripcion = form.save()
+            from usuarios.utils import notificar_inscripcion
+            notificar_inscripcion(inscripcion)
+            usuario = inscripcion.usuario
+            messages.success(request, f'{usuario.get_full_name()} ha sido inscrito en {curso.titulo}')
+            return redirect('cursos:curso_detail', pk=curso.id)
+    else:
+        form = InscripcionDirectaForm(curso=curso)
     
     usuarios_inscritos = InscripcionCurso.objects.filter(curso=curso).values_list('usuario_id', flat=True)
     usuarios_disponibles = Usuario.objects.exclude(id__in=usuarios_inscritos).filter(rol='colaborador')
     
     return render(request, 'usuarios/inscribir_curso.html', {
         'curso': curso,
+        'form': form,
         'usuarios': usuarios_disponibles
     })
 

@@ -4,9 +4,11 @@ from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 from datetime import timedelta
-from cursos.models import Categoria, Curso, Material, InscripcionCurso, Clase, ClaseCompletado
+from cursos.models import Categoria, Curso, Material, InscripcionCurso, Clase, ClaseCompletado, ProgresoCurso
 from cursos.forms import CursoForm, MaterialForm, CategoriaForm, ClaseForm
 from cursos.views import curso_list, curso_create, curso_detail, material_create, categoria_create
+from cursos.utils import obtener_o_calcular_progreso
+from evaluaciones.models import Evaluacion, IntentoEvaluacion
 
 Usuario = get_user_model()
 
@@ -139,8 +141,12 @@ class MaterialModelTests(TestCase):
         choices = dict(Material.TIPO_CHOICES)
         self.assertIn('pdf', choices)
         self.assertIn('video', choices)
+        self.assertIn('video_file', choices)
+        self.assertIn('office', choices)
         self.assertEqual(choices['pdf'], 'PDF')
         self.assertEqual(choices['video'], 'Video URL')
+        self.assertEqual(choices['video_file'], 'Video (archivo)')
+        self.assertEqual(choices['office'], 'Documento Office')
 
     def test_material_related_name(self):
         self.assertEqual(self.curso.materiales.count(), 2)
@@ -373,6 +379,48 @@ class MaterialFormTests(TestCase):
     def test_form_video_valid(self):
         form = MaterialForm(data=self.valid_video_data)
         self.assertTrue(form.is_valid(), msg=f"Form errors: {form.errors}")
+
+    def test_form_video_file_requires_archivo(self):
+        data = {
+            'titulo': 'Video Archivo',
+            'tipo': 'video_file',
+            'url': ''
+        }
+        form = MaterialForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('archivo', form.errors)
+
+    def test_form_office_requires_archivo(self):
+        data = {
+            'titulo': 'Documento Office',
+            'tipo': 'office',
+            'url': ''
+        }
+        form = MaterialForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('archivo', form.errors)
+
+    def test_form_video_file_invalid_extension(self):
+        video_file = SimpleUploadedFile("test.txt", b"file content", content_type="text/plain")
+        data = {
+            'titulo': 'Video Archivo',
+            'tipo': 'video_file',
+            'url': ''
+        }
+        form = MaterialForm(data=data, files={'archivo': video_file})
+        self.assertFalse(form.is_valid())
+        self.assertIn('archivo', form.errors)
+
+    def test_form_office_invalid_extension(self):
+        office_file = SimpleUploadedFile("test.txt", b"file content", content_type="text/plain")
+        data = {
+            'titulo': 'Documento Office',
+            'tipo': 'office',
+            'url': ''
+        }
+        form = MaterialForm(data=data, files={'archivo': office_file})
+        self.assertFalse(form.is_valid())
+        self.assertIn('archivo', form.errors)
 
 
 class CategoriaFormTests(TestCase):
@@ -786,3 +834,95 @@ class ClaseCompletarViewTests(TestCase):
         response = self.client.post(reverse('cursos:clase_completar', kwargs={'pk': self.clase1.pk}))
         self.assertEqual(response.status_code, 302)
         self.assertEqual(ClaseCompletado.objects.filter(usuario=self.colaborador, clase=self.clase1).count(), 1)
+
+
+class ProgresoCursoModelTests(TestCase):
+    def setUp(self):
+        self.docente = Usuario.objects.create_user(
+            username='docente', password='testpass', rol='docente', rut='11111111-1'
+        )
+        self.colaborador = Usuario.objects.create_user(
+            username='colaborador', password='testpass', rol='colaborador', rut='22222222-2'
+        )
+        self.curso = Curso.objects.create(
+            titulo='Curso Progreso',
+            descripcion='Descripción',
+            docente_creador=self.docente,
+            estado='publicado'
+        )
+        self.clase1 = Clase.objects.create(
+            curso=self.curso,
+            titulo='Clase 1',
+            contenido='<p>Contenido 1</p>',
+            orden=1
+        )
+        self.clase2 = Clase.objects.create(
+            curso=self.curso,
+            titulo='Clase 2',
+            contenido='<p>Contenido 2</p>',
+            orden=2
+        )
+        self.evaluacion = Evaluacion.objects.create(
+            curso=self.curso,
+            titulo='Evaluación 1',
+            porcentaje_aprobacion=70
+        )
+
+    def test_progreso_curso_creation(self):
+        progreso = ProgresoCurso.objects.create(
+            usuario=self.colaborador,
+            curso=self.curso,
+            porcentaje=0
+        )
+        self.assertEqual(progreso.usuario, self.colaborador)
+        self.assertEqual(progreso.curso, self.curso)
+        self.assertEqual(progreso.porcentaje, 0)
+
+    def test_progreso_curso_calcular_progreso_clases(self):
+        progreso = ProgresoCurso.objects.create(
+            usuario=self.colaborador,
+            curso=self.curso
+        )
+        ClaseCompletado.objects.create(usuario=self.colaborador, clase=self.clase1)
+        porcentaje = progreso.calcular_progreso()
+        self.assertEqual(progreso.clases_completadas, 1)
+        self.assertEqual(progreso.total_clases, 2)
+        self.assertEqual(porcentaje, 25)
+
+    def test_progreso_curso_calcular_progreso_clases_y_evaluaciones(self):
+        progreso = ProgresoCurso.objects.create(
+            usuario=self.colaborador,
+            curso=self.curso
+        )
+        ClaseCompletado.objects.create(usuario=self.colaborador, clase=self.clase1)
+        ClaseCompletado.objects.create(usuario=self.colaborador, clase=self.clase2)
+        IntentoEvaluacion.objects.create(
+            usuario=self.colaborador,
+            evaluacion=self.evaluacion,
+            puntaje_obtenido=80,
+            aprobado=True
+        )
+        porcentaje = progreso.calcular_progreso()
+        self.assertEqual(progreso.clases_completadas, 2)
+        self.assertEqual(progreso.evaluaciones_aprobadas, 1)
+        self.assertEqual(porcentaje, 100)
+
+    def test_progreso_curso_unique_together(self):
+        ProgresoCurso.objects.create(usuario=self.colaborador, curso=self.curso)
+        with self.assertRaises(Exception):
+            ProgresoCurso.objects.create(usuario=self.colaborador, curso=self.curso)
+
+    def test_obtener_o_calcular_progreso_util(self):
+        progreso = obtener_o_calcular_progreso(self.colaborador, self.curso)
+        self.assertEqual(progreso.usuario, self.colaborador)
+        self.assertEqual(progreso.curso, self.curso)
+        self.assertEqual(progreso.total_clases, 2)
+        self.assertEqual(progreso.total_evaluaciones, 1)
+
+    def test_signal_actualiza_progreso_al_completar_clase(self):
+        progreso_inicial = obtener_o_calcular_progreso(self.colaborador, self.curso)
+        self.assertEqual(progreso_inicial.clases_completadas, 0)
+        ClaseCompletado.objects.create(usuario=self.colaborador, clase=self.clase1)
+        progreso_inicial.refresh_from_db()
+        self.assertEqual(progreso_inicial.clases_completadas, 1)
+        self.assertEqual(progreso_inicial.porcentaje, 25)

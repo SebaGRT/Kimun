@@ -52,7 +52,8 @@
              :class="timeLeft <= 300 ? 'bg-red-50 text-red-700 border-red-200' : 'bg-blue-50 text-blue-800 border-blue-200'"
              style="border-width: 1px;">
             <i class="bi" :class="timeLeft <= 300 ? 'bi-alarm-fill animate-pulse' : 'bi-clock-history'"></i>
-            <span>Tiempo restante: <span x-text="formatTime(timeLeft)" class="font-mono tabular-nums"></span></span>
+            <span x-show="timeLeft > 0">Tiempo restante: <span x-text="formatTime(timeLeft)" class="font-mono tabular-nums"></span></span>
+            <span x-show="timeLeft <= 0">¡Tiempo agotado! Enviando...</span>
         </div>
         {% endif %}
         
@@ -161,6 +162,7 @@ function evaluacionApp() {
         respuestas: {},
         started: false,
         timeLeft: {{ evaluacion.duracion_minutos|default:0 }} * 60,
+        graceLeft: 5,
         timer: null,
         preguntas: [
             {% for pregunta in preguntas %}
@@ -184,10 +186,13 @@ function evaluacionApp() {
             this.timer = setInterval(() => {
                 if (this.timeLeft > 0) {
                     this.timeLeft--;
+                } else if (this.graceLeft > 0) {
+                    this.graceLeft--;
                 }
-                if (this.timeLeft <= 0) {
+                if (this.timeLeft <= 0 && this.graceLeft <= 0) {
                     clearInterval(this.timer);
-                    document.querySelector('form').submit();
+                    document.getElementById('respuestasInput').value = JSON.stringify(this.respuestas);
+                    document.getElementById('evalForm').submit();
                 }
             }, 1000);
         },

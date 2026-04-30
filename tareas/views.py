@@ -1,12 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import HttpResponseForbidden
 from django.db.models import Q
 from .models import Tarea, EntregaTarea
 from .forms import TareaForm, EntregaTareaForm, CalificacionForm
 from cursos.models import Curso, InscripcionCurso
-from usuarios.decorators import docente_or_admin_required
+from usuarios.decorators import docente_or_admin_required, course_owner_or_admin, owner_or_admin
 
 
 @login_required
@@ -55,12 +54,10 @@ def tarea_detail(request, pk):
 
 
 @login_required
+@course_owner_or_admin
 @docente_or_admin_required
 def tarea_create(request, curso_pk):
     curso = get_object_or_404(Curso, pk=curso_pk)
-    
-    if request.user.rol == 'docente' and curso.docente_creador != request.user:
-        return HttpResponseForbidden('No puedes crear tareas en este curso.')
     
     if request.method == 'POST':
         form = TareaForm(request.POST)
@@ -82,12 +79,10 @@ def tarea_create(request, curso_pk):
 
 
 @login_required
+@owner_or_admin(Tarea, 'creado_por')
 @docente_or_admin_required
 def tarea_edit(request, pk):
     tarea = get_object_or_404(Tarea, pk=pk)
-    
-    if request.user.rol == 'docente' and tarea.creado_por != request.user:
-        return HttpResponseForbidden('No puedes editar esta tarea.')
     
     if request.method == 'POST':
         form = TareaForm(request.POST, instance=tarea)
@@ -106,12 +101,10 @@ def tarea_edit(request, pk):
 
 
 @login_required
+@owner_or_admin(Tarea, 'creado_por')
 @docente_or_admin_required
 def tarea_delete(request, pk):
     tarea = get_object_or_404(Tarea, pk=pk)
-    
-    if request.user.rol == 'docente' and tarea.creado_por != request.user:
-        return HttpResponseForbidden('No puedes eliminar esta tarea.')
     
     curso_pk = tarea.curso.pk
     
@@ -161,12 +154,10 @@ def entrega_create(request, tarea_pk):
 
 
 @login_required
+@owner_or_admin(EntregaTarea, 'tarea.creado_por')
 @docente_or_admin_required
 def entrega_grade(request, pk):
     entrega = get_object_or_404(EntregaTarea, pk=pk)
-    
-    if request.user.rol == 'docente' and entrega.tarea.creado_por != request.user:
-        return HttpResponseForbidden('No puedes calificar esta entrega.')
     
     if request.method == 'POST':
         form = CalificacionForm(request.POST, instance=entrega)

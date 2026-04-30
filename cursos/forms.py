@@ -1,6 +1,7 @@
 from django import forms
 from django.conf import settings
-from .models import Curso, Material, Categoria, Clase
+from .models import Curso, Material, Categoria, Clase, InscripcionCurso
+from usuarios.models import Usuario
 
 
 class CursoForm(forms.ModelForm):
@@ -64,7 +65,7 @@ class MaterialForm(forms.ModelForm):
             }),
             'archivo': forms.FileInput(attrs={
                 'class': 'input-field w-full px-4 py-3 rounded-xl text-lg',
-                'accept': '.pdf'
+                'accept': '.pdf,.mp4,.mov,.avi,.mkv,.webm,.doc,.docx,.xls,.xlsx,.ppt,.pptx'
             }),
             'url': forms.URLInput(attrs={
                 'class': 'input-field w-full px-4 py-3 rounded-xl text-lg',
@@ -78,11 +79,20 @@ class MaterialForm(forms.ModelForm):
         archivo = cleaned_data.get('archivo')
         url = cleaned_data.get('url')
 
-        if tipo == 'pdf' and not archivo:
-            self.add_error('archivo', 'Debes subir un archivo PDF para este tipo de material.')
+        if tipo in ('pdf', 'video_file', 'office') and not archivo:
+            self.add_error('archivo', 'Debes subir un archivo para este tipo de material.')
 
         if tipo == 'video' and not url:
             self.add_error('url', 'Debes ingresar una URL de video para este tipo de material.')
+
+        if tipo and archivo:
+            nombre = archivo.name.lower()
+            if tipo == 'pdf' and not nombre.endswith('.pdf'):
+                self.add_error('archivo', 'El archivo debe ser un PDF.')
+            elif tipo == 'video_file' and not any(nombre.endswith(ext) for ext in ('.mp4', '.mov', '.avi', '.mkv', '.webm')):
+                self.add_error('archivo', 'El archivo debe ser un video (MP4, MOV, AVI, MKV, WEBM).')
+            elif tipo == 'office' and not any(nombre.endswith(ext) for ext in ('.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx')):
+                self.add_error('archivo', 'El archivo debe ser un documento Office (DOC, DOCX, XLS, XLSX, PPT, PPTX).')
 
         return cleaned_data
 
@@ -149,3 +159,24 @@ class ClaseForm(forms.ModelForm):
                 )
 
         return cleaned_data
+
+
+class InscripcionDirectaForm(forms.ModelForm):
+    class Meta:
+        model = InscripcionCurso
+        fields = ['usuario']
+
+    def __init__(self, *args, curso=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.curso = curso
+        inscritos = InscripcionCurso.objects.filter(curso=curso).values_list('usuario_id', flat=True)
+        self.fields['usuario'].queryset = Usuario.objects.filter(rol='colaborador').exclude(id__in=inscritos)
+        self.fields['usuario'].label = 'Colaborador'
+
+    def save(self, commit=True):
+        inscripcion = super().save(commit=False)
+        inscripcion.curso = self.curso
+        inscripcion.estado = 'asignado'
+        if commit:
+            inscripcion.save()
+        return inscripcion

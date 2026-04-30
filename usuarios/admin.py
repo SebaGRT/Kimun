@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.admin import AdminSite
 
+from .models import Auditoria
+
 
 class KimunAdminSite(AdminSite):
     site_title = 'Kimün - Administración'
@@ -29,3 +31,21 @@ class KimunAdminSite(AdminSite):
 
 
 kimun_admin_site = KimunAdminSite(name='kimun_admin')
+
+
+@admin.register(Auditoria)
+class AuditoriaAdmin(admin.ModelAdmin):
+    list_display = ['fecha', 'usuario', 'accion', 'descripcion', 'ip_address']
+    list_filter = ['accion', 'fecha']
+    search_fields = ['usuario__username', 'descripcion']
+    readonly_fields = ['usuario', 'accion', 'descripcion', 'ip_address', 'fecha', 'objeto_tipo', 'objeto_id']
+    date_hierarchy = 'fecha'
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False

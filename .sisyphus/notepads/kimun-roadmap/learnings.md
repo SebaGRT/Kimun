@@ -52,3 +52,11 @@
 - `python manage.py test --verbosity=0` completed with `Ran 286 tests` and `OK`.
 - `python manage.py makemigrations --dry-run` returned `No changes detected`.
 - Git state at verification time showed existing working tree changes and untracked evidence files under `.sisyphus/evidence/`.
+
+## 2025-04-23 — Extending Material Model for Video & Office Files
+
+- **Extending choices without schema changes**: Django `choices` on a `CharField` can be extended without altering the field definition itself; `makemigrations` only generates an `AlterField` for the choices update.
+- **Generic file fields**: The existing `archivo` `FileField` and `url` `URLField` were already generic enough to support new material types (`video_file`, `office`) without adding new model fields.
+- **Case-insensitive validation**: File extension validation in `MaterialForm.clean()` uses `.lower()` on the filename before checking extensions, ensuring `.MP4` and `.mp4` are treated equally.
+- **Template conditional display**: Using Django template `{% if material.tipo == 'video_file' %}` to embed a `<video controls>` player directly in `curso_detail.html` keeps the UI clean and type-specific.
+- **HTML comment convention**: The `material_form.html` template uses section HTML comments (`<!-- Archivo (para PDF, Video archivo, Office) -->`) to demarcate field groups; maintaining this pattern aids future developers.

@@ -1,6 +1,8 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.utils import timezone
+from datetime import timedelta
 import json
 from evaluaciones.models import Evaluacion, Pregunta, Alternativa, IntentoEvaluacion
 from evaluaciones.forms import EvaluacionForm
@@ -471,3 +473,381 @@ class TomarEvaluacionViewTests(TestCase):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 404)
+
+
+class EvaluacionIntentoLimitTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.docente = Usuario.objects.create_user(
+            username='docente', password='testpass', rol='docente', rut='11111111-1'
+        )
+        self.colaborador = Usuario.objects.create_user(
+            username='colaborador', password='testpass', rol='colaborador', rut='22222222-2'
+        )
+        self.admin = Usuario.objects.create_user(
+            username='admin', password='testpass', rol='admin', rut='33333333-3'
+        )
+        self.curso = Curso.objects.create(
+            titulo='Curso Test',
+            descripcion='Descripcion',
+            docente_creador=self.docente
+        )
+        self.evaluacion = Evaluacion.objects.create(
+            curso=self.curso,
+            titulo='Evaluacion Test',
+            porcentaje_aprobacion=70,
+            max_intentos=2
+        )
+        self.pregunta = Pregunta.objects.create(
+            evaluacion=self.evaluacion,
+            texto='Pregunta 1'
+        )
+        self.alt_correcta = Alternativa.objects.create(
+            pregunta=self.pregunta,
+            texto='Correcta',
+            es_correcta=True
+        )
+        self.alt_incorrecta = Alternativa.objects.create(
+            pregunta=self.pregunta,
+            texto='Incorrecta',
+            es_correcta=False
+        )
+        InscripcionCurso.objects.create(
+            usuario=self.colaborador,
+            curso=self.curso,
+            estado='asignado'
+        )
+        InscripcionCurso.objects.create(
+            usuario=self.admin,
+            curso=self.curso,
+            estado='asignado'
+        )
+
+    def _hacer_intento(self, usuario):
+        self.client.login(username=usuario.username, password='testpass')
+        respuestas = {str(self.pregunta.pk): str(self.alt_correcta.pk)}
+        response = self.client.post(
+            reverse('evaluaciones:tomar_evaluacion', kwargs={'pk': self.evaluacion.pk}),
+            {'respuestas': json.dumps(respuestas)}
+        )
+        self.client.logout()
+        return response
+
+    def test_dos_intentos_permitidos(self):
+        response1 = self._hacer_intento(self.colaborador)
+        self.assertEqual(response1.status_code, 302)
+        response2 = self._hacer_intento(self.colaborador)
+        self.assertEqual(response2.status_code, 302)
+        self.assertEqual(
+            IntentoEvaluacion.objects.filter(usuario=self.colaborador, evaluacion=self.evaluacion).count(),
+            2
+        )
+
+    def test_tercer_intento_bloqueado(self):
+        self._hacer_intento(self.colaborador)
+        self._hacer_intento(self.colaborador)
+        self.client.login(username='colaborador', password='testpass')
+        response = self.client.get(
+            reverse('evaluaciones:tomar_evaluacion', kwargs={'pk': self.evaluacion.pk})
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            IntentoEvaluacion.objects.filter(usuario=self.colaborador, evaluacion=self.evaluacion).count(),
+            2
+        )
+
+    def test_admin_tambien_bloqueado(self):
+        self._hacer_intento(self.admin)
+        self._hacer_intento(self.admin)
+        self.client.login(username='admin', password='testpass')
+        response = self.client.get(
+            reverse('evaluaciones:tomar_evaluacion', kwargs={'pk': self.evaluacion.pk})
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            IntentoEvaluacion.objects.filter(usuario=self.admin, evaluacion=self.evaluacion).count(),
+            2
+        )
+
+
+class EvaluacionTimerTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.docente = Usuario.objects.create_user(
+            username='docente', password='testpass', rol='docente', rut='11111111-1'
+        )
+        self.colaborador = Usuario.objects.create_user(
+            username='colaborador', password='testpass', rol='colaborador', rut='22222222-2'
+        )
+        self.curso = Curso.objects.create(
+            titulo='Curso Test',
+            descripcion='Descripcion',
+            docente_creador=self.docente
+        )
+        self.evaluacion = Evaluacion.objects.create(
+            curso=self.curso,
+            titulo='Evaluacion Test',
+            porcentaje_aprobacion=70,
+            duracion_minutos=1
+        )
+        self.pregunta = Pregunta.objects.create(
+            evaluacion=self.evaluacion,
+            texto='Pregunta 1'
+        )
+        self.alt_correcta = Alternativa.objects.create(
+            pregunta=self.pregunta,
+            texto='Correcta',
+            es_correcta=True
+        )
+        self.alt_incorrecta = Alternativa.objects.create(
+            pregunta=self.pregunta,
+            texto='Incorrecta',
+            es_correcta=False
+        )
+        InscripcionCurso.objects.create(
+            usuario=self.colaborador,
+            curso=self.curso,
+            estado='asignado'
+        )
+
+    def test_hora_inicio_guardada_en_sesion(self):
+        self.client.login(username='colaborador', password='testpass')
+        self.client.get(reverse('evaluaciones:tomar_evaluacion', kwargs={'pk': self.evaluacion.pk}))
+        session_key = f'eval_{self.evaluacion.pk}_hora_inicio'
+        self.assertIn(session_key, self.client.session)
+        self.assertIsNotNone(self.client.session[session_key])
+
+    def test_hora_inicio_guardada_en_intento(self):
+        self.client.login(username='colaborador', password='testpass')
+        self.client.get(reverse('evaluaciones:tomar_evaluacion', kwargs={'pk': self.evaluacion.pk}))
+        respuestas = {str(self.pregunta.pk): str(self.alt_correcta.pk)}
+        self.client.post(
+            reverse('evaluaciones:tomar_evaluacion', kwargs={'pk': self.evaluacion.pk}),
+            {'respuestas': json.dumps(respuestas)}
+        )
+        intento = IntentoEvaluacion.objects.filter(usuario=self.colaborador, evaluacion=self.evaluacion).first()
+        self.assertIsNotNone(intento)
+        self.assertIsNotNone(intento.hora_inicio)
+
+    def test_post_expirado_rechazado(self):
+        self.client.login(username='colaborador', password='testpass')
+        self.client.get(reverse('evaluaciones:tomar_evaluacion', kwargs={'pk': self.evaluacion.pk}))
+        session = self.client.session
+        session_key = f'eval_{self.evaluacion.pk}_hora_inicio'
+        hora_expirada = (timezone.now() - timedelta(minutes=2)).isoformat()
+        session[session_key] = hora_expirada
+        session.save()
+        respuestas = {str(self.pregunta.pk): str(self.alt_correcta.pk)}
+        response = self.client.post(
+            reverse('evaluaciones:tomar_evaluacion', kwargs={'pk': self.evaluacion.pk}),
+            {'respuestas': json.dumps(respuestas)}
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            IntentoEvaluacion.objects.filter(usuario=self.colaborador, evaluacion=self.evaluacion).count(),
+            0
+        )
+
+
+class EvaluacionRandomizationTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.docente = Usuario.objects.create_user(
+            username='docente', password='testpass', rol='docente', rut='11111111-1'
+        )
+        self.colaborador = Usuario.objects.create_user(
+            username='colaborador', password='testpass', rol='colaborador', rut='22222222-2'
+        )
+        self.curso = Curso.objects.create(
+            titulo='Curso Test',
+            descripcion='Descripcion',
+            docente_creador=self.docente
+        )
+        self.evaluacion = Evaluacion.objects.create(
+            curso=self.curso,
+            titulo='Evaluacion Test',
+            porcentaje_aprobacion=70,
+            max_intentos=0,
+            preguntas_por_intento=5
+        )
+        self.preguntas = []
+        self.alternativas_correctas = {}
+        for i in range(10):
+            pregunta = Pregunta.objects.create(
+                evaluacion=self.evaluacion,
+                texto=f'Pregunta {i+1}'
+            )
+            alt_correcta = Alternativa.objects.create(
+                pregunta=pregunta,
+                texto=f'Correcta {i+1}',
+                es_correcta=True
+            )
+            Alternativa.objects.create(
+                pregunta=pregunta,
+                texto=f'Incorrecta {i+1}',
+                es_correcta=False
+            )
+            self.preguntas.append(pregunta)
+            self.alternativas_correctas[pregunta.pk] = alt_correcta.pk
+        InscripcionCurso.objects.create(
+            usuario=self.colaborador,
+            curso=self.curso,
+            estado='asignado'
+        )
+
+    def test_subset_tamano_correcto(self):
+        self.client.login(username='colaborador', password='testpass')
+        self.client.get(reverse('evaluaciones:tomar_evaluacion', kwargs={'pk': self.evaluacion.pk}))
+        session_key = f'eval_{self.evaluacion.pk}_preguntas_seleccionadas'
+        preguntas_ids = self.client.session.get(session_key, [])
+        self.assertEqual(len(preguntas_ids), 5)
+
+    def test_diferente_subset_entre_intentos(self):
+        self.client.login(username='colaborador', password='testpass')
+        subsets = []
+        for _ in range(5):
+            self.client.get(reverse('evaluaciones:tomar_evaluacion', kwargs={'pk': self.evaluacion.pk}))
+            session_key = f'eval_{self.evaluacion.pk}_preguntas_seleccionadas'
+            preguntas_ids = self.client.session.get(session_key, [])
+            subsets.append(frozenset(preguntas_ids))
+        unique_subsets = set(subsets)
+        self.assertGreater(len(unique_subsets), 1, "All attempts returned the same question subset")
+
+    def test_orden_cambia_entre_intentos(self):
+        self.client.login(username='colaborador', password='testpass')
+        orders = []
+        for _ in range(5):
+            self.client.get(reverse('evaluaciones:tomar_evaluacion', kwargs={'pk': self.evaluacion.pk}))
+            session_key = f'eval_{self.evaluacion.pk}_preguntas_seleccionadas'
+            preguntas_ids = self.client.session.get(session_key, [])
+            orders.append(tuple(preguntas_ids))
+        unique_orders = set(orders)
+        self.assertGreater(len(unique_orders), 1, "All attempts returned questions in the same order")
+
+    def test_completa_intento_con_subset_aleatorio(self):
+        self.client.login(username='colaborador', password='testpass')
+        self.client.get(reverse('evaluaciones:tomar_evaluacion', kwargs={'pk': self.evaluacion.pk}))
+        session_key = f'eval_{self.evaluacion.pk}_preguntas_seleccionadas'
+        preguntas_ids = self.client.session.get(session_key, [])
+        self.assertEqual(len(preguntas_ids), 5)
+        respuestas = {}
+        for pk in preguntas_ids:
+            respuestas[str(pk)] = str(self.alternativas_correctas[pk])
+        response = self.client.post(
+            reverse('evaluaciones:tomar_evaluacion', kwargs={'pk': self.evaluacion.pk}),
+            {'respuestas': json.dumps(respuestas)}
+        )
+        self.assertEqual(response.status_code, 302)
+        intento = IntentoEvaluacion.objects.filter(usuario=self.colaborador, evaluacion=self.evaluacion).first()
+        self.assertIsNotNone(intento)
+        self.assertEqual(intento.puntaje_obtenido, 100)
+
+
+class EvaluacionNotaTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.docente = Usuario.objects.create_user(
+            username='docente', password='testpass', rol='docente', rut='11111111-1'
+        )
+        self.colaborador = Usuario.objects.create_user(
+            username='colaborador', password='testpass', rol='colaborador', rut='22222222-2'
+        )
+        self.curso = Curso.objects.create(
+            titulo='Curso Test',
+            descripcion='Descripcion',
+            docente_creador=self.docente
+        )
+        self.evaluacion = Evaluacion.objects.create(
+            curso=self.curso,
+            titulo='Evaluacion Test',
+            porcentaje_aprobacion=75
+        )
+        self.preguntas = []
+        self.alternativas_correctas = {}
+        self.alternativas_incorrectas = {}
+        for i in range(4):
+            pregunta = Pregunta.objects.create(
+                evaluacion=self.evaluacion,
+                texto=f'Pregunta {i+1}'
+            )
+            alt_correcta = Alternativa.objects.create(
+                pregunta=pregunta,
+                texto=f'Correcta {i+1}',
+                es_correcta=True
+            )
+            alt_incorrecta = Alternativa.objects.create(
+                pregunta=pregunta,
+                texto=f'Incorrecta {i+1}',
+                es_correcta=False
+            )
+            self.preguntas.append(pregunta)
+            self.alternativas_correctas[pregunta.pk] = alt_correcta.pk
+            self.alternativas_incorrectas[pregunta.pk] = alt_incorrecta.pk
+        InscripcionCurso.objects.create(
+            usuario=self.colaborador,
+            curso=self.curso,
+            estado='asignado'
+        )
+
+    def _tomar_evaluacion(self, respuestas_map):
+        self.client.login(username='colaborador', password='testpass')
+        response = self.client.post(
+            reverse('evaluaciones:tomar_evaluacion', kwargs={'pk': self.evaluacion.pk}),
+            {'respuestas': json.dumps(respuestas_map)}
+        )
+        return response
+
+    def test_puntaje_100_todas_correctas(self):
+        respuestas = {str(p.pk): str(self.alternativas_correctas[p.pk]) for p in self.preguntas}
+        response = self._tomar_evaluacion(respuestas)
+        self.assertEqual(response.status_code, 302)
+        intento = IntentoEvaluacion.objects.get(usuario=self.colaborador, evaluacion=self.evaluacion)
+        self.assertEqual(intento.puntaje_obtenido, 100)
+        self.assertTrue(intento.aprobado)
+
+    def test_puntaje_0_ninguna_correcta(self):
+        respuestas = {str(p.pk): str(self.alternativas_incorrectas[p.pk]) for p in self.preguntas}
+        response = self._tomar_evaluacion(respuestas)
+        self.assertEqual(response.status_code, 302)
+        intento = IntentoEvaluacion.objects.get(usuario=self.colaborador, evaluacion=self.evaluacion)
+        self.assertEqual(intento.puntaje_obtenido, 0)
+        self.assertFalse(intento.aprobado)
+
+    def test_calculo_puntaje_25(self):
+        respuestas = {}
+        for i, p in enumerate(self.preguntas):
+            if i == 0:
+                respuestas[str(p.pk)] = str(self.alternativas_correctas[p.pk])
+            else:
+                respuestas[str(p.pk)] = str(self.alternativas_incorrectas[p.pk])
+        response = self._tomar_evaluacion(respuestas)
+        self.assertEqual(response.status_code, 302)
+        intento = IntentoEvaluacion.objects.get(usuario=self.colaborador, evaluacion=self.evaluacion)
+        self.assertEqual(intento.puntaje_obtenido, 25)
+        self.assertFalse(intento.aprobado)
+
+    def test_aprobado_limite_exacto(self):
+        respuestas = {}
+        for i, p in enumerate(self.preguntas):
+            if i < 3:
+                respuestas[str(p.pk)] = str(self.alternativas_correctas[p.pk])
+            else:
+                respuestas[str(p.pk)] = str(self.alternativas_incorrectas[p.pk])
+        response = self._tomar_evaluacion(respuestas)
+        self.assertEqual(response.status_code, 302)
+        intento = IntentoEvaluacion.objects.get(usuario=self.colaborador, evaluacion=self.evaluacion)
+        self.assertEqual(intento.puntaje_obtenido, 75)
+        self.assertTrue(intento.aprobado)
+
+    def test_reprobado_por_debajo_limite(self):
+        respuestas = {}
+        for i, p in enumerate(self.preguntas):
+            if i < 2:
+                respuestas[str(p.pk)] = str(self.alternativas_correctas[p.pk])
+            else:
+                respuestas[str(p.pk)] = str(self.alternativas_incorrectas[p.pk])
+        response = self._tomar_evaluacion(respuestas)
+        self.assertEqual(response.status_code, 302)
+        intento = IntentoEvaluacion.objects.get(usuario=self.colaborador, evaluacion=self.evaluacion)
+        self.assertEqual(intento.puntaje_obtenido, 50)
+        self.assertFalse(intento.aprobado)

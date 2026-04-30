@@ -79,38 +79,47 @@
             {% if materiales %}
             <div class="space-y-4">
                 {% for material in materiales %}
-                <div class="flex items-center justify-between p-4 rounded-xl" style="background-color: var(--color-bg);">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl"
-                             style="background-color: {% if material.tipo == 'pdf' %}var(--color-primary){% else %}var(--color-danger){% endif %}; color: white;">
-                            <i class="bi bi-{% if material.tipo == 'pdf' %}file-earmark-pdf{% else %}play-circle{% endif %}"></i>
+                <div class="p-4 rounded-xl" style="background-color: var(--color-bg);">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl"
+                                 style="background-color: {% if material.tipo == 'pdf' %}var(--color-primary){% elif material.tipo == 'office' %}var(--color-success){% else %}var(--color-danger){% endif %}; color: white;">
+                                <i class="bi bi-{% if material.tipo == 'pdf' %}file-earmark-pdf{% elif material.tipo == 'video' %}play-circle{% elif material.tipo == 'video_file' %}film{% else %}file-earmark-text{% endif %}"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium" style="color: var(--color-text);">{{ material.titulo }}</h4>
+                                <span class="text-sm" style="color: var(--color-text-secondary);">
+                                    {{ material.get_tipo_display }}
+                                </span>
+                            </div>
                         </div>
-                        <div>
-                            <h4 class="font-medium" style="color: var(--color-text);">{{ material.titulo }}</h4>
-                            <span class="text-sm" style="color: var(--color-text-secondary);">
-                                {{ material.get_tipo_display }}
-                            </span>
+                        <div class="flex items-center gap-2">
+                            {% if material.tipo == 'video' %}
+                            <a href="{{ material.url }}" target="_blank" class="btn-outline px-3 py-1.5 rounded-lg text-sm">
+                                <i class="bi bi-box-arrow-up-right me-1"></i>Ver
+                            </a>
+                            {% elif material.tipo != 'video_file' and material.archivo %}
+                            <a href="{{ material.archivo.url }}" target="_blank" class="btn-outline px-3 py-1.5 rounded-lg text-sm">
+                                <i class="bi bi-download me-1"></i>Descargar
+                            </a>
+                            {% endif %}
+                            {% if puede_editar %}
+                            <form method="post" action="{% url 'cursos:material_delete' pk=material.id %}" class="inline" onsubmit="return confirm('¿Eliminar este material?');">
+                                {% csrf_token %}
+                                <button type="submit" class="p-2 rounded-lg transition-colors" style="color: var(--color-danger);">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                            {% endif %}
                         </div>
                     </div>
-                    <div class="flex items-center gap-2">
-                        {% if material.archivo %}
-                        <a href="{{ material.archivo.url }}" target="_blank" class="btn-outline px-3 py-1.5 rounded-lg text-sm">
-                            <i class="bi bi-download me-1"></i>Descargar
-                        </a>
-                        {% elif material.url %}
-                        <a href="{{ material.url }}" target="_blank" class="btn-outline px-3 py-1.5 rounded-lg text-sm">
-                            <i class="bi bi-box-arrow-up-right me-1"></i>Ver
-                        </a>
-                        {% endif %}
-                        {% if puede_editar %}
-                        <form method="post" action="{% url 'cursos:material_delete' pk=material.id %}" class="inline" onsubmit="return confirm('¿Eliminar este material?');">
-                            {% csrf_token %}
-                            <button type="submit" class="p-2 rounded-lg transition-colors" style="color: var(--color-danger);">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </form>
-                        {% endif %}
+                    {% if material.tipo == 'video_file' %}
+                    <div class="mt-3">
+                        <video controls class="w-full rounded-xl" style="max-height: 400px;">
+                            <source src="{{ material.archivo.url }}">
+                        </video>
                     </div>
+                    {% endif %}
                 </div>
                 {% endfor %}
             </div>

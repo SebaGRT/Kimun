@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,7 +25,12 @@ SECRET_KEY = 'django-insecure-p&%s&hb46$63d25!8%lt1k5c&5y9%%h!5c(9hw1oe#-p62z=39
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '*']
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+]
 
 
 INSTALLED_APPS = [
@@ -31,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'ckeditor',
+    'django_ckeditor_5',
+    'django_supabase_storage',
     'usuarios',
     'cursos',
     'evaluaciones',
@@ -50,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'usuarios.middleware.AuditoriaMiddleware',
 ]
 
 ROOT_URLCONF = 'kimun.urls'
@@ -75,8 +86,15 @@ WSGI_APPLICATION = 'kimun.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('SUPABASE_DB_NAME', 'postgres'),
+        'USER': os.environ.get('SUPABASE_DB_USER'),
+        'PASSWORD': os.environ.get('SUPABASE_DB_PASSWORD'),
+        'HOST': os.environ.get('SUPABASE_DB_HOST'),
+        'PORT': os.environ.get('SUPABASE_DB_PORT', '5432'),
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
     }
 }
 
@@ -123,3 +141,43 @@ LOGIN_REDIRECT_URL = 'inicio'
 LOGOUT_REDIRECT_URL = 'usuarios:login'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+SUPABASE_URL = os.environ.get('SUPABASE_URL')
+SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
+
+STORAGES = {
+    'default': {
+        'BACKEND': 'django_supabase_storage.SupabaseMediaStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+    },
+}
+
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': {
+            'items': [
+                'heading', '|',
+                'bold', 'italic', 'underline', 'strikethrough', '|',
+                'link', '|',
+                'bulletedList', 'numberedList', 'blockQuote', '|',
+                'imageUpload', '|',
+                'undo', 'redo',
+            ],
+        },
+        'language': 'es',
+        'image': {
+            'toolbar': [
+                'imageTextAlternative', '|',
+                'imageStyle:alignLeft', 'imageStyle:alignCenter', 'imageStyle:alignRight', '|',
+            ],
+            'styles': [
+                'alignLeft', 'alignCenter', 'alignRight',
+            ],
+        },
+    },
+}
+
+CKEDITOR_5_FILE_UPLOAD_PERMISSION = 'authenticated'
+CKEDITOR_5_MAX_FILE_SIZE = 5

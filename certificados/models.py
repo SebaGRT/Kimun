@@ -8,6 +8,8 @@ class Certificado(models.Model):
         ('pendiente', 'Pendiente'),
         ('aprobado', 'Aprobado'),
         ('rechazado', 'Rechazado'),
+        ('revocado', 'Revocado'),
+        ('expirado', 'Expirado'),
     ]
 
     usuario = models.ForeignKey(
@@ -25,6 +27,14 @@ class Certificado(models.Model):
         default='pendiente'
     )
     fecha_aprobacion = models.DateTimeField(null=True, blank=True)
+    fecha_vencimiento = models.DateTimeField(
+        null=True, blank=True,
+        help_text='Fecha de vencimiento del certificado. Nulo = sin vencimiento'
+    )
+    motivo_revocacion = models.TextField(
+        blank=True, null=True,
+        help_text='Motivo de la revocación del certificado'
+    )
     aprobado_por = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,

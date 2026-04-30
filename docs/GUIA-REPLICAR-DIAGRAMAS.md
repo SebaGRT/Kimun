@@ -27,7 +27,7 @@ Esta guía permite a cualquier agente de IA generar los 6 diagramas UML del proy
 - **Base de datos**: SQLite (dev) / PostgreSQL (prod)
 - **Frontend**: Tailwind CSS, Alpine.js, Chart.js
 - **PDFs**: WeasyPrint
-- **Editor**: CKEditor 4
+- **Editor**: CKEditor 5
 
 ### Estructura de Apps
 ```
@@ -94,7 +94,7 @@ Categoria
 Clase
 ├── curso: ForeignKey(Curso)
 ├── titulo: CharField
-├── contenido: RichTextField(ckeditor)
+├── contenido: CKEditor5Field
 └── orden: PositiveIntegerField
 
 Material

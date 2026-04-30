@@ -6,9 +6,17 @@ from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.db.models import Max
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 from .models import Curso, Material, InscripcionCurso, Categoria, Clase, ClaseCompletado
 from .forms import CursoForm, MaterialForm, CategoriaForm, ClaseForm
-from usuarios.decorators import admin_required, docente_or_admin_required, course_owner_or_admin
+from usuarios.decorators import admin_required, docente_or_admin_required, course_owner_or_admin, owner_or_admin, colaborador_required
+
+
+@require_POST
+@docente_or_admin_required
+def ckeditor5_upload_restricted(request):
+    from django_ckeditor_5.views import upload_file
+    return upload_file(request)
 
 
 @login_required
@@ -154,7 +162,12 @@ def curso_detail(request, pk):
     )
     
     from django.utils import timezone
-    
+    from .utils import obtener_o_calcular_progreso
+
+    progreso = None
+    if inscripcion:
+        progreso = obtener_o_calcular_progreso(request.user, curso)
+
     return render(request, 'cursos/curso_detail.html', {
         'curso': curso,
         'materiales': materiales,
@@ -164,6 +177,7 @@ def curso_detail(request, pk):
         'inscripcion': inscripcion,
         'puede_editar': puede_editar,
         'course_progress': course_progress,
+        'progreso': progreso,
         'now': timezone.now()
     })
 
@@ -206,13 +220,11 @@ def material_create(request, pk):
 
 
 @login_required
+@owner_or_admin(Material, 'curso.docente_creador')
 @docente_or_admin_required
 def material_delete(request, pk):
     material = get_object_or_404(Material, pk=pk)
     curso = material.curso
-    
-    if request.user.rol == 'docente' and curso.docente_creador != request.user:
-        return HttpResponseForbidden('No puedes eliminar este material.')
     
     if request.method == 'POST':
         material.delete()
@@ -399,13 +411,11 @@ def clase_detail(request, pk):
 
 
 @login_required
+@owner_or_admin(Clase, 'curso.docente_creador')
 @docente_or_admin_required
 def clase_edit(request, pk):
     clase = get_object_or_404(Clase, pk=pk)
     curso = clase.curso
-    
-    if request.user.rol == 'docente' and curso.docente_creador != request.user:
-        return HttpResponseForbidden('No puedes editar esta clase.')
     
     if request.method == 'POST':
         form = ClaseForm(request.POST, instance=clase)
@@ -428,13 +438,11 @@ def clase_edit(request, pk):
 
 
 @login_required
+@owner_or_admin(Clase, 'curso.docente_creador')
 @docente_or_admin_required
 def clase_delete(request, pk):
     clase = get_object_or_404(Clase, pk=pk)
     curso = clase.curso
-    
-    if request.user.rol == 'docente' and curso.docente_creador != request.user:
-        return HttpResponseForbidden('No puedes eliminar esta clase.')
     
     if request.method == 'POST':
         titulo = clase.titulo
@@ -448,15 +456,12 @@ def clase_delete(request, pk):
     })
 
 @login_required
+@colaborador_required
 def clase_completar(request, pk):
     clase = get_object_or_404(Clase, pk=pk)
     curso = clase.curso
     
     if request.method != 'POST':
-        return redirect('cursos:clase_detail', pk=clase.id)
-    
-    if request.user.rol != 'colaborador':
-        messages.error(request, 'Solo los colaboradores pueden completar clases.')
         return redirect('cursos:clase_detail', pk=clase.id)
     
     esta_inscrito = InscripcionCurso.objects.filter(

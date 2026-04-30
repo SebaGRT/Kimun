@@ -1,14 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import FileResponse, Http404, HttpResponseForbidden
+from django.http import FileResponse, Http404
 from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
 from django.core.paginator import Paginator
 from weasyprint import HTML
 from .models import Certificado
 from cursos.models import Curso, InscripcionCurso
-from usuarios.decorators import admin_required, docente_or_admin_required
+from usuarios.decorators import admin_required, docente_or_admin_required, course_owner_or_admin, owner_or_admin
+from usuarios.models import Auditoria
 
 
 @login_required
@@ -55,62 +56,9 @@ def mis_certificados(request):
 
 
 @login_required
-@docente_or_admin_required
-def generar_certificado(request, curso_pk):
-    curso = get_object_or_404(Curso, pk=curso_pk)
-    
-    if request.user.rol == 'docente' and curso.docente_creador != request.user:
-        return HttpResponseForbidden('No puedes generar certificados para este curso.')
-    
-    try:
-        from django.utils import timezone
-        fecha_str = timezone.now().strftime('%d de %B de %Y')
-        
-        html_string = render_to_string('certificados/certificado_pdf.html', {
-            'curso': curso,
-            'fecha': fecha_str,
-            'nombre_usuario': request.user.get_full_name() or request.user.username,
-        })
-        
-        pdf_file = HTML(string=html_string).write_pdf()
-        
-        Certificado.objects.create(
-            usuario=request.user,
-            curso=curso,
-            archivo_pdf=ContentFile(pdf_file)
-        )
-        
-        for inscripcion in InscripcionCurso.objects.filter(curso=curso):
-            tiene_certificado = True
-            for evaluacion in curso.evaluaciones.all():
-                ultimo = evaluacion.intentos.filter(usuario=inscripcion.usuario).order_by('-fecha_intento').first()
-                if not ultimo or not ultimo.aprobado:
-                    tiene_certificado = False
-                    break
-            
-            if tiene_certificado:
-                Certificado.objects.get_or_create(
-                    usuario=inscripcion.usuario,
-                    curso=curso,
-                    defaults={'estado': 'pendiente'}
-                )
-        
-        messages.success(request, 'Certificado generado exitosamente.')
-    except Exception as e:
-        messages.error(request, f'Error al generar certificado: {str(e)}')
-    
-    if request.user.rol == 'admin':
-        return redirect('certificados:certificado_list')
-    return redirect('cursos:curso_detail', pk=curso_pk)
-
-
-@login_required
+@owner_or_admin(Certificado, 'usuario')
 def descargar_certificado(request, pk):
     certificado = get_object_or_404(Certificado, pk=pk)
-    
-    if request.user != certificado.usuario and request.user.rol != 'admin':
-        messages.error(request, 'No tienes permisos para descargar este certificado.')
-        return redirect('certificados:mis_certificados')
     
     if certificado.estado != 'aprobado':
         messages.error(request, 'El certificado aún no ha sido aprobado.')
@@ -185,14 +133,11 @@ def certificados_pendientes(request):
 
 
 @login_required
+@owner_or_admin(Certificado, 'curso.docente_creador')
 @docente_or_admin_required
 def aprobar_certificado(request, pk):
     """Approve a pending certificate."""
     certificado = get_object_or_404(Certificado, pk=pk)
-
-    # Permission check: docente can only approve their own course certs
-    if request.user.rol == 'docente' and certificado.curso.docente_creador != request.user:
-        return HttpResponseForbidden('No tienes permisos para aprobar este certificado.')
 
     if request.method == 'POST':
         from django.utils import timezone
@@ -200,20 +145,24 @@ def aprobar_certificado(request, pk):
         certificado.fecha_aprobacion = timezone.now()
         certificado.aprobado_por = request.user
         certificado.save()
+        Auditoria.objects.create(
+            usuario=request.user,
+            accion='certificado_aprobado',
+            descripcion=f'Certificado de {certificado.usuario.username} para {certificado.curso.titulo} aprobado',
+            objeto_tipo='Certificado',
+            objeto_id=certificado.pk
+        )
         messages.success(request, f'Certificado de {certificado.usuario.get_full_name()} aprobado.')
 
     return redirect('certificados:certificados_pendientes')
 
 
 @login_required
+@owner_or_admin(Certificado, 'curso.docente_creador')
 @docente_or_admin_required
 def rechazar_certificado(request, pk):
     """Reject a pending certificate."""
     certificado = get_object_or_404(Certificado, pk=pk)
-
-    # Permission check
-    if request.user.rol == 'docente' and certificado.curso.docente_creador != request.user:
-        return HttpResponseForbidden('No tienes permisos para rechazar este certificado.')
 
     if request.method == 'POST':
         certificado.estado = 'rechazado'
@@ -224,14 +173,11 @@ def rechazar_certificado(request, pk):
 
 
 @login_required
+@owner_or_admin(Certificado, 'curso.docente_creador')
 @docente_or_admin_required
 def resetear_certificado(request, pk):
     """Reset a rejected certificate back to pending."""
     certificado = get_object_or_404(Certificado, pk=pk)
-
-    # Permission check
-    if request.user.rol == 'docente' and certificado.curso.docente_creador != request.user:
-        return HttpResponseForbidden('No tienes permisos para resetear este certificado.')
 
     if request.method == 'POST':
         certificado.estado = 'pendiente'
@@ -239,3 +185,24 @@ def resetear_certificado(request, pk):
         messages.info(request, f'Certificado de {certificado.usuario.get_full_name()} reseteado a pendiente.')
 
     return redirect('certificados:certificados_pendientes')
+
+
+@login_required
+@owner_or_admin(Certificado, 'curso.docente_creador')
+@docente_or_admin_required
+def revocar_certificado(request, pk):
+    """Revoke an approved certificate with a required reason."""
+    certificado = get_object_or_404(Certificado, pk=pk)
+
+    if request.method == 'POST':
+        motivo_revocacion = request.POST.get('motivo_revocacion', '').strip()
+        if not motivo_revocacion:
+            messages.error(request, 'Debe proporcionar un motivo de revocación.')
+            return redirect('certificados:certificado_list')
+
+        certificado.estado = 'revocado'
+        certificado.motivo_revocacion = motivo_revocacion
+        certificado.save()
+        messages.success(request, f'Certificado de {certificado.usuario.get_full_name()} revocado.')
+
+    return redirect('certificados:certificado_list')

@@ -6,12 +6,17 @@ Esta carpeta contiene los archivos fuente (.puml) para generar los 6 diagramas U
 
 | Diagrama | Archivo Fuente | Descripción |
 |----------|---------------|-------------|
+| Diagrama de Arquitectura en Capas | `diagrama_arquitectura_capas.puml` | Arquitectura 4 capas del sistema |
 | Diagrama de Clases | `diagrama_clases.puml` | Modelos Django y sus relaciones |
 | Diagrama de Casos de Uso | `diagrama_casos_uso.puml` | Actores y funcionalidades del sistema |
 | Diagrama de Actividad | `diagrama_actividad.puml` | Flujo de inscripción y certificación |
 | Diagrama de Secuencia | `diagrama_secuencia.puml` | Interacción en el flujo de evaluación |
 | Diagrama de Componentes | `diagrama_componentes.puml` | Arquitectura de componentes Django |
 | Diagrama de Despliegue | `diagrama_despliegue.puml` | Infraestructura de producción |
+| Modelo Conceptual (Chen) | `diagrama_modelo_datos_chen.puml` | Entidades y relaciones - Notación Chen |
+| Modelo Lógico (Barker) | `diagrama_modelo_datos_barker.puml` | Atributos y cardinalidad - Notación Barker |
+
+**Total: 9 diagramas**
 
 ---
 
@@ -39,12 +44,15 @@ wget https://github.com/plantuml/plantuml/releases/download/v1.2023.10/plantuml-
 
 # Generar PDF
 cd docs/diagrams
+java -jar plantuml.jar -tpdf diagrama_arquitectura_capas.puml
 java -jar plantuml.jar -tpdf diagrama_clases.puml
 java -jar plantuml.jar -tpdf diagrama_casos_uso.puml
 java -jar plantuml.jar -tpdf diagrama_actividad.puml
 java -jar plantuml.jar -tpdf diagrama_secuencia.puml
 java -jar plantuml.jar -tpdf diagrama_componentes.puml
 java -jar plantuml.jar -tpdf diagrama_despliegue.puml
+java -jar plantuml.jar -tpdf diagrama_modelo_datos_chen.puml
+java -jar plantuml.jar -tpdf diagrama_modelo_datos_barker.puml
 ```
 
 ### Opción 4: Docker
@@ -79,44 +87,69 @@ docker run -v $(pwd):/data plantuml/plantuml -tpdf *.puml
 
 ## Estructura de los Diagramas
 
-### 1. Diagrama de Clases
+### 1. Diagrama de Arquitectura en Capas
+**Arquitectura:** Sistema en 4 capas (Layered Architecture)
+- Capa 4 - Presentación: Django Templates, Tailwind CSS, Alpine.js, Chart.js
+- Capa 3 - Lógica de Negocio: 7 apps Django con sus funcionalidades
+- Capa 2 - Acceso a Datos: Django ORM, Models, Migrations
+- Capa 1 - Base de Datos: SQLite (dev) / PostgreSQL (prod)
+- Cross-cutting: Authentication, Signals, Middleware
+
+### 2. Diagrama de Clases
 **Muestra:**
 - 8 modelos principales (Usuario, Curso, Evaluacion, etc.)
 - Relaciones ForeignKey, ManyToMany
 - Métodos importantes de cada modelo
 - Herencia (Usuario extends AbstractUser)
 
-**Archivos de referencia:**
-- `cursos/models.py`
-- `usuarios/models.py`
-- `evaluaciones/models.py`
-- `certificados/models.py`
-- `calendario/models.py`
-
-### 2. Diagrama de Casos de Uso
+### 3. Diagrama de Casos de Uso
 **Muestra:**
 - 4 actores: Administrador, Docente, Colaborador, Sistema
 - ~25 casos de uso agrupados por funcionalidad
 - Relaciones <<include>> y <<extend>>
 - Permisos por rol
 
-### 3. Diagrama de Actividad
+### 4. Diagrama de Actividad
 **Flujo:** Inscripción → Clases → Evaluación → Certificado
 - Decisiones: ¿Aprobado?, ¿Reintentos disponibles?
 - Forks paralelos: Email + Notificación + PDF
 - Bucle: Completar clases secuencialmente
 
-### 4. Diagrama de Secuencia
+### 5. Diagrama de Secuencia
 **Escenario:** Tomar evaluación
 - Participantes: Colaborador, Navegador, Views, Models
 - Mensajes: GET evaluación, POST respuestas, Generar certificado
 - Alt/Else: Aprobado vs No aprobado
 
-### 5. Diagrama de Componentes
+### 6. Diagrama de Componentes
 **Arquitectura:**
 - Capa de presentación (Templates, Static)
 - 7 Apps Django con sus responsabilidades
 - Capa de framework (Django Core)
+
+### 7. Diagrama de Despliegue
+**Infraestructura:**
+- Nginx (reverse proxy)
+- Gunicorn (WSGI server)
+- Django Application
+- PostgreSQL
+- WeasyPrint + dependencias del sistema
+
+### 8. Modelo Conceptual (Chen)
+**Notación:** Entidad-Relación (Chen)
+- Entidades: Rectángulos con nombres
+- Relaciones: Diamantes con nombres
+- Atributos: Óvalos conectados a entidades
+- PKs: Óvalos dobles o subrayados
+- Muestra: 15+ entidades con relaciones y cardinalidad
+
+### 9. Modelo Lógico (Barker)
+**Notación:** Barker con crow's foot
+- Entidades: Cajas con atributos
+- PKs: Subrayadas o marcadas con #
+- FKs: Marcadas con * o FK
+- Cardinalidad: Crow's foot (|, <, O)
+- Detalle: Tipos de datos, restricciones UNIQUE
 - Servicios externos (PDF, Email)
 
 ### 6. Diagrama de Despliegue

@@ -1,11 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from anuncios.forms import AnuncioForm  # pyright: ignore[reportMissingImports]
 from anuncios.models import Anuncio, LecturaAnuncio
-from usuarios.decorators import admin_required, docente_or_admin_required
+from usuarios.decorators import admin_required, docente_or_admin_required, owner_or_admin
 
 
 @login_required
@@ -52,12 +51,10 @@ def anuncio_create(request):
 
 
 @login_required
+@owner_or_admin(Anuncio, 'creado_por')
 @docente_or_admin_required
 def anuncio_edit(request, pk):
     anuncio = get_object_or_404(Anuncio, pk=pk)
-
-    if request.user.rol == 'docente' and anuncio.creado_por != request.user:
-        return HttpResponse(status=403)
 
     if request.method == 'POST':
         form = AnuncioForm(request.POST, instance=anuncio)

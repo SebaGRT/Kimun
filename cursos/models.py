@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from ckeditor.fields import RichTextField
+from django_ckeditor_5.fields import CKEditor5Field
 
 
 class Categoria(models.Model):
@@ -42,6 +42,27 @@ class Curso(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_limite = models.DateTimeField(null=True, blank=True, verbose_name='Fecha límite')
 
+    certificado_activo = models.BooleanField(
+        default=True,
+        help_text='Este curso emite certificado al completarse'
+    )
+    certificado_requiere_clases = models.BooleanField(
+        default=True,
+        help_text='Requiere completar todas las clases para obtener el certificado'
+    )
+    certificado_porcentaje_minimo_clases = models.PositiveIntegerField(
+        default=100,
+        help_text='Porcentaje mínimo de clases requeridas (0-100)'
+    )
+    certificado_requiere_evaluaciones = models.BooleanField(
+        default=True,
+        help_text='Requiere aprobar todas las evaluaciones para obtener el certificado'
+    )
+    certificado_vigencia_meses = models.PositiveIntegerField(
+        default=0,
+        help_text='Meses de vigencia del certificado. 0 = sin vencimiento'
+    )
+
     class Meta:
         verbose_name = 'Curso'
         verbose_name_plural = 'Cursos'
@@ -58,6 +79,8 @@ class Material(models.Model):
     TIPO_CHOICES = [
         ('pdf', 'PDF'),
         ('video', 'Video URL'),
+        ('video_file', 'Video (archivo)'),
+        ('office', 'Documento Office'),
     ]
 
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE, related_name='materiales')
@@ -108,7 +131,7 @@ class Clase(models.Model):
     """Clase/Lección dentro de un curso - contenido rico con CKEditor"""
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE, related_name='clases')
     titulo = models.CharField(max_length=200)
-    contenido = RichTextField(verbose_name='Contenido de la clase')
+    contenido = CKEditor5Field(verbose_name='Contenido de la clase', config_name='default')
     orden = models.PositiveIntegerField(default=1, help_text='Orden de la clase en el curso')
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
@@ -171,3 +194,58 @@ class ClaseCompletado(models.Model):
 
     def __str__(self):
         return f"{self.usuario} - {self.clase.titulo} ({self.fecha_completado.strftime('%d/%m/%Y')})"
+
+
+class ProgresoCurso(models.Model):
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='progresos')
+    curso = models.ForeignKey('Curso', on_delete=models.CASCADE, related_name='progresos')
+    porcentaje = models.PositiveIntegerField(default=0)
+    clases_completadas = models.PositiveIntegerField(default=0)
+    total_clases = models.PositiveIntegerField(default=0)
+    evaluaciones_aprobadas = models.PositiveIntegerField(default=0)
+    total_evaluaciones = models.PositiveIntegerField(default=0)
+    actualizado_en = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Progreso de Curso'
+        verbose_name_plural = 'Progresos de Cursos'
+        unique_together = ['usuario', 'curso']
+        indexes = [
+            models.Index(fields=['usuario', 'curso']),
+            models.Index(fields=['porcentaje']),
+        ]
+
+    def calcular_progreso(self):
+        from evaluaciones.models import IntentoEvaluacion
+
+        total_clases = self.curso.clases.count()
+        clases_completadas = ClaseCompletado.objects.filter(
+            usuario=self.usuario, clase__curso=self.curso
+        ).count()
+
+        total_evals = self.curso.evaluaciones.count()
+        if total_evals > 0:
+            aprobadas = IntentoEvaluacion.objects.filter(
+                usuario=self.usuario,
+                evaluacion__curso=self.curso,
+                aprobado=True
+            ).values('evaluacion').distinct().count()
+        else:
+            aprobadas = 0
+
+        self.clases_completadas = clases_completadas
+        self.total_clases = total_clases
+        self.evaluaciones_aprobadas = aprobadas
+        self.total_evaluaciones = total_evals
+
+        if total_clases > 0 and total_evals > 0:
+            self.porcentaje = int(((clases_completadas / total_clases) * 0.5 + (aprobadas / total_evals) * 0.5) * 100)
+        elif total_clases > 0:
+            self.porcentaje = int((clases_completadas / total_clases) * 100)
+        elif total_evals > 0:
+            self.porcentaje = int((aprobadas / total_evals) * 100)
+        else:
+            self.porcentaje = 0
+
+        self.save()
+        return self.porcentaje

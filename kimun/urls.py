@@ -3,6 +3,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from usuarios.views import inicio
+from cursos.views import ckeditor5_upload_restricted
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -15,6 +16,8 @@ urlpatterns = [
     path('anuncios/', include('anuncios.urls')),
     path('tareas/', include('tareas.urls')),
     path('', inicio, name='inicio'),
+    path("ckeditor5/image_upload/", ckeditor5_upload_restricted, name="ck_editor_5_upload_file"),
+    path("ckeditor5/", include('django_ckeditor_5.urls')),
 ]
 
 if settings.DEBUG:
