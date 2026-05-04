@@ -1,0 +1,10 @@
+EXISTS
+^venv/ OK
+db.sqlite3 OK
+tools/ OK
+.sisyphus/ OK
+.planning/ OK
+media/ OK
+\.pyc$ OK
+__pycache__/ OK
+^\.env$ OK
