@@ -1,0 +1,2 @@
+WSGI=kimun.wsgi.application
+ASGI=NOT SET
