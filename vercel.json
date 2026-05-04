@@ -5,7 +5,7 @@
   "functions": {
     "api/**/*.py": {
       "maxDuration": 30,
-      "memory": 3009
+      "memory": 2048
     }
   },
   "rewrites": [
