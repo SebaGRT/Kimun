@@ -5,7 +5,8 @@ from django.http import FileResponse, Http404, HttpResponseForbidden
 from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
 from django.core.paginator import Paginator
-from weasyprint import HTML
+from io import BytesIO
+from xhtml2pdf import pisa
 from .models import Certificado
 from cursos.models import Curso, InscripcionCurso
 from usuarios.decorators import admin_required, docente_or_admin_required
@@ -118,10 +119,7 @@ def descargar_certificado(request, pk):
     
     # Lazy PDF generation: create PDF on first download if it doesn't exist
     if not certificado.archivo_pdf:
-        from django.template.loader import render_to_string
         from django.utils import timezone
-        from django.core.files.base import ContentFile
-        from weasyprint import HTML
         
         fecha_str = timezone.now().strftime('%d de %B de %Y')
         html_string = render_to_string('certificados/certificado_pdf.html', {
@@ -129,10 +127,15 @@ def descargar_certificado(request, pk):
             'fecha': fecha_str,
             'nombre_usuario': certificado.usuario.get_full_name() or certificado.usuario.username,
         })
-        pdf_file = HTML(string=html_string).write_pdf()
+        pdf_buffer = BytesIO()
+        pisa_status = pisa.CreatePDF(html_string, dest=pdf_buffer)
+        if pisa_status.err:
+            from django.http import HttpResponse
+            return HttpResponse('Error al generar el PDF del certificado.', status=500)
+        pdf_buffer.seek(0)
         certificado.archivo_pdf.save(
             f'certificado_{certificado.pk}.pdf',
-            ContentFile(pdf_file)
+            ContentFile(pdf_buffer.getvalue())
         )
     
     certificado.archivo_pdf.seek(0)

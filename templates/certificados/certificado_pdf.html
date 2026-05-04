@@ -9,22 +9,17 @@
             margin: 0;
         }
         
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Open+Sans:wght@300;400;600&display=swap');
-        
         * {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
         
         body {
-            font-family: 'Open Sans', sans-serif;
+            font-family: Helvetica, Arial, sans-serif;
             width: 297mm;
             height: 210mm;
             background-color: #FDFBF7;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            text-align: center;
             padding: 25px;
         }
         
@@ -33,25 +28,21 @@
             width: 100%;
             height: 100%;
             padding: 12px;
-            /* Outer navy border */
             border: 2px solid #0F2439;
             position: relative;
-            box-shadow: 0 0 15px rgba(0,0,0,0.05);
         }
 
         .certificate-inner {
             width: 100%;
             height: 100%;
-            border: 3px solid #D4AF37; /* Gold inner border */
-            padding: 40px 50px;
+            border: 3px solid #D4AF37;
+            padding: 30px 40px;
             position: relative;
             text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            box-sizing: border-box;
         }
 
-        /* Ornamental Corners using CSS */
+        /* Ornamental Corners using CSS borders only */
         .corner {
             position: absolute;
             width: 30px;
@@ -63,108 +54,124 @@
         .corner-bl { bottom: -6px; left: -6px; border-right: none; border-top: none; }
         .corner-br { bottom: -6px; right: -6px; border-left: none; border-top: none; }
 
+        /* Header section */
         .header {
-            margin-bottom: 15px;
+            padding-bottom: 15px;
+            margin-bottom: 10px;
         }
         
         .org-logo {
-            margin: 0 auto 15px auto;
+            margin: 0 auto 10px auto;
             width: 60px;
             height: 60px;
+            border: 2px solid #D4AF37;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 56px;
+        }
+        
+        .org-logo-text {
+            font-size: 28px;
+            font-weight: bold;
+            color: #0F2439;
+            font-family: 'Times New Roman', serif;
         }
         
         .org-name-top {
-            font-family: 'Open Sans', sans-serif;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             color: #D4AF37;
             text-transform: uppercase;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
         }
         
         .title {
-            font-family: 'Playfair Display', serif;
-            font-size: 46px;
-            font-weight: 700;
+            font-family: 'Times New Roman', serif;
+            font-size: 40px;
+            font-weight: bold;
             color: #0F2439;
             text-transform: uppercase;
-            letter-spacing: 6px;
-            margin-bottom: 5px;
+            letter-spacing: 4px;
+            margin-bottom: 3px;
         }
         
         .subtitle {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Times New Roman', serif;
             font-style: italic;
-            font-size: 20px;
+            font-size: 16px;
             color: #555555;
-            margin-bottom: 25px;
+            margin-bottom: 10px;
         }
         
+        /* Content section */
         .content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            padding: 15px 0;
+            margin: 10px 0;
         }
         
         .certifies-text {
-            font-size: 15px;
+            font-size: 13px;
             color: #666666;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
         }
         
         .student-name {
-            font-family: 'Playfair Display', serif;
-            font-size: 40px;
-            font-weight: 700;
+            font-family: 'Times New Roman', serif;
+            font-size: 32px;
+            font-weight: bold;
             color: #0F2439;
-            margin: 10px 0;
-            padding-bottom: 5px;
+            margin: 6px 0;
+            padding-bottom: 3px;
             border-bottom: 1px solid #D4AF37;
             display: inline-block;
-            min-width: 60%;
+            width: 70%;
         }
         
         .course-text {
-            font-size: 15px;
+            font-size: 13px;
             color: #666666;
-            margin: 20px 0 10px 0;
+            margin: 12px 0 6px 0;
         }
         
         .course-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 26px;
-            font-weight: 600;
+            font-family: 'Times New Roman', serif;
+            font-size: 22px;
+            font-weight: bold;
             color: #0F2439;
             margin: 0 auto;
-            max-width: 80%;
+            width: 80%;
             line-height: 1.3;
         }
         
+        /* Footer section - three columns using inline-block */
         .footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-top: 30px;
-            padding: 0 40px;
+            margin-top: 25px;
+            padding-top: 15px;
+        }
+        
+        .footer-col {
+            display: inline-block;
+            width: 30%;
+            vertical-align: bottom;
+            text-align: center;
+            padding: 0 10px;
         }
         
         .signature-block {
             text-align: center;
-            width: 220px;
         }
         
         .signature-line {
             border-bottom: 1px solid #0F2439;
-            margin-bottom: 8px;
-            height: 40px; /* Space for a signature */
+            margin-bottom: 5px;
+            height: 30px;
         }
         
         .signature-name {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             color: #0F2439;
             text-transform: uppercase;
@@ -172,46 +179,54 @@
         }
         
         .signature-role {
-            font-size: 12px;
+            font-size: 10px;
             color: #666666;
-            margin-top: 3px;
+            margin-top: 2px;
         }
         
         .date-block {
             text-align: center;
-            width: 220px;
         }
         
         .date-text {
-            font-size: 14px;
+            font-size: 12px;
             color: #0F2439;
             font-weight: 600;
             border-bottom: 1px solid #0F2439;
-            padding-bottom: 4px;
-            margin-bottom: 8px;
+            padding-bottom: 3px;
+            margin-bottom: 5px;
             display: inline-block;
-            width: 100%;
+            width: 80%;
         }
 
+        /* Seal - simple CSS-based */
         .seal {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 80px;
+            text-align: center;
+            margin: 0 auto;
+        }
+        
+        .seal-circle {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #D4AF37;
+            border-radius: 50%;
+            margin: 0 auto;
+            text-align: center;
+            line-height: 56px;
+        }
+        
+        .seal-text {
+            font-size: 28px;
+            color: #D4AF37;
         }
         
         .verification-code {
-            position: absolute;
-            bottom: 15px;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            font-size: 9px;
+            font-size: 8px;
             color: #999999;
-            font-family: monospace;
+            font-family: 'Courier New', monospace;
             letter-spacing: 1px;
+            margin-top: 10px;
+            padding-top: 5px;
         }
     </style>
 </head>
@@ -225,13 +240,7 @@
             
             <div class="header">
                 <div class="org-logo">
-                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="50" cy="50" r="48" stroke="#D4AF37" stroke-width="2"/>
-                        <circle cx="50" cy="50" r="42" stroke="#0F2439" stroke-width="1"/>
-                        <path d="M50 20 L80 40 L80 80 L50 95 L20 80 L20 40 Z" stroke="#D4AF37" stroke-width="1.5"/>
-                        <text x="50" y="55" font-family="'Playfair Display', serif" font-size="28" font-weight="bold" fill="#0F2439" text-anchor="middle" dominant-baseline="middle">A</text>
-                        <text x="50" y="75" font-family="'Open Sans', sans-serif" font-size="8" fill="#D4AF37" text-anchor="middle" letter-spacing="2">ONG</text>
-                    </svg>
+                    <span class="org-logo-text">A</span>
                 </div>
                 <div class="org-name-top">ONG ALUMCO - Adultos Mayores en Confianza</div>
                 <div class="title">Certificado</div>
@@ -248,24 +257,27 @@
             </div>
             
             <div class="footer">
-                <div class="date-block">
-                    <div class="date-text">{{ fecha }}</div>
-                    <div class="signature-role">Fecha de Emisión</div>
+                <div class="footer-col">
+                    <div class="date-block">
+                        <div class="date-text">{{ fecha }}</div>
+                        <div class="signature-role">Fecha de Emisión</div>
+                    </div>
                 </div>
                 
-                <div class="seal">
-                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M50 5 L55 18 L69 18 L64 30 L75 39 L63 46 L66 60 L54 55 L46 68 L40 56 L26 62 L32 49 L19 43 L32 35 L26 22 L39 24 L46 11 Z" fill="#FDFBF7" stroke="#D4AF37" stroke-width="1"/>
-                        <circle cx="50" cy="40" r="18" stroke="#0F2439" stroke-width="1"/>
-                        <circle cx="50" cy="40" r="14" fill="#D4AF37" opacity="0.1"/>
-                        <path d="M43 85 L50 70 L57 85 L60 95 L50 90 L40 95 Z" fill="#D4AF37" opacity="0.8"/>
-                    </svg>
+                <div class="footer-col">
+                    <div class="seal">
+                        <div class="seal-circle">
+                            <span class="seal-text">&#9733;</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="signature-block">
-                    <div class="signature-line"></div>
-                    <div class="signature-name">Dirección de Capacitación</div>
-                    <div class="signature-role">ONG ALUMCO</div>
+                <div class="footer-col">
+                    <div class="signature-block">
+                        <div class="signature-line"></div>
+                        <div class="signature-name">Dirección de Capacitación</div>
+                        <div class="signature-role">ONG ALUMCO</div>
+                    </div>
                 </div>
             </div>
             
