@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "yum install -y cairo-devel && uv pip install --system -r requirements.txt",
+  "installCommand": "yum install -y cairo-devel && uv venv && uv pip install -r requirements.txt",
   "functions": {
     "api/index.py": {
       "maxDuration": 30,
