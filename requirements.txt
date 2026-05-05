@@ -67,8 +67,6 @@ click==8.3.2
 # --- PDF Generation (xhtml2pdf replaces WeasyPrint) ---
 xhtml2pdf>=0.2.17
 reportlab==4.5.0
-rlPyCairo==0.4.0
-pycairo==1.29.0
 pypdf==6.10.2
 html5lib==1.1
 svglib==1.6.0
