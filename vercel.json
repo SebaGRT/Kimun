@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "pip install --break-system-packages -r requirements.txt",
+  "installCommand": "uv pip install --system -r requirements.txt",
   "functions": {
     "api/**/*.py": {
       "maxDuration": 30,
