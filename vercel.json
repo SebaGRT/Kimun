@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "uv pip install --system --break-system-packages -r requirements.txt",
+  "installCommand": "pip install --break-system-packages -r requirements.txt",
   "functions": {
     "api/**/*.py": {
       "runtime": "python3.12",
