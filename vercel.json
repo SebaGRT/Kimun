@@ -1,17 +1,13 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "yum install -y cairo-devel && uv venv && uv pip install -r requirements-deploy.txt && echo '#!/bin/bash\nexit 0' > /usr/local/bin/pip && chmod +x /usr/local/bin/pip",
+  "installCommand": "uv pip install --system --break-system-packages -r requirements.txt",
   "functions": {
-    "api/index.py": {
+    "api/**/*.py": {
       "maxDuration": 30,
       "memory": 2048
     }
   },
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/api/index" }
-  ],
   "env": {
-    "DEBUG": "False",
     "PYTHON_VERSION": "3.12"
   }
 }
