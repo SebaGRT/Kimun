@@ -53,3 +53,4 @@ venv/
 # Archived scripts
 tools/
 .vercel
+.env*.local
