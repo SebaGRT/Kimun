@@ -6,7 +6,8 @@ from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
 from django.core.paginator import Paginator
 from io import BytesIO
-from xhtml2pdf import pisa
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 from .models import Certificado
 from cursos.models import Curso, InscripcionCurso
 from usuarios.decorators import admin_required, docente_or_admin_required
@@ -67,13 +68,23 @@ def generar_certificado(request, curso_pk):
         from django.utils import timezone
         fecha_str = timezone.now().strftime('%d de %B de %Y')
         
-        html_string = render_to_string('certificados/certificado_pdf.html', {
-            'curso': curso,
-            'fecha': fecha_str,
-            'nombre_usuario': request.user.get_full_name() or request.user.username,
-        })
+        buffer = BytesIO()
+        p = canvas.Canvas(buffer, pagesize=letter)
+        width, height = letter
         
-        pdf_file = HTML(string=html_string).write_pdf()
+        p.setFont("Helvetica-Bold", 24)
+        p.drawCentredString(width / 2, height - 100, "CERTIFICADO DE FINALIZACIÓN")
+        
+        p.setFont("Helvetica", 16)
+        p.drawCentredString(width / 2, height - 160, f"Otorgado a: {request.user.get_full_name() or request.user.username}")
+        p.drawCentredString(width / 2, height - 200, f"Por completar el curso: {curso.titulo}")
+        p.drawCentredString(width / 2, height - 240, f"Fecha: {fecha_str}")
+        
+        p.showPage()
+        p.save()
+        buffer.seek(0)
+        pdf_file = buffer.getvalue()
+        buffer.close()
         
         Certificado.objects.create(
             usuario=request.user,
@@ -122,21 +133,26 @@ def descargar_certificado(request, pk):
         from django.utils import timezone
         
         fecha_str = timezone.now().strftime('%d de %B de %Y')
-        html_string = render_to_string('certificados/certificado_pdf.html', {
-            'curso': certificado.curso,
-            'fecha': fecha_str,
-            'nombre_usuario': certificado.usuario.get_full_name() or certificado.usuario.username,
-        })
-        pdf_buffer = BytesIO()
-        pisa_status = pisa.CreatePDF(html_string, dest=pdf_buffer)
-        if pisa_status.err:
-            from django.http import HttpResponse
-            return HttpResponse('Error al generar el PDF del certificado.', status=500)
-        pdf_buffer.seek(0)
+        buffer = BytesIO()
+        p = canvas.Canvas(buffer, pagesize=letter)
+        width, height = letter
+        
+        p.setFont("Helvetica-Bold", 24)
+        p.drawCentredString(width / 2, height - 100, "CERTIFICADO DE FINALIZACIÓN")
+        
+        p.setFont("Helvetica", 16)
+        p.drawCentredString(width / 2, height - 160, f"Otorgado a: {certificado.usuario.get_full_name() or certificado.usuario.username}")
+        p.drawCentredString(width / 2, height - 200, f"Por completar el curso: {certificado.curso.titulo}")
+        p.drawCentredString(width / 2, height - 240, f"Fecha: {fecha_str}")
+        
+        p.showPage()
+        p.save()
+        buffer.seek(0)
         certificado.archivo_pdf.save(
             f'certificado_{certificado.pk}.pdf',
-            ContentFile(pdf_buffer.getvalue())
+            ContentFile(buffer.getvalue())
         )
+        buffer.close()
     
     certificado.archivo_pdf.seek(0)
     return FileResponse(certificado.archivo_pdf, content_type='application/pdf')
