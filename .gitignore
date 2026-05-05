@@ -32,6 +32,7 @@ Thumbs.db
 # Environment
 .env
 .env.local
+.env.vercel.local
 
 # Celery
 celerybeat-schedule
@@ -51,3 +52,4 @@ venv/
 
 # Archived scripts
 tools/
+.vercel

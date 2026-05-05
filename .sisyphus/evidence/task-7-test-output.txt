@@ -1,0 +1,206 @@
+Creating test database for alias 'default' ('test_postgres')...
+Found 343 test(s).
+Operations to perform:
+  Synchronize unmigrated apps: django_ckeditor_5, django_supabase_storage, messages, reportes, staticfiles
+  Apply all migrations: admin, anuncios, auth, calendario, certificados, contenttypes, cursos, evaluaciones, sessions, tareas, usuarios
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0001_initial... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying usuarios.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying cursos.0001_initial... OK
+  Applying cursos.0002_initial... OK
+  Applying cursos.0003_curso_fecha_limite... OK
+  Applying cursos.0004_categoria_curso_categoria... OK
+  Applying cursos.0005_clase_clasecompletado... OK
+  Applying cursos.0006_normalize_clase_orden_data... OK
+  Applying cursos.0007_clase_add_constraints_and_default... OK
+  Applying anuncios.0001_initial... OK
+  Applying evaluaciones.0001_initial... OK
+  Applying evaluaciones.0002_intentoevaluacion_respuestas... OK
+  Applying evaluaciones.0003_evaluacion_max_intentos... OK
+  Applying evaluaciones.0004_evaluacion_duracion_minutos_and_more... OK
+  Applying evaluaciones.0005_evaluacion_preguntas_por_intento_and_more... OK
+  Applying evaluaciones.0006_intentoevaluacion_evaluacione_usuario_f41a07_idx_and_more... OK
+  Applying cursos.0008_clasecompletado_cursos_clas_usuario_b17fef_idx_and_more... OK
+  Applying calendario.0001_initial... OK
+  Applying calendario.0002_eventocalendario_calendario__fecha_i_7e3f1a_idx... OK
+  Applying certificados.0001_initial... OK
+  Applying certificados.0002_initial... OK
+  Applying certificados.0003_initial... OK
+  Applying certificados.0004_certificado_estado... OK
+  Applying certificados.0005_certificado_certificado_estado_02805c_idx... OK
+  Applying certificados.0006_certificado_fecha_vencimiento_and_more... OK
+  Applying certificados.0007_alter_certificado_estado... OK
+  Applying cursos.0009_progresocurso... OK
+  Applying cursos.0010_curso_certificado_settings... OK
+  Applying cursos.0011_alter_material_tipo... OK
+  Applying sessions.0001_initial... OK
+  Applying tareas.0001_initial... OK
+  Applying usuarios.0002_recordatorio... OK
+  Applying usuarios.0003_auditoria...test_anuncio_creation_and_str (anuncios.tests.AnuncioModelTest.test_anuncio_creation_and_str) ... ok
+test_lectura_anuncio_creation_and_str (anuncios.tests.LecturaAnuncioModelTest.test_lectura_anuncio_creation_and_str) ... ok
+test_unique_together (anuncios.tests.LecturaAnuncioModelTest.test_unique_together) ... ok
+test_signal_curso_creates_end_event_on_fecha_limite (calendario.tests.CalendarioSignalTests.test_signal_curso_creates_end_event_on_fecha_limite) ... ok
+test_signal_curso_creates_start_event (calendario.tests.CalendarioSignalTests.test_signal_curso_creates_start_event) ... ok
+test_signal_curso_delete_cascades_events (calendario.tests.CalendarioSignalTests.test_signal_curso_delete_cascades_events) ... ok
+test_signal_curso_update_fecha_limite_updates_end_event (calendario.tests.CalendarioSignalTests.test_signal_curso_update_fecha_limite_updates_end_event) ... ok
+test_signal_evaluacion_creates_event (calendario.tests.CalendarioSignalTests.test_signal_evaluacion_creates_event) ... ok
+test_signal_evaluacion_delete_cascades_events (calendario.tests.CalendarioSignalTests.test_signal_evaluacion_delete_cascades_events) ... ok
+test_calendario_admin_access (calendario.tests.CalendarioViewTests.test_calendario_admin_access) ... /home/sebacc/Documents/UDD/Ingeniería de Software/Proyecto-Kimün/venv/lib/python3.14/site-packages/django/db/models/fields/__init__.py:1670: RuntimeWarning: DateTimeField EventoCalendario.fecha_inicio received a naive datetime (2026-05-01 00:00:00) while time zone support is active.
+  warnings.warn(
+/home/sebacc/Documents/UDD/Ingeniería de Software/Proyecto-Kimün/venv/lib/python3.14/site-packages/django/db/models/fields/__init__.py:1670: RuntimeWarning: DateTimeField EventoCalendario.fecha_inicio received a naive datetime (2026-05-31 23:59:59) while time zone support is active.
+  warnings.warn(
+ok
+test_calendario_colaborador_access (calendario.tests.CalendarioViewTests.test_calendario_colaborador_access) ... ok
+test_calendario_requires_login (calendario.tests.CalendarioViewTests.test_calendario_requires_login) ... ok
+test_form_color_default (calendario.tests.EventoCalendarioFormTests.test_form_color_default) ... ok
+test_form_curso_optional (calendario.tests.EventoCalendarioFormTests.test_form_curso_optional) ... ok
+test_form_fecha_fin_before_fecha_inicio_invalid (calendario.tests.EventoCalendarioFormTests.test_form_fecha_fin_before_fecha_inicio_invalid) ... ok
+test_form_valid_data (calendario.tests.EventoCalendarioFormTests.test_form_valid_data) ... ok
+test_evento_calendario_creation (calendario.tests.EventoCalendarioModelTests.test_evento_calendario_creation) ... ok
+test_evento_calendario_curso_nullable (calendario.tests.EventoCalendarioModelTests.test_evento_calendario_curso_nullable) ... ok
+test_evento_calendario_default_color (calendario.tests.EventoCalendarioModelTests.test_evento_calendario_default_color) ... ok
+test_evento_calendario_default_tipo (calendario.tests.EventoCalendarioModelTests.test_evento_calendario_default_tipo) ... ok
+test_evento_calendario_ordering (calendario.tests.EventoCalendarioModelTests.test_evento_calendario_ordering) ... ok
+test_evento_calendario_related_names (calendario.tests.EventoCalendarioModelTests.test_evento_calendario_related_names) ... ok
+test_evento_calendario_str_method (calendario.tests.EventoCalendarioModelTests.test_evento_calendario_str_method) ... ok
+test_evento_calendario_tipo_choices (calendario.tests.EventoCalendarioModelTests.test_evento_calendario_tipo_choices) ... ok
+test_evento_calendario_verbose_names (calendario.tests.EventoCalendarioModelTests.test_evento_calendario_verbose_names) ... ok
+test_evento_create_admin_access (calendario.tests.EventoCreateViewTests.test_evento_create_admin_access) ... ok
+test_evento_create_colaborador_forbidden (calendario.tests.EventoCreateViewTests.test_evento_create_colaborador_forbidden) ... ok
+test_evento_create_post (calendario.tests.EventoCreateViewTests.test_evento_create_post) ... ok
+test_evento_create_requires_login (calendario.tests.EventoCreateViewTests.test_evento_create_requires_login) ... ok
+test_evento_edit_admin_access (calendario.tests.EventoEditViewTests.test_evento_edit_admin_access) ... ok
+test_ical_export_requires_login (calendario.tests.IcalExportTests.test_ical_export_requires_login) ... ok
+test_ical_export_returns_ics (calendario.tests.IcalExportTests.test_ical_export_returns_ics) ... /home/sebacc/Documents/UDD/Ingeniería de Software/Proyecto-Kimün/venv/lib/python3.14/site-packages/django/db/models/fields/__init__.py:1670: RuntimeWarning: DateTimeField EventoCalendario.fecha_inicio received a naive datetime (2026-05-04 16:50:45.511895) while time zone support is active.
+  warnings.warn(
+/home/sebacc/Documents/UDD/Ingeniería de Software/Proyecto-Kimün/venv/lib/python3.14/site-packages/django/db/models/fields/__init__.py:1670: RuntimeWarning: DateTimeField EventoCalendario.fecha_inicio received a naive datetime (2026-10-31 16:50:45.511895) while time zone support is active.
+  warnings.warn(
+ok
+test_certificado_list_accessible_by_admin (certificados.tests.CertificadoListViewTests.test_certificado_list_accessible_by_admin) ... ok
+test_certificado_list_requires_admin (certificados.tests.CertificadoListViewTests.test_certificado_list_requires_admin) ... ok
+test_certificado_codigo_unico (certificados.tests.CertificadoModelTests.test_certificado_codigo_unico) ... ok
+test_certificado_creation (certificados.tests.CertificadoModelTests.test_certificado_creation) ... ok
+test_certificado_default_estado (certificados.tests.CertificadoModelTests.test_certificado_default_estado) ... ok
+test_certificado_estado_choices (certificados.tests.CertificadoModelTests.test_certificado_estado_choices) ... ok
+test_certificado_related_names (certificados.tests.CertificadoModelTests.test_certificado_related_names) ... ok
+test_certificado_str_includes_estado (certificados.tests.CertificadoModelTests.test_certificado_str_includes_estado) ... ok
+test_certificado_str_method (certificados.tests.CertificadoModelTests.test_certificado_str_method) ... ok
+test_cert_created_on_last_evaluation_pass (certificados.tests.CertificadoSignalTests.test_cert_created_on_last_evaluation_pass)
+Complete all classes + pass all evals -> cert created with estado='aprobado'. ... ok
+test_cert_created_when_classes_completed_last (certificados.tests.CertificadoSignalTests.test_cert_created_when_classes_completed_last)
+Complete classes last (after evals) -> cert created via ClaseCompletado signal. ... ok
+test_cert_not_created_when_enrollment_abandonado (certificados.tests.CertificadoSignalTests.test_cert_not_created_when_enrollment_abandonado)
+Enrollment is 'abandonado' -> no cert even if all complete. ... ok
+test_no_cert_when_classes_incomplete (certificados.tests.CertificadoSignalTests.test_no_cert_when_classes_incomplete)
+Complete evals but not classes -> no cert created. ... ok
+test_no_duplicate_cert_on_evaluation_retry (certificados.tests.CertificadoSignalTests.test_no_duplicate_cert_on_evaluation_retry)
+Cert already exists, user retries/repasses eval -> no duplicate cert created. ... ok
+test_admin_sees_all_pending (certificados.tests.CertificadosPendientesViewTests.test_admin_sees_all_pending) ... ok
+test_aprobar_changes_estado (certificados.tests.CertificadosPendientesViewTests.test_aprobar_changes_estado) ... ok
+test_colaborador_blocked (certificados.tests.CertificadosPendientesViewTests.test_colaborador_blocked) ... ok
+test_docente_sees_own_pending (certificados.tests.CertificadosPendientesViewTests.test_docente_sees_own_pending) ... ok
+test_rechazar_changes_estado (certificados.tests.CertificadosPendientesViewTests.test_rechazar_changes_estado) ... ok
+test_eligible_when_all_complete (certificados.tests.CertificateEligibilityServiceTests.test_eligible_when_all_complete)
+User is eligible when all classes done AND all evaluations passed. ... ok
+test_eligible_when_enrolled_asignado (certificados.tests.CertificateEligibilityServiceTests.test_eligible_when_enrolled_asignado)
+User is eligible even if enrolled with estado='asignado'. ... ok
+test_eligible_when_previous_cert_revoked (certificados.tests.CertificateEligibilityServiceTests.test_eligible_when_previous_cert_revoked)
+User IS eligible if the only existing cert is revoked (can re-earn). ... ok
+test_not_eligible_when_already_has_cert (certificados.tests.CertificateEligibilityServiceTests.test_not_eligible_when_already_has_cert)
+User is NOT eligible if they already have a non-revoked certificate. ... ok
+test_not_eligible_when_course_certificado_activo_false (certificados.tests.CertificateEligibilityServiceTests.test_not_eligible_when_course_certificado_activo_false)
+User is NOT eligible if curso.certificado_activo is False. ... ok
+test_not_eligible_when_enrollment_abandonado (certificados.tests.CertificateEligibilityServiceTests.test_not_eligible_when_enrollment_abandonado)
+User is NOT eligible if enrollment estado is 'abandonado'. ... ok
+test_not_eligible_when_evaluation_failed (certificados.tests.CertificateEligibilityServiceTests.test_not_eligible_when_evaluation_failed)
+User is NOT eligible if latest attempt on an evaluation is not approved. ... ok
+test_not_eligible_when_missing_class (certificados.tests.CertificateEligibilityServiceTests.test_not_eligible_when_missing_class)
+User is NOT eligible if a class is not completed. ... ok
+test_not_eligible_when_missing_evaluation (certificados.tests.CertificateEligibilityServiceTests.test_not_eligible_when_missing_evaluation)
+User is NOT eligible if an evaluation is not passed. ... ok
+test_descargar_admin_can_access (certificados.tests.DescargarCertificadoViewTests.test_descargar_admin_can_access) ... ok
+test_descargar_other_user_cannot_access (certificados.tests.DescargarCertificadoViewTests.test_descargar_other_user_cannot_access) ... FAIL
+test_descargar_owner_can_access (certificados.tests.DescargarCertificadoViewTests.test_descargar_owner_can_access) ... ok
+test_descargar_pending_certificado_blocked (certificados.tests.DescargarCertificadoViewTests.test_descargar_pending_certificado_blocked) ... ok
+test_descargar_rejected_certificado_blocked (certificados.tests.DescargarCertificadoViewTests.test_descargar_rejected_certificado_blocked) ... ok
+test_descargar_requires_login (certificados.tests.DescargarCertificadoViewTests.test_descargar_requires_login) ... ok
+test_mis_certificados_admin_redirects (certificados.tests.MisCertificadosViewTests.test_mis_certificados_admin_redirects) ... ok
+test_mis_certificados_colaborador (certificados.tests.MisCertificadosViewTests.test_mis_certificados_colaborador) ... ok
+test_mis_certificados_requires_login (certificados.tests.MisCertificadosViewTests.test_mis_certificados_requires_login) ... ok
+test_verificar_certificado_valid (certificados.tests.VerificarCertificadoViewTests.test_verificar_certificado_valid) ... ok
+test_categoria_create_get_form (cursos.tests.CategoriaCreateViewTests.test_categoria_create_get_form) ... ok
+test_categoria_create_post_valid (cursos.tests.CategoriaCreateViewTests.test_categoria_create_post_valid) ... ok
+test_categoria_create_requires_admin (cursos.tests.CategoriaCreateViewTests.test_categoria_create_requires_admin) ... ok
+test_form_descripcion_optional (cursos.tests.CategoriaFormTests.test_form_descripcion_optional) ... ok
+test_form_valid_data (cursos.tests.CategoriaFormTests.test_form_valid_data) ... ok
+test_categoria_creation (cursos.tests.CategoriaModelTests.test_categoria_creation) ... ok
+test_categoria_ordering (cursos.tests.CategoriaModelTests.test_categoria_ordering) ... ok
+test_categoria_str_method (cursos.tests.CategoriaModelTests.test_categoria_str_method) ... ok
+test_categoria_unique_constraint (cursos.tests.CategoriaModelTests.test_categoria_unique_constraint) ... ok
+test_categoria_verbose_names (cursos.tests.CategoriaModelTests.test_categoria_verbose_names) ... ok
+test_clase_completado_creation (cursos.tests.ClaseCompletadoModelTests.test_clase_completado_creation) ... ok
+test_clase_completado_related_names (cursos.tests.ClaseCompletadoModelTests.test_clase_completado_related_names) ... ok
+test_clase_completado_str_method (cursos.tests.ClaseCompletadoModelTests.test_clase_completado_str_method) ... ok
+test_clase_completado_unique_together (cursos.tests.ClaseCompletadoModelTests.test_clase_completado_unique_together) ... ok
+test_completar_clase_already_completed (cursos.tests.ClaseCompletarViewTests.test_completar_clase_already_completed) ... ok
+test_completar_clase_requires_colaborador (cursos.tests.ClaseCompletarViewTests.test_completar_clase_requires_colaborador) ... FAIL
+test_completar_clase_requires_inscripcion (cursos.tests.ClaseCompletarViewTests.test_completar_clase_requires_inscripcion) ... ok
+test_completar_clase_requires_post (cursos.tests.ClaseCompletarViewTests.test_completar_clase_requires_post) ... ok
+test_completar_clase_requires_previous (cursos.tests.ClaseCompletarViewTests.test_completar_clase_requires_previous) ... ok
+test_completar_clase_success (cursos.tests.ClaseCompletarViewTests.test_completar_clase_success) ... ok
+test_form_orden_negative (cursos.tests.ClaseFormTests.test_form_orden_negative) ... ok
+test_form_orden_validation (cursos.tests.ClaseFormTests.test_form_orden_validation) ... ok
+test_form_valid_data (cursos.tests.ClaseFormTests.test_form_valid_data) ... ok
+test_clase_creation (cursos.tests.ClaseModelTests.test_clase_creation) ... ok
+test_clase_get_clase_anterior (cursos.tests.ClaseModelTests.test_clase_get_clase_anterior) ... ok
+test_clase_get_siguiente_clase (cursos.tests.ClaseModelTests.test_clase_get_siguiente_clase) ... ok
+test_clase_orden_validation (cursos.tests.ClaseModelTests.test_clase_orden_validation) ... ok
+test_clase_ordering (cursos.tests.ClaseModelTests.test_clase_ordering) ... ok
+test_clase_str_method (cursos.tests.ClaseModelTests.test_clase_str_method) ... ok
+test_clase_unique_constraint (cursos.tests.ClaseModelTests.test_clase_unique_constraint) ... ok
+test_clase_create_get_form (cursos.tests.ClaseViewTests.test_clase_create_get_form) ... ok
+test_clase_create_requires_docente (cursos.tests.ClaseViewTests.test_clase_create_requires_docente) ... ok
+test_clase_detail_accessible (cursos.tests.ClaseViewTests.test_clase_detail_accessible) ... ok
+test_clase_list_accessible_by_inscrito (cursos.tests.ClaseViewTests.test_clase_list_accessible_by_inscrito) ... ok
+test_clase_list_requires_login (cursos.tests.ClaseViewTests.test_clase_list_requires_login) ... ok
+test_curso_create_get_form (cursos.tests.CursoCreateViewTests.test_curso_create_get_form) ... ok
+test_curso_create_post_valid (cursos.tests.CursoCreateViewTests.test_curso_create_post_valid) ... ok
+test_curso_create_requires_docente_or_admin (cursos.tests.CursoCreateViewTests.test_curso_create_requires_docente_or_admin) ... ok
+test_curso_borrador_docente_can_access (cursos.tests.CursoDetailViewTests.test_curso_borrador_docente_can_access) ... ok
+test_curso_detail_accessible (cursos.tests.CursoDetailViewTests.test_curso_detail_accessible) ... ok
+test_curso_detail_requires_login (cursos.tests.CursoDetailViewTests.test_curso_detail_requires_login) ... ok
+test_curso_edit_only_by_owner_or_admin (cursos.tests.CursoEditViewTests.test_curso_edit_only_by_owner_or_admin) ... ok
+test_curso_edit_owner_can_access (cursos.tests.CursoEditViewTests.test_curso_edit_owner_can_access) ... ok
+test_curso_edit_post_valid (cursos.tests.CursoEditViewTests.test_curso_edit_post_valid) ... ok
+test_form_categoria_optional (cursos.tests.CursoFormTests.test_form_categoria_optional) ... ok
+test_form_fecha_limite_optional (cursos.tests.CursoFormTests.test_form_fecha_limite_optional) ... ok
+test_form_valid_data (cursos.tests.CursoFormTests.test_form_valid_data) ... ok
+test_curso_list_admin_not_redirected (cursos.tests.CursoListViewTests.test_curso_list_admin_not_redirected)
+Admin should see curso_list normally ... ok
+test_curso_list_admin_sees_all (cursos.tests.CursoListViewTests.test_curso_list_admin_sees_all) ... ok
+test_curso_list_colaborador_only_publicados (cursos.tests.CursoListViewTests.test_curso_list_colaborador_only_publicados) ... ok
+test_curso_list_colaborador_redirected (cursos.tests.CursoListViewTests.test_curso_list_colaborador_redirected)
+Colaborador should be redirected to mis_cursos ... ok
+test_curso_list_docente_not_redirected (cursos.tests.CursoListViewTests.test_curso_list_docente_not_redirected)
+Docente should see curso_list normally ... ok
+test_curso_list_docente_sees_all (cursos.tests.CursoListViewTests.test_curso_list_docente_sees_all) ... ok
+test_curso_list_requires_login (cursos.tests.CursoListViewTests.test_curso_list_requires_login) ... 
