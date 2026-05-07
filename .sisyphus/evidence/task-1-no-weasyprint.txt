@@ -1,1 +1,0 @@
-No WeasyPrint, cairocffi, or cairosvg found in requirements.txt
