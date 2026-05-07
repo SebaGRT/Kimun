@@ -303,11 +303,13 @@
                         </button>
 
                     <nav class="hidden xl:flex items-center gap-8">
+                        {% if user.rol != 'colaborador' %}
                         <a
                             href="{% url 'cursos:curso_list' %}"
                             class="nav-link text-base font-medium {% if request.path|slice:':8' == '/cursos/' %}active{% endif %}"
                             >Cursos</a
                         >
+                        {% endif %}
                         <a
                             href="{% url 'calendario:calendario' %}"
                             class="nav-link text-base font-medium {% if request.path|slice:':12' == '/calendario/' %}active{% endif %}"
@@ -349,6 +351,15 @@
                                     style="color: var(--color-text);"
                                     >Usuarios</a
                                 >
+                                {% endif %}
+                                {% if user.rol == 'admin' or user.rol == 'docente' %}
+                                <a
+                                    href="{% url 'certificados:certificados_pendientes' %}"
+                                    class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                                    style="color: var(--color-text);"
+                                >
+                                    <i class="bi bi-hourglass-split me-2"></i>Certificados Pendientes
+                                </a>
                                 {% endif %}
                                 <a
                                     href="{% url 'anuncios:anuncio_list' %}"
@@ -423,6 +434,7 @@
                 "
             >
                 <div class="px-4 py-4 space-y-2">
+                    {% if user.rol != 'colaborador' %}
                     <a
                         href="{% url 'cursos:curso_list' %}"
                         class="block py-3 px-4 rounded-lg {% if request.path|slice:':8' == '/cursos/' %}bg-gray-100 dark:bg-slate-700{% endif %}"
@@ -430,6 +442,7 @@
                     >
                         <i class="bi bi-book me-2"></i>Cursos
                     </a>
+                    {% endif %}
                     <a
                         href="{% url 'calendario:calendario' %}"
                         class="block py-3 px-4 rounded-lg {% if request.path|slice:':12' == '/calendario/' %}bg-gray-100 dark:bg-slate-700{% endif %}"

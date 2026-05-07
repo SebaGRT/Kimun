@@ -35,7 +35,7 @@ class CertificadoModelTests(TestCase):
         self.assertIsNotNone(self.certificado.fecha_emision)
 
     def test_certificado_str_method(self):
-        expected = f'Certificado {self.colaborador} - Curso Test'
+        expected = f'Certificado {self.colaborador} - Curso Test (Pendiente)'
         self.assertEqual(str(self.certificado), expected)
 
     def test_certificado_codigo_unico(self):
@@ -48,6 +48,20 @@ class CertificadoModelTests(TestCase):
     def test_certificado_related_names(self):
         self.assertEqual(self.colaborador.certificados.count(), 1)
         self.assertEqual(self.curso.certificados.count(), 1)
+
+    def test_certificado_default_estado(self):
+        cert = Certificado.objects.create(usuario=self.colaborador, curso=self.curso)
+        self.assertEqual(cert.estado, 'pendiente')
+
+    def test_certificado_estado_choices(self):
+        choices = dict(Certificado.ESTADO_CHOICES)
+        self.assertIn('pendiente', choices)
+        self.assertIn('aprobado', choices)
+        self.assertIn('rechazado', choices)
+
+    def test_certificado_str_includes_estado(self):
+        cert = Certificado.objects.create(usuario=self.colaborador, curso=self.curso)
+        self.assertIn('Pendiente', str(cert))
 
 
 class CertificadoListViewTests(TestCase):
@@ -135,7 +149,8 @@ class DescargarCertificadoViewTests(TestCase):
         self.certificado = Certificado.objects.create(
             usuario=self.colaborador,
             curso=self.curso,
-            archivo_pdf=pdf_content
+            archivo_pdf=pdf_content,
+            estado='aprobado'
         )
 
     def test_descargar_requires_login(self):
@@ -159,6 +174,20 @@ class DescargarCertificadoViewTests(TestCase):
         self.client.login(username='colab2', password='testpass')
         response = self.client.get(reverse('certificados:descargar_certificado', kwargs={'pk': self.certificado.pk}))
         self.assertEqual(response.status_code, 302)
+
+    def test_descargar_pending_certificado_blocked(self):
+        cert = Certificado.objects.create(usuario=self.colaborador, curso=self.curso, estado='pendiente')
+        self.client.login(username='colaborador', password='testpass')
+        response = self.client.get(reverse('certificados:descargar_certificado', args=[cert.pk]))
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('certificados:mis_certificados'))
+
+    def test_descargar_rejected_certificado_blocked(self):
+        cert = Certificado.objects.create(usuario=self.colaborador, curso=self.curso, estado='rechazado')
+        self.client.login(username='colaborador', password='testpass')
+        response = self.client.get(reverse('certificados:descargar_certificado', args=[cert.pk]))
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('certificados:mis_certificados'))
 
 
 class VerificarCertificadoViewTests(TestCase):
@@ -186,3 +215,41 @@ class VerificarCertificadoViewTests(TestCase):
             'codigo': self.certificado.codigo_verificacion
         }))
         self.assertEqual(response.status_code, 200)
+
+
+class CertificadosPendientesViewTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.admin = Usuario.objects.create_user(username='admin', password='testpass', rol='admin', rut='11111111-1')
+        self.docente = Usuario.objects.create_user(username='docente', password='testpass', rol='docente', rut='22222222-2')
+        self.colaborador = Usuario.objects.create_user(username='colaborador', password='testpass', rol='colaborador', rut='33333333-3')
+        self.curso = Curso.objects.create(titulo='Test Curso', descripcion='...', estado='publicado', docente_creador=self.docente)
+
+    def test_admin_sees_all_pending(self):
+        self.client.login(username='admin', password='testpass')
+        response = self.client.get(reverse('certificados:certificados_pendientes'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_docente_sees_own_pending(self):
+        self.client.login(username='docente', password='testpass')
+        response = self.client.get(reverse('certificados:certificados_pendientes'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_colaborador_blocked(self):
+        self.client.login(username='colaborador', password='testpass')
+        response = self.client.get(reverse('certificados:certificados_pendientes'))
+        self.assertEqual(response.status_code, 403)
+
+    def test_aprobar_changes_estado(self):
+        cert = Certificado.objects.create(usuario=self.colaborador, curso=self.curso, estado='pendiente')
+        self.client.login(username='docente', password='testpass')
+        response = self.client.post(reverse('certificados:aprobar_certificado', args=[cert.pk]))
+        cert.refresh_from_db()
+        self.assertEqual(cert.estado, 'aprobado')
+
+    def test_rechazar_changes_estado(self):
+        cert = Certificado.objects.create(usuario=self.colaborador, curso=self.curso, estado='pendiente')
+        self.client.login(username='docente', password='testpass')
+        response = self.client.post(reverse('certificados:rechazar_certificado', args=[cert.pk]))
+        cert.refresh_from_db()
+        self.assertEqual(cert.estado, 'rechazado')

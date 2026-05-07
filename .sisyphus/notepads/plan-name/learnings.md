@@ -1,1 +1,0 @@
-- Replaced bootstrap layout grids with custom CSS variables and utility classes via Tailwind where applicable

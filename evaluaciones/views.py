@@ -283,7 +283,7 @@ def tomar_evaluacion(request, pk):
             respuesta_seleccionada = respuestas.get(str(pregunta.pk))
             if respuesta_seleccionada:
                 alternativa_correcta = pregunta.alternativas.filter(es_correcta=True).first()
-                if alternativa_correcta and str(alternativa_correcta.pk) == respuesta_seleccionada:
+                if alternativa_correcta and str(respuesta_seleccionada) == str(alternativa_correcta.pk):
                     respuestas_correctas += 1
 
         puntaje = int((respuestas_correctas / total_preguntas) * 100) if total_preguntas > 0 else 0
@@ -315,6 +315,14 @@ def tomar_evaluacion(request, pk):
                 if inscripcion and inscripcion.estado != 'completado':
                     inscripcion.estado = 'completado'
                     inscripcion.save()
+                
+                # Auto-create pending certificate
+                from certificados.models import Certificado
+                Certificado.objects.get_or_create(
+                    usuario=request.user,
+                    curso=curso,
+                    defaults={'estado': 'pendiente'}
+                )
         
         return redirect('evaluaciones:resultado_evaluacion', pk=pk, intento_pk=intento.pk)
     
@@ -329,7 +337,12 @@ def tomar_evaluacion(request, pk):
 @login_required
 def resultado_evaluacion(request, pk, intento_pk):
     evaluacion = get_object_or_404(Evaluacion, pk=pk)
-    intento = get_object_or_404(IntentoEvaluacion, pk=intento_pk, usuario=request.user, evaluacion=evaluacion)
+    
+    try:
+        intento = IntentoEvaluacion.objects.get(pk=intento_pk, usuario=request.user, evaluacion=evaluacion)
+    except IntentoEvaluacion.DoesNotExist:
+        messages.error(request, 'No se encontró el intento de evaluación.')
+        return redirect('evaluaciones:evaluacion_list', curso_pk=evaluacion.curso.pk)
 
     preguntas = evaluacion.preguntas.prefetch_related('alternativas').all()
 

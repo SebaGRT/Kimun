@@ -387,6 +387,18 @@ class TomarEvaluacionViewTests(TestCase):
         inscripcion = InscripcionCurso.objects.get(usuario=self.colaborador, curso=self.curso)
         self.assertEqual(inscripcion.estado, 'completado')
 
+    def test_certificado_auto_created_on_all_evals_passed(self):
+        self.client.login(username='colaborador', password='testpass')
+        respuestas = {str(self.pregunta1.pk): str(self.alt1_p1.pk)}
+        self.client.post(
+            reverse('evaluaciones:tomar_evaluacion', kwargs={'pk': self.evaluacion.pk}),
+            {'respuestas': json.dumps(respuestas)}
+        )
+        from certificados.models import Certificado
+        cert = Certificado.objects.filter(usuario=self.colaborador, curso=self.curso).first()
+        self.assertIsNotNone(cert)
+        self.assertEqual(cert.estado, 'pendiente')
+
     def test_tomar_evaluacion_blocks_when_max_intentos_reached(self):
         self.evaluacion.max_intentos = 1
         self.evaluacion.save()
@@ -429,6 +441,27 @@ class TomarEvaluacionViewTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.alt1_p1.texto)
+
+    def test_resultado_evaluacion_defensive_redirect(self):
+        self.client.login(username='colaborador', password='testpass')
+        response = self.client.get(
+            reverse('evaluaciones:resultado_evaluacion', kwargs={'pk': self.evaluacion.pk, 'intento_pk': 9999}),
+            follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'evaluaciones/evaluacion_list.html')
+
+    def test_tomar_evaluacion_redirects_to_resultado_and_user_remains_authenticated(self):
+        self.client.login(username='colaborador', password='testpass')
+        respuestas = {str(self.pregunta1.pk): str(self.alt1_p1.pk)}
+        response = self.client.post(
+            reverse('evaluaciones:tomar_evaluacion', kwargs={'pk': self.evaluacion.pk}),
+            {'respuestas': json.dumps(respuestas)},
+            follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'evaluaciones/resultado_evaluacion.html')
+        self.assertTrue(response.context['user'].is_authenticated)
 
     def test_responder_pregunta_htmx_removed(self):
         self.client.login(username='colaborador', password='testpass')
