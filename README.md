@@ -164,6 +164,10 @@ brew install cairo pango libgobject
 - **PDFs**: WeasyPrint + Pillow
 - **Icons**: Bootstrap Icons
 
+## Link
+
+Se puede ingresar al prototipo del sitio en: kimun-zeta.vercel.app
+
 ## Licencia
 
 MIT License - Proyecto desarrollado para ONG ALUMCO
