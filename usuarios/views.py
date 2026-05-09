@@ -325,8 +325,6 @@ def usuario_delete(request, pk):
         
         nombre = usuario.get_full_name() or usuario.username
         try:
-            with connection.cursor() as cursor:
-                cursor.execute("DELETE FROM usuarios_auditoria WHERE usuario_id = %s", [usuario.pk])
             usuario.delete()
             messages.success(request, f'Usuario "{nombre}" eliminado.')
         except IntegrityError:
