@@ -15,20 +15,32 @@ from dotenv import load_dotenv
 import os
 import sys
 
-load_dotenv()
-
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load env vars from project root regardless of working directory
+load_dotenv(BASE_DIR / '.env')
+if not os.environ.get('SUPABASE_DB_HOST'):
+    load_dotenv(BASE_DIR / '.env.local')
+if not os.environ.get('SUPABASE_DB_HOST'):
+    load_dotenv(BASE_DIR / '.env.vercel.local')
+
+
+def env(key, default=None):
+    value = os.environ.get(key, default)
+    if value is not None:
+        value = value.strip()
+    return value
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-key-change-me')
+SECRET_KEY = env('SECRET_KEY', 'django-insecure-dev-key-change-me')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+DEBUG = env('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = [host.strip() for host in env('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',') if host.strip()]
 
-CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'http://127.0.0.1:8000,http://localhost:8000').split(',')
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in env('CSRF_TRUSTED_ORIGINS', 'http://127.0.0.1:8000,http://localhost:8000').split(',') if origin.strip()]
 
 
 INSTALLED_APPS = [
@@ -80,12 +92,27 @@ TEMPLATES = [
 WSGI_APPLICATION = 'kimun.wsgi.application'
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if env('SUPABASE_DB_HOST'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('SUPABASE_DB_NAME', 'postgres'),
+            'USER': env('SUPABASE_DB_USER'),
+            'PASSWORD': env('SUPABASE_DB_PASSWORD'),
+            'HOST': env('SUPABASE_DB_HOST'),
+            'PORT': env('SUPABASE_DB_PORT', '5432'),
+            'OPTIONS': {
+                'sslmode': 'require',
+            },
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -131,8 +158,8 @@ LOGOUT_REDIRECT_URL = 'usuarios:login'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-SUPABASE_URL = os.environ.get('SUPABASE_URL')
-SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
+SUPABASE_URL = env('SUPABASE_URL')
+SUPABASE_KEY = env('SUPABASE_KEY')
 
 STORAGES = {
     'default': {
