@@ -166,7 +166,7 @@ brew install cairo pango libgobject
 
 ## Link
 
-Se puede ingresar al prototipo del sitio en: kimun-zeta.vercel.app
+Se puede ingresar al prototipo del sitio en: [Link Text](https://kimun-zeta.vercel.app)
 
 ## Licencia
 
