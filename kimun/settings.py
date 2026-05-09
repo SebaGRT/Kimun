@@ -164,7 +164,7 @@ SUPABASE_KEY = env('SUPABASE_KEY')
 
 STORAGES = {
     'default': {
-        'BACKEND': 'django_supabase_storage.SupabaseMediaStorage',
+        'BACKEND': 'kimun.storage_backends.FixedSupabaseMediaStorage',
     },
     'staticfiles': {
         'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
