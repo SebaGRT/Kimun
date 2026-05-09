@@ -5,4 +5,3 @@ cp -r ../kimun ../manage.py ../requirements.txt ../certificados ../usuarios ../c
   unset SUPABASE_DB_HOST
   python manage.py collectstatic --noinput
 )
-python manage.py migrate --noinput
