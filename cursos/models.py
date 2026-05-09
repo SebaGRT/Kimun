@@ -41,6 +41,7 @@ class Curso(models.Model):
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='borrador')
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_limite = models.DateTimeField(null=True, blank=True, verbose_name='Fecha límite')
+    certificado_activo = models.BooleanField(default=False, null=True)
 
     class Meta:
         verbose_name = 'Curso'
