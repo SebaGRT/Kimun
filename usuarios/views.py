@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.http import HttpResponseForbidden
 from django.contrib.auth import get_user_model
 from django import forms
-from django.db import models
+from django.db import models, IntegrityError, connection
 from django.core.paginator import Paginator
 from cursos.models import Curso, InscripcionCurso
 from usuarios.decorators import admin_required
@@ -324,8 +324,13 @@ def usuario_delete(request, pk):
             return redirect('usuarios:usuario_list')
         
         nombre = usuario.get_full_name() or usuario.username
-        usuario.delete()
-        messages.success(request, f'Usuario "{nombre}" eliminado.')
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("DELETE FROM usuarios_auditoria WHERE usuario_id = %s", [usuario.pk])
+            usuario.delete()
+            messages.success(request, f'Usuario "{nombre}" eliminado.')
+        except IntegrityError:
+            messages.error(request, f'No se puede eliminar el usuario "{nombre}" porque tiene registros relacionados en el sistema.')
         return redirect('usuarios:usuario_list')
     
     return render(request, 'usuarios/usuario_confirm_delete.html', {'usuario': usuario})
