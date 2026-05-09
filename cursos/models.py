@@ -42,6 +42,10 @@ class Curso(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_limite = models.DateTimeField(null=True, blank=True, verbose_name='Fecha límite')
     certificado_activo = models.BooleanField(default=False, null=True)
+    certificado_requiere_clases = models.BooleanField(default=False)
+    certificado_requiere_evaluaciones = models.BooleanField(default=False)
+    certificado_porcentaje_minimo_clases = models.PositiveIntegerField(default=0)
+    certificado_vigencia_meses = models.PositiveIntegerField(default=12)
 
     class Meta:
         verbose_name = 'Curso'
