@@ -29,3 +29,6 @@ media/
 # OS
 .DS_Store
 Thumbs.db
+
+# Capturas y documentación del README
+docs/
