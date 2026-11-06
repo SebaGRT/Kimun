@@ -2,6 +2,12 @@
 
 Plataforma de capacitación interna para la ONG ALUMCO, dedicada a trabajar con adultos mayores en residencias ELEAM.
 
+Proyecto del curso de Ingeniería de Software · Universidad del Desarrollo · 2026.
+
+🔗 **Demo:** <https://kimun-zeta.vercel.app> · **Stack:** Django, Tailwind CSS, PostgreSQL (producción) / SQLite (desarrollo), Vercel
+
+![Pantalla de inicio de sesión de Kimün](docs/capturas/login.png)
+
 ## Características
 
 - **Gestión de usuarios** con 3 roles: Administrador, Docente, Colaborador
@@ -23,11 +29,13 @@ Plataforma de capacitación interna para la ONG ALUMCO, dedicada a trabajar con 
 
 ### 1. Clonar y Entrar al proyecto
 ```bash
-cd /home/sebacc/Documents/UDD/Ingeniería\ de\ Software/Proyecto-Kimün
+git clone https://github.com/SebaGRT/Kimun.git
+cd Kimun
 ```
 
-### 2. Activar entorno virtual
+### 2. Crear y activar el entorno virtual
 ```bash
+python -m venv venv
 source venv/bin/activate
 ```
 
